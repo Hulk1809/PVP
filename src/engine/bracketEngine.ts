@@ -38,23 +38,9 @@ export function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-// Standard tournament seeding generator: 1 vs 16, 8 vs 9, 4 vs 13, 5 vs 12, 2 vs 15, 7 vs 10, 3 vs 14, 6 vs 11
-function getSeededPairings(bracketSize: number): number[] {
-  let seeds = [1, 2];
-  while (seeds.length < bracketSize) {
-    const nextSeeds: number[] = [];
-    const currentMax = seeds.length * 2 + 1;
-    for (const s of seeds) {
-      nextSeeds.push(s);
-      nextSeeds.push(currentMax - s);
-    }
-    seeds = nextSeeds;
-  }
-  return seeds;
-}
-
 /**
- * Generate full tree of matches for single-elimination tournament with Byes and 3rd Place Match.
+ * Generate full tree of matches with Alternating Byes Distribution.
+ * Each Bye branch (e.g. Match 0) cleanly merges in Round 2 with a contested match (e.g. Match 1).
  */
 export function generateTournamentBracket(
   bracketId: BracketId,
@@ -64,24 +50,48 @@ export function generateTournamentBracket(
   const count = participants.length;
   if (count < 2) return {};
 
-  const { totalRounds, bracketSize } = calculateBracketDimensions(count);
+  const { totalRounds, bracketSize, byesCount } = calculateBracketDimensions(count);
   const matches: Record<string, Match> = {};
 
   // Sort or shuffle participants based on randomize flag
   const processedParticipants = randomize
     ? shuffleArray(participants)
-    : [...participants].sort((a, b) => (a.seedRank || 999) - (b.seedRank || 999));
+    : [...participants];
 
-  // Map seeds to participant slots using standard international seeding
-  const seedSlots = getSeededPairings(bracketSize);
+  const totalFirstRoundMatches = bracketSize / 2;
   const slotToPlayerMap: (Participant | null)[] = new Array(bracketSize).fill(null);
 
-  for (let i = 0; i < bracketSize; i++) {
-    const seed = seedSlots[i];
-    if (seed <= count) {
-      slotToPlayerMap[i] = processedParticipants[seed - 1] || null;
+  // Distribute byes across first round matches:
+  // Match m has slots (2*m, 2*m + 1).
+  // If match m gets a Bye, slot (2*m + 1) is null, and slot (2*m) gets a player.
+  const matchHasBye: boolean[] = new Array(totalFirstRoundMatches).fill(false);
+
+  // Step 1: Assign 1 bye per Round-2 pair (match 0, 2, 4, 6...)
+  let assignedByes = 0;
+  for (let i = 0; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
+    matchHasBye[i] = true;
+    assignedByes++;
+  }
+  // Step 2: If more byes remain, assign to the remaining matches (match 1, 3, 5...)
+  for (let i = 1; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
+    matchHasBye[i] = true;
+    assignedByes++;
+  }
+
+  // Populate slotToPlayerMap
+  let pIdx = 0;
+  for (let m = 0; m < totalFirstRoundMatches; m++) {
+    const slot1 = m * 2;
+    const slot2 = m * 2 + 1;
+
+    if (matchHasBye[m]) {
+      // 1 real player, 1 Bye
+      slotToPlayerMap[slot1] = processedParticipants[pIdx++] || null;
+      slotToPlayerMap[slot2] = null; // Bye
     } else {
-      slotToPlayerMap[i] = null; // Bye
+      // 2 real players
+      slotToPlayerMap[slot1] = processedParticipants[pIdx++] || null;
+      slotToPlayerMap[slot2] = processedParticipants[pIdx++] || null;
     }
   }
 
@@ -187,8 +197,8 @@ export function generateTournamentBracket(
   }
 
   // Propagate Bye winners to Round 2
-  const totalFirstRoundMatches = bracketSize / 2;
-  for (let m = 0; m < totalFirstRoundMatches; m++) {
+  const totalFirstRoundMatchesCount = bracketSize / 2;
+  for (let m = 0; m < totalFirstRoundMatchesCount; m++) {
     const r1Match = matches[roundMatchIds[0][m]];
     if (r1Match && r1Match.status === 'bye' && r1Match.winnerId && r1Match.nextMatchId) {
       const nextMatch = matches[r1Match.nextMatchId];
@@ -273,7 +283,7 @@ export function advanceWinner(
 }
 
 /**
- * Reset a match result and recursively rollback downstream brackets (both winner and loser tracks)
+ * Reset a match result and recursively rollback downstream brackets
  */
 export function resetMatch(
   currentMatches: Record<string, Match>,
@@ -297,7 +307,6 @@ export function resetMatch(
     if (nextMatch.player1Id === previousWinner) nextMatch.player1Id = null;
     if (nextMatch.player2Id === previousWinner) nextMatch.player2Id = null;
 
-    // Recursively reset downstream if it was completed
     if (nextMatch.winnerId) {
       matches = resetMatch(matches, nextMatch.id);
     }
@@ -309,7 +318,6 @@ export function resetMatch(
     if (thirdMatch.player1Id === previousLoser) thirdMatch.player1Id = null;
     if (thirdMatch.player2Id === previousLoser) thirdMatch.player2Id = null;
 
-    // Recursively reset 3rd place match if it was completed
     if (thirdMatch.winnerId) {
       matches = resetMatch(matches, thirdMatch.id);
     }

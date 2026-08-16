@@ -5,7 +5,7 @@ import { getInitialTournamentData } from '../engine/defaultData';
 import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutcome } from '../engine/bracketEngine';
 import { soundEngine } from '../engine/soundEngine';
 
-const STORAGE_KEY = 'soul_land_pvp_tournament_v7';
+const STORAGE_KEY = 'soul_land_pvp_tournament_v8';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
 
 interface TournamentContextType {
