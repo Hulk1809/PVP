@@ -33,25 +33,25 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
   return (
     <>
       <style>{`
-        /* Soul Land Movie 3D Title Floating & Breathing Aura */
+        /* Soul Land Platinum Silver Title Floating & Breathing Aura */
         @keyframes soulLandTitleFloat {
           0%, 100% {
             transform: translateY(0px) scale(1);
-            filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.8))
-                    drop-shadow(0 0 35px rgba(234, 88, 12, 0.5))
-                    drop-shadow(0 10px 22px rgba(0, 0, 0, 0.95));
+            filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.85))
+                    drop-shadow(0 0 40px rgba(148, 163, 184, 0.6))
+                    drop-shadow(0 12px 24px rgba(0, 0, 0, 0.95));
           }
           50% {
             transform: translateY(-6px) scale(1.02);
-            filter: drop-shadow(0 0 26px rgba(254, 240, 138, 0.95))
-                    drop-shadow(0 0 60px rgba(245, 158, 11, 0.75))
-                    drop-shadow(0 0 90px rgba(234, 88, 12, 0.4))
-                    drop-shadow(0 14px 28px rgba(0, 0, 0, 1));
+            filter: drop-shadow(0 0 28px rgba(255, 255, 255, 1))
+                    drop-shadow(0 0 65px rgba(203, 213, 225, 0.85))
+                    drop-shadow(0 0 95px rgba(148, 163, 184, 0.5))
+                    drop-shadow(0 16px 30px rgba(0, 0, 0, 1));
           }
         }
 
-        /* Continuous Sword Blade Glint & Gold Texture Sweep */
-        @keyframes swordGlintSweep {
+        /* Continuous Platinum Sword Blade Glint Sweep */
+        @keyframes silverGlintSweep {
           0% {
             background-position: -200% center;
           }
@@ -72,7 +72,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           }
         }
 
-        /* Floating Golden Spark Embers */
+        /* Floating Silver Spark Embers */
         @keyframes sparkRise {
           0% {
             transform: translateY(0px) scale(0.6);
@@ -93,12 +93,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
         /* Glass Button Pulse */
         @keyframes glassButtonGlow {
           0%, 100% { 
-            box-shadow: 0 0 18px 2px rgba(251,191,36,0.25), 0 0 40px 6px rgba(0,0,0,0.5);
-            border-color: rgba(251,191,36,0.4);
+            box-shadow: 0 0 18px 2px rgba(255, 255, 255, 0.2), 0 0 40px 6px rgba(0,0,0,0.5);
+            border-color: rgba(255, 255, 255, 0.4);
           }
           50% { 
-            box-shadow: 0 0 32px 5px rgba(251,191,36,0.55), 0 0 55px 10px rgba(234,88,12,0.3);
-            border-color: rgba(251,191,36,0.85);
+            box-shadow: 0 0 32px 5px rgba(255, 255, 255, 0.55), 0 0 55px 10px rgba(203, 213, 225, 0.3);
+            border-color: rgba(255, 255, 255, 0.85);
           }
         }
 
@@ -111,20 +111,20 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           font-family: 'Cinzel Decorative', 'Cinzel', 'Outfit', serif;
           background: linear-gradient(
             110deg,
-            #ca8a04 0%,
-            #eab308 14%,
-            #fef08a 28%,
-            #ffffff 42%,
-            #fbbf24 56%,
-            #ffffff 70%,
-            #f59e0b 84%,
-            #a16207 100%
+            #64748b 0%,
+            #94a3b8 15%,
+            #cbd5e1 30%,
+            #ffffff 45%,
+            #f8fafc 55%,
+            #cbd5e1 70%,
+            #94a3b8 85%,
+            #475569 100%
           );
           background-size: 250% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 245, 180, 0.85);
-          animation: swordGlintSweep 4.5s linear infinite, soulLandTitleFloat 3.8s ease-in-out infinite, fadeInUpCinematic 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+          -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.95);
+          animation: silverGlintSweep 4.5s linear infinite, soulLandTitleFloat 3.8s ease-in-out infinite, fadeInUpCinematic 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .soul-land-wing-line {
@@ -171,8 +171,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               width: `${s.size}px`,
               height: `${s.size}px`,
               borderRadius: '50%',
-              background: '#fef08a',
-              boxShadow: `0 0 ${s.size * 3}px ${s.size}px rgba(251,191,36,0.9)`,
+              background: '#ffffff',
+              boxShadow: `0 0 ${s.size * 3}px ${s.size}px rgba(255,255,255,0.9)`,
               animation: `sparkRise ${s.dur}s ${s.delay}s ease-in-out infinite`,
               pointerEvents: 'none',
               zIndex: 2,
@@ -207,26 +207,26 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               maxWidth: '420px',
             }}
           >
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.9))' }} />
-            <span style={{ color: '#fbbf24', fontSize: '0.8rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>❖</span>
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.9))' }} />
+            <span style={{ color: '#ffffff', fontSize: '0.8rem', textShadow: '0 0 10px rgba(255,255,255,0.9)' }}>❖</span>
             <span
               style={{
-                color: '#fef08a',
+                color: '#f8fafc',
                 fontSize: 'clamp(0.68rem, 1.4vw, 0.78rem)',
                 fontWeight: 900,
                 letterSpacing: '0.3em',
                 fontFamily: '"Cinzel", monospace',
                 textTransform: 'uppercase',
-                textShadow: '0 0 12px rgba(251,191,36,0.7), 0 2px 4px rgba(0,0,0,0.8)',
+                textShadow: '0 0 12px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
               斗罗大陆 • ĐẤU LA ĐẠI LỤC
             </span>
-            <span style={{ color: '#fbbf24', fontSize: '0.8rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>❖</span>
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, rgba(251,191,36,0.9), transparent)' }} />
+            <span style={{ color: '#ffffff', fontSize: '0.8rem', textShadow: '0 0 10px rgba(255,255,255,0.9)' }}>❖</span>
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, rgba(255,255,255,0.9), transparent)' }} />
           </div>
 
-          {/* Cinematic Epic Movie Title: TÔNG MÔN TRANH BÁ (Properly clamped for landscape mobile) */}
+          {/* Cinematic Epic Movie Title: TÔNG MÔN TRANH BÁ (Platinum Silver) */}
           <h1
             className="soul-land-cinematic-title"
             style={{
@@ -254,7 +254,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               fontFamily: 'monospace',
               marginBottom: '1.4rem',
               textTransform: 'uppercase',
-              textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 0 10px rgba(251,191,36,0.4)',
+              textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 0 10px rgba(255,255,255,0.5)',
               fontWeight: 700,
             }}
           >
@@ -272,31 +272,31 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               padding: '12px 52px',
               borderRadius: '16px',
               background: 'rgba(0, 0, 0, 0.45)',
-              color: '#fbbf24',
+              color: '#ffffff',
               fontSize: '1rem',
               fontWeight: 900,
-              border: '1.5px solid rgba(251,191,36,0.45)',
+              border: '1.5px solid rgba(255, 255, 255, 0.45)',
               cursor: 'pointer',
               letterSpacing: '0.16em',
               fontFamily: '"Montserrat", sans-serif',
               backdropFilter: 'blur(14px)',
               transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              textShadow: '0 0 14px rgba(251,191,36,0.6)',
+              textShadow: '0 0 14px rgba(255,255,255,0.8)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             }}
             onMouseEnter={(e) => {
               const btn = e.currentTarget as HTMLButtonElement;
               btn.style.transform = 'scale(1.06) translateY(-2px)';
-              btn.style.background = 'rgba(251,191,36,0.2)';
-              btn.style.borderColor = 'rgba(251,191,36,0.95)';
-              btn.style.boxShadow = '0 0 35px rgba(251,191,36,0.65), 0 12px 35px rgba(0,0,0,0.6)';
+              btn.style.background = 'rgba(255,255,255,0.2)';
+              btn.style.borderColor = 'rgba(255,255,255,0.95)';
+              btn.style.boxShadow = '0 0 35px rgba(255,255,255,0.7), 0 12px 35px rgba(0,0,0,0.6)';
               btn.style.filter = 'brightness(1.2)';
             }}
             onMouseLeave={(e) => {
               const btn = e.currentTarget as HTMLButtonElement;
               btn.style.transform = 'scale(1) translateY(0px)';
               btn.style.background = 'rgba(0, 0, 0, 0.45)';
-              btn.style.borderColor = 'rgba(251,191,36,0.45)';
+              btn.style.borderColor = 'rgba(255,255,255,0.45)';
               btn.style.boxShadow = '0 8px 32px rgba(0,0,0,0.5)';
               btn.style.filter = 'brightness(1)';
             }}
