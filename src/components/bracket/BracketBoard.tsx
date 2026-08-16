@@ -116,15 +116,6 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     containerRef.current.scrollLeft = scrollLeftState - walk;
   };
 
-  // Wheel to Horizontal Scroll
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    // If vertical delta is significant, scroll horizontally
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      containerRef.current.scrollLeft += e.deltaY * 1.2;
-    }
-  };
-
   // Intercept advance with confirmation modal
   const handleRequestAdvance = (matchId: string, winnerId: string) => {
     const targetMatch = matches[matchId];
@@ -201,7 +192,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
           {/* Pan Hint Badge */}
           <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800 text-[11px] text-zinc-400">
             <MoveHorizontal className="w-3.5 h-3.5 text-amber-400" />
-            <span>Kéo chuột hoặc lăn chuột để xem các vòng</span>
+            <span>Nhấn giữ chuột kéo trái / phải để xem các vòng</span>
           </div>
 
           {/* Quick Slide Navigation Buttons */}
@@ -264,7 +255,6 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        onWheel={handleWheel}
         className={`w-full overflow-x-auto overflow-y-hidden py-8 px-4 sm:px-8 transition-colors ${
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         }`}
