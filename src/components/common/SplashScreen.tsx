@@ -227,22 +227,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
             </button>
           </div>
 
-          {/* Music hint */}
-          <p
-            className="splash-hint"
-            style={{
-              marginTop: '1.5rem',
-              fontSize: '0.75rem',
-              color: '#475569',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>🎵</span>
-            <span>Nhạc nền sẽ tự động phát khi vào giải đấu</span>
-          </p>
+
+
         </div>
       </div>
     </>
