@@ -56,10 +56,8 @@ const MainApp: React.FC = () => {
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
   const [participantToEdit, setParticipantToEdit] = useState<Participant | null>(null);
 
-  // YouTube Player ref
-  const ytPlayerRef = useRef<{ playVideo: () => void; pauseVideo: () => void; destroy: () => void } | null>(null);
-  const ytReadyRef = useRef(false);
-  const pendingPlayRef = useRef(false);
+  // Background Audio Ref
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Background Video Ref for guaranteed Mobile Autoplay Recovery
   const bgVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -88,7 +86,7 @@ const MainApp: React.FC = () => {
       if (bgVideoRef.current && bgVideoRef.current.paused) {
         bgVideoRef.current.play().catch(() => {});
       }
-    }, 1000);
+    }, 800);
 
     return () => {
       window.removeEventListener('touchstart', forcePlayVideo);
@@ -100,54 +98,15 @@ const MainApp: React.FC = () => {
     };
   }, []);
 
-  // Load YouTube IFrame API once — triggered AFTER user clicks splash (isEntering)
+  // Sync background music with soundEnabled & entry state
   useEffect(() => {
-    if (!isEntering && !hasEntered) return; // Wait for user interaction first
-    if (document.getElementById('yt-iframe-api')) return;
-    const tag = document.createElement('script');
-    tag.id = 'yt-iframe-api';
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
-
-    window.onYouTubeIframeAPIReady = () => {
-      ytPlayerRef.current = new window.YT.Player('yt-bg-player', {
-        videoId: YT_VIDEO_ID,
-        playerVars: {
-          autoplay: 1,
-          loop: 1,
-          playlist: YT_VIDEO_ID,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          rel: 0,
-          mute: 0,
-        },
-        events: {
-          onReady: (event) => {
-            ytReadyRef.current = true;
-            if (soundEnabled) {
-              event.target.playVideo();
-            }
-            pendingPlayRef.current = false;
-          },
-        },
-      });
-    };
-  }, [isEntering, hasEntered]);
-
-  // Sync play/pause with soundEnabled
-  useEffect(() => {
-    if (!ytReadyRef.current || !ytPlayerRef.current) {
-      if (soundEnabled) pendingPlayRef.current = true;
-      return;
-    }
-    if (soundEnabled) {
-      ytPlayerRef.current.playVideo();
+    if (!bgAudioRef.current) return;
+    if (soundEnabled && (isEntering || hasEntered)) {
+      bgAudioRef.current.play().catch(() => {});
     } else {
-      ytPlayerRef.current.pauseVideo();
+      bgAudioRef.current.pause();
     }
-  }, [soundEnabled]);
+  }, [soundEnabled, isEntering, hasEntered]);
 
   const handleOpenAddParticipant = () => {
     setParticipantToEdit(null);
@@ -162,11 +121,16 @@ const MainApp: React.FC = () => {
   // When user begins entry from splash
   const handleSplashStartEnter = () => {
     setIsEntering(true);
+    forcePlayVideo();
+    if (soundEnabled && bgAudioRef.current) {
+      bgAudioRef.current.play().catch(() => {});
+    }
   };
 
   // When splash overlay finishes fading out
   const handleSplashFinishEnter = () => {
     setHasEntered(true);
+    forcePlayVideo();
   };
 
   const isUIVisible = isEntering || hasEntered;
@@ -185,12 +149,16 @@ const MainApp: React.FC = () => {
         />
       )}
       
-      {/* Hidden YouTube Background Music Player */}
-      <div
-        id="yt-bg-player"
-        style={{ position: 'fixed', bottom: '-9999px', left: '-9999px', width: '1px', height: '1px', pointerEvents: 'none', zIndex: -1 }}
-        aria-hidden="true"
-      />
+      {/* Native HTML5 Background Music Player (Zero collision with video on mobile) */}
+      <audio
+        ref={bgAudioRef}
+        loop
+        preload="auto"
+        style={{ display: 'none' }}
+      >
+        <source src="/assets/bg-music.weba" type="audio/webm" />
+        <source src="/assets/bg-music.mp3" type="audio/mpeg" />
+      </audio>
 
       {/* Fullscreen Background Video — Hardware Accelerated 60FPS Mobile Stream */}
       <video
