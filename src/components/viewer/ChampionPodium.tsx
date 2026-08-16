@@ -37,16 +37,18 @@ export const ChampionPodium: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Header with Division Theme Aesthetics */}
-      <div className="text-center space-y-2.5">
-        <div className={`inline-flex items-center space-x-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${themeConfig.roundBadgeBg} ${themeConfig.roundBadgeBorder} ${themeConfig.roundBadgeText} ${themeConfig.roundBadgeShadow} backdrop-blur-md border shadow-md`}>
-          <Trophy className="w-4 h-4 text-current" />
-          <span>Vinh Danh Đỉnh Phong • {currentBracket.name}</span>
+      {/* Header with Division Theme Aesthetics (Stacked & Centered) */}
+      <div className="flex flex-col items-center justify-center text-center space-y-2 sm:space-y-3">
+        <div>
+          <div className={`inline-flex items-center space-x-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${themeConfig.roundBadgeBg} ${themeConfig.roundBadgeBorder} ${themeConfig.roundBadgeText} ${themeConfig.roundBadgeShadow} backdrop-blur-md border shadow-md`}>
+            <Trophy className="w-4 h-4 text-current" />
+            <span>Vinh Danh Đỉnh Phong • {currentBracket.name}</span>
+          </div>
         </div>
         
-        <div className="relative inline-block my-1">
+        <div className="w-full flex justify-center py-1">
           <h2
-            className="text-3xl sm:text-5xl font-black font-heading tracking-wider inline-block select-none"
+            className="text-3xl sm:text-5xl font-black font-heading tracking-wider text-center select-none"
             style={{
               fontFamily: '"Playfair Display", "Cinzel Decorative", serif',
               fontStyle: 'italic',
@@ -61,7 +63,7 @@ export const ChampionPodium: React.FC = () => {
           </h2>
         </div>
         
-        <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-sans drop-shadow">
+        <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-sans drop-shadow text-center">
           {themeConfig.elementName} • Bảng vàng vinh danh những hồn sư xuất sắc nhất đã vượt qua các ải tử chiến để ghi tên lên đỉnh cao Thần vị.
         </p>
       </div>
