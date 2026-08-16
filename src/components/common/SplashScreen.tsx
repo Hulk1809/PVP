@@ -215,7 +215,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
                 fontSize: 'clamp(0.68rem, 1.4vw, 0.78rem)',
                 fontWeight: 900,
                 letterSpacing: '0.3em',
-                fontFamily: '"Cinzel", monospace',
+                fontFamily: '"Be Vietnam Pro", "Montserrat", sans-serif',
                 textTransform: 'uppercase',
                 textShadow: '0 0 12px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.8)',
               }}
