@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SplashScreenProps {
   onStartEnter?: () => void;
@@ -7,6 +7,20 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnter }) => {
   const [isFading, setIsFading] = useState(false);
+  const [sparks, setSparks] = useState<{ id: number; x: number; y: number; size: number; delay: number; dur: number }[]>([]);
+
+  useEffect(() => {
+    // Generate floating soul energy sparks around title
+    const pts = Array.from({ length: 18 }, (_, i) => ({
+      id: i,
+      x: 35 + Math.random() * 30, // Centered around title
+      y: 40 + Math.random() * 30,
+      size: Math.random() * 3.5 + 1.5,
+      delay: Math.random() * 3,
+      dur: Math.random() * 2 + 2,
+    }));
+    setSparks(pts);
+  }, []);
 
   const handleEnter = () => {
     setIsFading(true);
@@ -19,24 +33,25 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
   return (
     <>
       <style>{`
-        /* Soul Land Cinematic Title Floating & Breathing */
-        @keyframes soulLandFloat {
+        /* Soul Land Movie 3D Title Floating & Breathing Aura */
+        @keyframes soulLandTitleFloat {
           0%, 100% {
-            transform: translateY(0px) scale(1);
-            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.7))
-                    drop-shadow(0 0 45px rgba(245, 158, 11, 0.45))
-                    drop-shadow(0 12px 28px rgba(0, 0, 0, 0.95));
+            transform: translateY(0px) scale(1) rotateX(0deg);
+            filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8))
+                    drop-shadow(0 0 45px rgba(234, 88, 12, 0.5))
+                    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.95));
           }
           50% {
-            transform: translateY(-8px) scale(1.02);
-            filter: drop-shadow(0 0 32px rgba(251, 191, 36, 0.95))
-                    drop-shadow(0 0 70px rgba(234, 88, 12, 0.6))
-                    drop-shadow(0 16px 35px rgba(0, 0, 0, 1));
+            transform: translateY(-8px) scale(1.025) rotateX(2deg);
+            filter: drop-shadow(0 0 30px rgba(254, 240, 138, 0.95))
+                    drop-shadow(0 0 75px rgba(245, 158, 11, 0.75))
+                    drop-shadow(0 0 110px rgba(234, 88, 12, 0.45))
+                    drop-shadow(0 18px 36px rgba(0, 0, 0, 1));
           }
         }
 
-        /* Continuous Metallic Gold Light Ray Sweep */
-        @keyframes goldShineSweep {
+        /* Continuous Sword Blade Glint & Gold Texture Sweep */
+        @keyframes swordGlintSweep {
           0% {
             background-position: -200% center;
           }
@@ -45,63 +60,83 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           }
         }
 
-        /* Soul Power Flare Pulse */
-        @keyframes soulFlarePulse {
+        /* Soul Power Electric Pulse */
+        @keyframes electricPulse {
           0%, 100% {
-            opacity: 0.6;
+            opacity: 0.5;
             transform: scaleX(1);
           }
           50% {
             opacity: 1;
-            transform: scaleX(1.15);
+            transform: scaleX(1.18);
           }
         }
 
-        /* Glass Button Glow Pulse */
-        @keyframes glassGlow {
+        /* Floating Golden Spark Embers */
+        @keyframes sparkRise {
+          0% {
+            transform: translateY(0px) scale(0.6);
+            opacity: 0;
+          }
+          30% {
+            opacity: 0.9;
+          }
+          80% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(-55px) scale(1.2);
+            opacity: 0;
+          }
+        }
+
+        /* Glass Button Pulse */
+        @keyframes glassButtonGlow {
           0%, 100% { 
-            box-shadow: 0 0 20px 2px rgba(251,191,36,0.2), 0 0 45px 6px rgba(0,0,0,0.5);
-            border-color: rgba(251,191,36,0.35);
+            box-shadow: 0 0 18px 2px rgba(251,191,36,0.25), 0 0 40px 6px rgba(0,0,0,0.5);
+            border-color: rgba(251,191,36,0.4);
           }
           50% { 
-            box-shadow: 0 0 35px 5px rgba(251,191,36,0.5), 0 0 65px 12px rgba(234,88,12,0.3);
-            border-color: rgba(251,191,36,0.75);
+            box-shadow: 0 0 35px 5px rgba(251,191,36,0.55), 0 0 65px 12px rgba(234,88,12,0.35);
+            border-color: rgba(251,191,36,0.85);
           }
         }
 
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(24px); }
+        @keyframes fadeInUpCinematic {
+          from { opacity: 0; transform: translateY(28px); }
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        .soul-land-title {
+        .soul-land-cinematic-title {
+          font-family: 'Cinzel Decorative', 'Cinzel', 'Outfit', serif;
           background: linear-gradient(
             110deg,
-            #d97706 0%,
-            #fbbf24 18%,
-            #ffffff 35%,
-            #fef08a 42%,
-            #f59e0b 55%,
+            #ca8a04 0%,
+            #eab308 14%,
+            #fef08a 28%,
+            #ffffff 42%,
+            #fbbf24 56%,
             #ffffff 70%,
-            #f59e0b 85%,
-            #b45309 100%
+            #f59e0b 84%,
+            #a16207 100%
           );
-          background-size: 240% auto;
+          background-size: 250% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          animation: goldShineSweep 4.5s linear infinite, soulLandFloat 3.6s ease-in-out infinite, fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          -webkit-text-stroke: 1.2px rgba(255, 245, 180, 0.9);
+          animation: swordGlintSweep 4.5s linear infinite, soulLandTitleFloat 3.8s ease-in-out infinite, fadeInUpCinematic 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .soul-land-sub {
-          animation: fadeInUp 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        .soul-land-wing-line {
+          animation: electricPulse 3.2s ease-in-out infinite, fadeInUpCinematic 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .soul-land-flair {
-          animation: soulFlarePulse 3s ease-in-out infinite, fadeInUp 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+        .soul-land-sub-text {
+          animation: fadeInUpCinematic 0.85s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        .splash-btn {
-          animation: glassGlow 2.5s ease-in-out infinite, fadeInUp 0.8s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        .soul-land-btn {
+          animation: glassButtonGlow 2.5s ease-in-out infinite, fadeInUpCinematic 0.85s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
       `}</style>
 
@@ -124,70 +159,102 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           pointerEvents: isFading ? 'none' : 'auto',
         }}
       >
+        {/* Floating Soul Energy Sparks */}
+        {sparks.map((s) => (
+          <div
+            key={s.id}
+            style={{
+              position: 'absolute',
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: `${s.size}px`,
+              height: `${s.size}px`,
+              borderRadius: '50%',
+              background: '#fef08a',
+              boxShadow: `0 0 ${s.size * 3}px ${s.size}px rgba(251,191,36,0.9)`,
+              animation: `sparkRise ${s.dur}s ${s.delay}s ease-in-out infinite`,
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          />
+        ))}
+
         {/* Center UI Content */}
         <div
           style={{
+            position: 'relative',
+            zIndex: 10,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center',
             padding: '1.5rem',
-            maxWidth: '900px',
+            maxWidth: '1000px',
             width: '100%',
           }}
         >
-          {/* Top Soul Land Divine Line Flair */}
+          {/* Top Movie Header Wing Badge */}
           <div
-            className="soul-land-flair"
+            className="soul-land-wing-line"
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '12px',
+              gap: '14px',
               marginBottom: '0.6rem',
               width: '100%',
-              maxWidth: '450px',
+              maxWidth: '520px',
             }}
           >
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.85))' }} />
-            <span style={{ color: '#fbbf24', fontSize: '0.85rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>✦</span>
-            <span style={{ color: '#fef08a', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.3em', fontFamily: 'monospace', textTransform: 'uppercase', textShadow: '0 0 12px rgba(251,191,36,0.6)' }}>
-              ĐẤU LA ĐẠI LỤC
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.9))' }} />
+            <span style={{ color: '#fbbf24', fontSize: '0.9rem', textShadow: '0 0 12px rgba(251,191,36,0.9)' }}>❖</span>
+            <span
+              style={{
+                color: '#fef08a',
+                fontSize: 'clamp(0.72rem, 1.6vw, 0.82rem)',
+                fontWeight: 900,
+                letterSpacing: '0.35em',
+                fontFamily: '"Cinzel", monospace',
+                textTransform: 'uppercase',
+                textShadow: '0 0 14px rgba(251,191,36,0.7), 0 2px 4px rgba(0,0,0,0.8)',
+              }}
+            >
+              斗罗大陆 • ĐẤU LA ĐẠI LỤC
             </span>
-            <span style={{ color: '#fbbf24', fontSize: '0.85rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>✦</span>
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, rgba(251,191,36,0.85), transparent)' }} />
+            <span style={{ color: '#fbbf24', fontSize: '0.9rem', textShadow: '0 0 12px rgba(251,191,36,0.9)' }}>❖</span>
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, rgba(251,191,36,0.9), transparent)' }} />
           </div>
 
-          {/* Cinematic Epic Soul Land Title */}
+          {/* Cinematic Epic Movie Title: TÔNG MÔN TRANH BÁ */}
           <h1
-            className="soul-land-title"
+            className="soul-land-cinematic-title"
             style={{
-              fontSize: 'clamp(2.5rem, 7.5vw, 4.6rem)',
-              fontWeight: 950,
-              letterSpacing: '0.04em',
-              marginBottom: '0.5rem',
-              lineHeight: 1.1,
-              fontFamily: '"Montserrat", "Cinzel", "Be Vietnam Pro", sans-serif',
+              fontSize: 'clamp(2.4rem, 7.8vw, 4.8rem)',
+              fontWeight: 900,
+              letterSpacing: '0.06em',
+              marginBottom: '0.6rem',
+              lineHeight: 1.15,
               textTransform: 'uppercase',
               userSelect: 'none',
-              padding: '0 10px',
+              padding: '0 12px',
+              perspective: '1000px',
             }}
           >
             TÔNG MÔN TRANH BÁ
           </h1>
 
-          {/* Subtitle */}
+          {/* Tagline Subtitle */}
           <p
-            className="soul-land-sub"
+            className="soul-land-sub-text"
             style={{
               fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
-              color: '#f1f5f9',
-              letterSpacing: '0.32em',
+              color: '#f8fafc',
+              letterSpacing: '0.34em',
               fontFamily: 'monospace',
               marginBottom: '2.6rem',
               textTransform: 'uppercase',
-              textShadow: '0 2px 14px rgba(0,0,0,0.95), 0 0 12px rgba(251,191,36,0.35)',
-              fontWeight: 600,
+              textShadow: '0 2px 14px rgba(0,0,0,0.95), 0 0 14px rgba(251,191,36,0.4)',
+              fontWeight: 700,
             }}
           >
             SOUL LAND ESPORTS PLATFORM • PVP 2026
@@ -195,21 +262,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
 
           {/* Transparent Glass "BẮT ĐẦU" Button */}
           <button
-            className="splash-btn"
+            className="soul-land-btn"
             onClick={handleEnter}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '16px 60px',
+              padding: '16px 64px',
               borderRadius: '18px',
-              background: 'rgba(0, 0, 0, 0.4)',
+              background: 'rgba(0, 0, 0, 0.45)',
               color: '#fbbf24',
               fontSize: '1.15rem',
               fontWeight: 900,
               border: '1.5px solid rgba(251,191,36,0.45)',
               cursor: 'pointer',
-              letterSpacing: '0.16em',
+              letterSpacing: '0.18em',
               fontFamily: '"Montserrat", sans-serif',
               backdropFilter: 'blur(14px)',
               transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -221,13 +288,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               btn.style.transform = 'scale(1.06) translateY(-2px)';
               btn.style.background = 'rgba(251,191,36,0.2)';
               btn.style.borderColor = 'rgba(251,191,36,0.95)';
-              btn.style.boxShadow = '0 0 35px rgba(251,191,36,0.6), 0 12px 35px rgba(0,0,0,0.6)';
+              btn.style.boxShadow = '0 0 35px rgba(251,191,36,0.65), 0 12px 35px rgba(0,0,0,0.6)';
               btn.style.filter = 'brightness(1.2)';
             }}
             onMouseLeave={(e) => {
               const btn = e.currentTarget as HTMLButtonElement;
               btn.style.transform = 'scale(1) translateY(0px)';
-              btn.style.background = 'rgba(0, 0, 0, 0.4)';
+              btn.style.background = 'rgba(0, 0, 0, 0.45)';
               btn.style.borderColor = 'rgba(251,191,36,0.45)';
               btn.style.boxShadow = '0 8px 32px rgba(0,0,0,0.5)';
               btn.style.filter = 'brightness(1)';
