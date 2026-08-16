@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
-import { MatchCard } from './MatchCard';
+import { ArenaMatchNode } from './ArenaMatchNode';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
 import { Match } from '../../types/tournament';
 import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerModal';
@@ -67,7 +67,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     .sort((a, b) => a - b);
 
   const handleZoom = (delta: number) => {
-    setZoomLevel((prev) => Math.min(1.3, Math.max(0.7, prev + delta)));
+    setZoomLevel((prev) => Math.min(1.3, Math.max(0.65, prev + delta)));
   };
 
   const handleResetZoom = () => {
@@ -77,20 +77,19 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   // Scroll Navigation Buttons
   const handleScrollLeft = () => {
     if (containerRef.current) {
-      containerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
+      containerRef.current.scrollBy({ left: -420, behavior: 'smooth' });
     }
   };
 
   const handleScrollRight = () => {
     if (containerRef.current) {
-      containerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
+      containerRef.current.scrollBy({ left: 420, behavior: 'smooth' });
     }
   };
 
   // Mouse Drag to Pan Handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    // Don't drag if clicking buttons, inputs, or interactive controls
     if (target.closest('button') || target.closest('input') || target.closest('select')) {
       return;
     }
@@ -112,7 +111,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     if (!isDragging || !containerRef.current) return;
     e.preventDefault();
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag sensitivity
+    const walk = (x - startX) * 1.5;
     containerRef.current.scrollLeft = scrollLeftState - walk;
   };
 
@@ -157,7 +156,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   };
 
   return (
-    <div className="relative w-full min-h-[600px] flex flex-col select-none">
+    <div className="relative w-full min-h-[600px] flex flex-col select-none arena-sunset-bg">
       
       {/* Control Bar: Search, Pan/Slide Buttons, Zoom */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-2 flex flex-wrap items-center justify-between gap-3">
@@ -165,20 +164,20 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         {/* Left: Search & Add Player */}
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" />
             <input
               type="text"
-              placeholder="Tìm tên thí sinh ING..."
+              placeholder="Tìm kiếm danh tướng ING..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all w-48 sm:w-60"
+              className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-zinc-950/80 border border-amber-500/30 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-all w-48 sm:w-60"
             />
           </div>
 
           {userRole === 'admin' && onOpenAddParticipant && (
             <button
               onClick={onOpenAddParticipant}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95 transition-all"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 hover:from-amber-400 hover:to-amber-500 shadow-md shadow-amber-500/30 active:scale-95 transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Thêm Tuyển Thủ (Tự Động Bốc Thăm)</span>
@@ -190,31 +189,31 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         <div className="flex items-center space-x-2 ml-auto">
           
           {/* Pan Hint Badge */}
-          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800 text-[11px] text-zinc-400">
+          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-zinc-950/80 border border-amber-500/20 text-[11px] text-zinc-300">
             <MoveHorizontal className="w-3.5 h-3.5 text-amber-400" />
-            <span>Nhấn giữ chuột kéo trái / phải để xem các vòng</span>
+            <span>Nhấn giữ chuột kéo trái / phải để xem lôi đài</span>
           </div>
 
           {/* Quick Slide Navigation Buttons */}
-          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center space-x-1 bg-zinc-950/80 p-1 rounded-xl border border-amber-500/30 shadow-sm">
             <button
               onClick={handleScrollLeft}
               title="Lướt sang trái (Vòng trước)"
-              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-amber-400 hover:text-white hover:bg-zinc-800 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleScrollRight}
               title="Lướt sang phải (Vòng sau)"
-              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-amber-400 hover:text-white hover:bg-zinc-800 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* Zoom Controls */}
-          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center space-x-1 bg-zinc-950/80 p-1 rounded-xl border border-amber-500/30 shadow-sm">
             <button
               onClick={() => handleZoom(-0.1)}
               title="Thu nhỏ"
@@ -248,14 +247,14 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
       </div>
 
-      {/* Main Bracket Interactive Scroll Area with Drag-To-Pan */}
+      {/* Main Arena Interactive Scroll Area with Drag-To-Pan */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        className={`w-full overflow-x-auto overflow-y-hidden py-8 px-4 sm:px-8 transition-colors ${
+        className={`w-full overflow-x-auto overflow-y-hidden py-10 px-4 sm:px-10 transition-colors ${
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         }`}
       >
@@ -263,8 +262,8 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
           style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
           className="min-w-max mx-auto transition-transform duration-200 flex flex-col items-center pointer-events-auto"
         >
-          {/* Rounds Container */}
-          <div className="flex items-stretch space-x-12 sm:space-x-16 justify-center">
+          {/* Arena Rounds Container */}
+          <div className="flex items-stretch space-x-16 sm:space-x-24 justify-center">
             {sortedRounds.map((roundNumber, rIdx) => {
               const roundMatches = roundsMap[roundNumber];
               const roundName = roundMatches[0]?.roundName || `Vòng ${roundNumber}`;
@@ -273,19 +272,19 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
               return (
                 <div key={roundNumber} className="flex flex-col items-center">
                   
-                  {/* Round Column Header */}
-                  <div className="mb-6 text-center">
-                    <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-amber-400 shadow-sm">
-                      <Swords className="w-3 h-3 text-amber-400" />
+                  {/* Arena Round Header Plaque */}
+                  <div className="mb-8 text-center">
+                    <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-gradient-to-r from-amber-600/30 via-zinc-950 to-amber-600/30 border-2 border-amber-500/60 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                      <Swords className="w-3.5 h-3.5 text-amber-400" />
                       <span>{roundName}</span>
                     </div>
-                    <p className="text-[10px] text-zinc-500 mt-1 font-mono">
-                      {roundMatches.length} trận đấu
+                    <p className="text-[10px] text-zinc-400 mt-1 font-mono">
+                      {roundMatches.length} Lôi Đài
                     </p>
                   </div>
 
-                  {/* Matches Column */}
-                  <div className="flex flex-col justify-around flex-1 space-y-6 sm:space-y-8">
+                  {/* Arena Matches Column */}
+                  <div className="flex flex-col justify-around flex-1 space-y-12 sm:space-y-16">
                     {roundMatches.map((m) => {
                       const p1 = m.player1Id ? participants[m.player1Id] : null;
                       const p2 = m.player2Id ? participants[m.player2Id] : null;
@@ -299,10 +298,10 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                         <div
                           key={m.id}
                           className={`relative transition-all duration-300 ${
-                            isHighlighted ? 'scale-105 ring-2 ring-amber-400 rounded-xl' : ''
+                            isHighlighted ? 'scale-105 ring-4 ring-amber-400 rounded-3xl' : ''
                           }`}
                         >
-                          <MatchCard
+                          <ArenaMatchNode
                             match={m}
                             player1={p1}
                             player2={p2}
@@ -313,14 +312,12 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                             onOpenMatchDetails={onOpenMatchDetails}
                           />
 
-                          {/* Clean Right-Angle Bracket Line to Next Round */}
+                          {/* Golden Chi Bridge to Next Round Stage */}
                           {!isLastRound && (
-                            <div className="hidden sm:block absolute top-1/2 -right-12 sm:-right-16 w-12 sm:w-16 h-[2px] -translate-y-1/2 pointer-events-none">
+                            <div className="hidden sm:block absolute top-1/2 -right-16 sm:-right-24 w-16 sm:w-24 h-1 -translate-y-1/2 pointer-events-none">
                               <div
-                                className={`w-full h-full transition-all duration-300 ${
-                                  m.winnerId
-                                    ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                                    : 'bg-zinc-800'
+                                className={`w-full h-full rounded-full transition-all duration-500 ${
+                                  m.winnerId ? 'chi-bridge-active' : 'chi-bridge-inactive'
                                 }`}
                               />
                             </div>
