@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Smartphone, RotateCw } from 'lucide-react';
+import { Smartphone, RotateCw, ExternalLink, Copy, Check } from 'lucide-react';
 
 export const RotatePrompt: React.FC = () => {
   const [isPortraitMobile, setIsPortraitMobile] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const checkOrientation = () => {
-      // Check if mobile device and in portrait mode
       const isMobile = window.innerWidth <= 900;
       const isPortrait = window.innerHeight > window.innerWidth;
       setIsPortraitMobile(isMobile && isPortrait);
@@ -22,6 +22,13 @@ export const RotatePrompt: React.FC = () => {
     };
   }, []);
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }).catch(() => {});
+  };
+
   if (!isPortraitMobile) return null;
 
   return (
@@ -30,14 +37,15 @@ export const RotatePrompt: React.FC = () => {
         position: 'fixed',
         inset: 0,
         zIndex: 99999,
-        background: 'radial-gradient(ellipse at center, #1a0f2e 0%, #090a0f 70%, #000 100%)',
+        background: 'radial-gradient(ellipse at center, #1b0d2f 0%, #090a0f 70%, #000 100%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
+        padding: '1.5rem',
         textAlign: 'center',
-        backdropFilter: 'blur(16px)',
+        backdropFilter: 'blur(20px)',
+        overflowY: 'auto',
       }}
     >
       <style>{`
@@ -46,10 +54,10 @@ export const RotatePrompt: React.FC = () => {
             transform: rotate(0deg) scale(1);
           }
           35% {
-            transform: rotate(-90deg) scale(1.1);
+            transform: rotate(-90deg) scale(1.08);
           }
           70% {
-            transform: rotate(-90deg) scale(1.1);
+            transform: rotate(-90deg) scale(1.08);
           }
           100% {
             transform: rotate(0deg) scale(1);
@@ -63,43 +71,39 @@ export const RotatePrompt: React.FC = () => {
             box-shadow: 0 0 50px rgba(251, 191, 36, 0.7), 0 0 100px rgba(234, 88, 12, 0.35);
           }
         }
-        @keyframes textBreathe {
-          0%, 100% { opacity: 0.9; transform: translateY(0); }
-          50% { opacity: 1; transform: translateY(-3px); }
-        }
       `}</style>
 
       {/* Animated Rotating Phone Icon Container */}
       <div
         style={{
           position: 'relative',
-          width: '100px',
-          height: '100px',
+          width: '84px',
+          height: '84px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '28px',
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(139,92,246,0.2))',
-          border: '1.5px solid rgba(251,191,36,0.5)',
+          borderRadius: '24px',
+          background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(139,92,246,0.25))',
+          border: '1.5px solid rgba(251,191,36,0.55)',
           animation: 'rotateGlow 3s infinite ease-in-out',
-          marginBottom: '2rem',
+          marginBottom: '1.2rem',
         }}
       >
         <div style={{ animation: 'phoneRotateAnim 3.5s infinite ease-in-out', transformOrigin: 'center center' }}>
-          <Smartphone style={{ width: '48px', height: '48px', color: '#fbbf24' }} />
+          <Smartphone style={{ width: '42px', height: '42px', color: '#fbbf24' }} />
         </div>
         <div
           style={{
             position: 'absolute',
-            bottom: '-6px',
-            right: '-6px',
+            bottom: '-4px',
+            right: '-4px',
             background: '#f59e0b',
             borderRadius: '50%',
             padding: '4px',
             boxShadow: '0 0 12px rgba(245,158,11,0.8)',
           }}
         >
-          <RotateCw style={{ width: '16px', height: '16px', color: '#090a0f' }} />
+          <RotateCw style={{ width: '14px', height: '14px', color: '#090a0f' }} />
         </div>
       </div>
 
@@ -107,51 +111,146 @@ export const RotatePrompt: React.FC = () => {
       <h2
         style={{
           fontFamily: '"Montserrat", "Be Vietnam Pro", sans-serif',
-          fontSize: '1.4rem',
+          fontSize: 'clamp(1.15rem, 5vw, 1.45rem)',
           fontWeight: 900,
           color: '#fff',
           letterSpacing: '-0.01em',
-          marginBottom: '0.6rem',
+          marginBottom: '0.4rem',
           textShadow: '0 0 20px rgba(251,191,36,0.5)',
           textTransform: 'uppercase',
-          animation: 'textBreathe 3s infinite ease-in-out',
+          lineHeight: 1.25,
         }}
       >
-        Vui Lòng Xoay Ngang Điện Thoại
+        Mở Web Ngoài & Xoay Ngang
       </h2>
 
-      {/* Subtitle description */}
+      {/* Subtitle */}
       <p
         style={{
-          fontSize: '0.85rem',
-          color: '#cbd5e1',
-          maxWidth: '320px',
-          lineHeight: 1.6,
-          marginBottom: '1.5rem',
+          fontSize: '0.8rem',
+          color: '#94a3b8',
+          marginBottom: '1.4rem',
+          letterSpacing: '0.15em',
+          fontFamily: 'monospace',
+          textTransform: 'uppercase',
         }}
       >
-        Để trải nghiệm đấu trường <strong style={{ color: '#fbbf24' }}>Đấu La Đại Lục</strong> và sơ đồ giải đấu với góc nhìn điện ảnh tối ưu nhất.
+        Soul Land Esports • Hướng Dẫn Tối Ưu
       </p>
 
-      {/* Visual orientation hint badge */}
+      {/* Instruction Steps Cards */}
       <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          maxWidth: '360px',
+          width: '100%',
+          marginBottom: '1.5rem',
+          textAlign: 'left',
+        }}
+      >
+        {/* Step 1 */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '12px',
+            padding: '12px 14px',
+            borderRadius: '14px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div
+            style={{
+              padding: '6px',
+              borderRadius: '8px',
+              background: 'rgba(245, 158, 11, 0.2)',
+              color: '#fbbf24',
+              flexShrink: 0,
+              marginTop: '2px',
+            }}
+          >
+            <ExternalLink style={{ width: '16px', height: '16px' }} />
+          </div>
+          <div>
+            <p style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fef08a', marginBottom: '2px' }}>
+              1. Mở bằng Trình Duyệt Ngoài (Chrome / Safari)
+            </p>
+            <p style={{ fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+              Nếu đang mở trong <strong>Zalo / Messenger / TikTok</strong>, hãy bấm biểu tượng <strong style={{ color: '#fbbf24' }}>⋮</strong> hoặc <strong style={{ color: '#fbbf24' }}>⋯</strong> và chọn <strong>"Mở bằng trình duyệt"</strong>.
+            </p>
+          </div>
+        </div>
+
+        {/* Step 2 */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '12px',
+            padding: '12px 14px',
+            borderRadius: '14px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(251, 191, 36, 0.25)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div
+            style={{
+              padding: '6px',
+              borderRadius: '8px',
+              background: 'rgba(245, 158, 11, 0.2)',
+              color: '#fbbf24',
+              flexShrink: 0,
+              marginTop: '2px',
+            }}
+          >
+            <RotateCw style={{ width: '16px', height: '16px' }} />
+          </div>
+          <div>
+            <p style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fef08a', marginBottom: '2px' }}>
+              2. Xoay Ngang Điện Thoại (16:9)
+            </p>
+            <p style={{ fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+              Mở khóa xoay màn hình và <strong>xoay ngang điện thoại</strong> để xem video hoạt ảnh & sơ đồ giải đấu rộng rãi nhất!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Copy Link Button Helper */}
+      <button
+        onClick={handleCopyLink}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 18px',
-          borderRadius: '999px',
-          background: 'rgba(251,191,36,0.12)',
-          border: '1px solid rgba(251,191,36,0.3)',
-          color: '#fbbf24',
-          fontSize: '0.75rem',
+          padding: '10px 22px',
+          borderRadius: '12px',
+          background: copied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(251, 191, 36, 0.15)',
+          border: copied ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(251, 191, 36, 0.4)',
+          color: copied ? '#34d399' : '#fbbf24',
+          fontSize: '0.78rem',
           fontWeight: 700,
-          fontFamily: 'monospace',
-          letterSpacing: '0.1em',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
         }}
       >
-        <span>🔄 LANDSCAPE MODE (16:9)</span>
-      </div>
+        {copied ? (
+          <>
+            <Check style={{ width: '14px', height: '14px' }} />
+            <span>Đã Sao Chép Link Để Dán Vào Chrome / Safari!</span>
+          </>
+        ) : (
+          <>
+            <Copy style={{ width: '14px', height: '14px' }} />
+            <span>Sao Chép Link Để Dán Vào Chrome / Safari</span>
+          </>
+        )}
+      </button>
     </div>
   );
 };
