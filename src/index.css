@@ -40,20 +40,21 @@
   background: #383d54;
 }
 
-/* Sunset War Arena Background (Style Danh Tướng 3Q / Đấu La) */
-.arena-sunset-bg {
-  background: radial-gradient(circle at 50% 30%, rgba(234, 88, 12, 0.15) 0%, rgba(180, 83, 9, 0.08) 40%, rgba(7, 8, 11, 0.95) 85%),
-              linear-gradient(180deg, #100d0a 0%, #07080b 100%);
+/* Esports Surface Cards */
+.esports-card {
+  background: linear-gradient(180deg, rgba(20, 22, 31, 0.95) 0%, rgba(12, 13, 18, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
-/* Golden Chi Connector Bridge */
-.chi-bridge-active {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.8), 0 0 4px rgba(251, 191, 36, 1);
+.esports-card:hover {
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
-.chi-bridge-inactive {
-  background: #27272a;
+.esports-card-active {
+  background: linear-gradient(180deg, rgba(30, 27, 20, 0.95) 0%, rgba(15, 14, 10, 0.98) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
 }
 
 /* Gold Gradient Accents */
@@ -61,4 +62,16 @@
   background: linear-gradient(135deg, #ffffff 0%, #fde047 40%, #f59e0b 80%, #d97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Esports Bracket Connectors */
+.bracket-connector-line {
+  stroke: #2a2e42;
+  stroke-width: 2;
+}
+
+.bracket-connector-line-active {
+  stroke: #f59e0b;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
 }
