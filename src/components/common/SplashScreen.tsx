@@ -9,27 +9,65 @@ type Phase = 'loop' | 'action' | 'flash' | 'done';
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   const [phase, setPhase] = useState<Phase>('loop');
+  const [loopLayer, setLoopLayer] = useState<0 | 1>(0);
   const loopRef = useRef<HTMLVideoElement>(null);
+  const loopSwapRef = useRef<HTMLVideoElement>(null);
   const actionRef = useRef<HTMLVideoElement>(null);
   const calledRef = useRef(false);
   const flashTriggeredRef = useRef(false);
   const finishTimerRef = useRef<number | null>(null);
+  const loopRafRef = useRef<number | null>(null);
 
   // Preload the action video silently so it's ready
   useEffect(() => {
     if (loopRef.current) {
       loopRef.current.load();
     }
+    if (loopSwapRef.current) {
+      loopSwapRef.current.load();
+    }
     if (actionRef.current) {
       actionRef.current.load();
+    }
+
+    const syncLoopVideo = (video: HTMLVideoElement) => {
+      if (phase !== 'loop') return;
+      if (!video.duration || Number.isNaN(video.duration)) return;
+
+      const fadeWindow = 0.65;
+      const shouldPrewarmNext = video.currentTime >= Math.max(video.duration - (fadeWindow + 0.2), video.duration * 0.84);
+
+      if (shouldPrewarmNext) {
+        const nextVideo = loopLayer === 0 ? loopSwapRef.current : loopRef.current;
+        if (nextVideo && nextVideo.paused) {
+          nextVideo.currentTime = 0;
+          nextVideo.playbackRate = video.playbackRate;
+          nextVideo.play().catch(() => {});
+          setLoopLayer((current) => (current === 0 ? 1 : 0));
+        }
+      }
+
+      loopRafRef.current = window.requestAnimationFrame(() => syncLoopVideo(video));
+    };
+
+    if (loopRef.current) {
+      loopRef.current.onplay = () => {
+        if (loopRafRef.current !== null) {
+          window.cancelAnimationFrame(loopRafRef.current);
+        }
+        loopRafRef.current = window.requestAnimationFrame(() => syncLoopVideo(loopRef.current as HTMLVideoElement));
+      };
     }
 
     return () => {
       if (finishTimerRef.current !== null) {
         window.clearTimeout(finishTimerRef.current);
       }
+      if (loopRafRef.current !== null) {
+        window.cancelAnimationFrame(loopRafRef.current);
+      }
     };
-  }, []);
+  }, [phase, loopLayer]);
 
   const handleEnter = () => {
     if (phase !== 'loop') return;
@@ -39,6 +77,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
 
     if (loopRef.current) {
       loopRef.current.pause();
+    }
+    if (loopSwapRef.current) {
+      loopSwapRef.current.pause();
     }
 
     const vid = actionRef.current;
@@ -156,14 +197,30 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         {/* ─── VIDEO 1: LOOP (idle stance) ─── */}
         <video
           ref={loopRef}
-          autoPlay muted loop playsInline preload="auto"
+          autoPlay muted playsInline preload="auto"
           style={{
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
             objectFit: 'cover',
-            opacity: phase === 'loop' ? 1 : 0,
+            opacity: phase === 'loop' && loopLayer === 0 ? 1 : 0,
             transform: 'scale(1.04)',
-            transition: 'opacity 0.2s, transform 0.25s',
+            transition: 'opacity 0.35s ease, transform 0.25s ease',
+            zIndex: 0,
+          }}
+        >
+          <source src="/assets/splash-loop.mp4" type="video/mp4" />
+        </video>
+
+        <video
+          ref={loopSwapRef}
+          muted playsInline preload="auto"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            opacity: phase === 'loop' && loopLayer === 1 ? 1 : 0,
+            transform: 'scale(1.04)',
+            transition: 'opacity 0.35s ease, transform 0.25s ease',
             zIndex: 0,
           }}
         >
