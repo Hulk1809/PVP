@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --font-heading: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-    --font-body: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Outfit', 'Cinzel', serif, system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
 
   body {
     font-family: var(--font-body);
-    background-color: #07080b;
+    background-color: #0c0806;
     color: #f1f5f9;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, .font-heading {
     font-family: var(--font-heading);
-    letter-spacing: -0.015em;
+    letter-spacing: 0.02em;
   }
 }
 
-/* Custom Esports Minimal Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -40,38 +40,26 @@
   background: #383d54;
 }
 
-/* Esports Surface Cards */
-.esports-card {
-  background: linear-gradient(180deg, rgba(20, 22, 31, 0.95) 0%, rgba(12, 13, 18, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+/* Sunset War Arena Background (Style Danh Tướng 3Q / Đấu La Võ Hồn Điện) */
+.arena-sunset-bg {
+  background: radial-gradient(circle at 50% 25%, rgba(249, 115, 22, 0.25) 0%, rgba(194, 65, 12, 0.15) 35%, rgba(12, 8, 6, 0.95) 80%),
+              linear-gradient(180deg, #180d07 0%, #0c0806 100%);
+  background-attachment: fixed;
 }
 
-.esports-card:hover {
-  border-color: rgba(245, 158, 11, 0.4);
+/* Golden Chi Connector Bridge */
+.chi-bridge-active {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.9), 0 0 5px rgba(251, 191, 36, 1);
 }
 
-.esports-card-active {
-  background: linear-gradient(180deg, rgba(30, 27, 20, 0.95) 0%, rgba(15, 14, 10, 0.98) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.6);
-  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
+.chi-bridge-inactive {
+  background: #3f3f46;
 }
 
 /* Gold Gradient Accents */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #fde047 40%, #f59e0b 80%, #d97706 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fde047 35%, #f59e0b 70%, #b45309 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-/* Esports Bracket Connectors */
-.bracket-connector-line {
-  stroke: #2a2e42;
-  stroke-width: 2;
-}
-
-.bracket-connector-line-active {
-  stroke: #f59e0b;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
 }
