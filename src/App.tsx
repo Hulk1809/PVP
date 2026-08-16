@@ -10,6 +10,7 @@ import { MatchDetailModal } from './components/viewer/MatchDetailModal';
 import { SchedulerModal } from './components/admin/SchedulerModal';
 import { ParticipantManager } from './components/admin/ParticipantManager';
 import { LoginModal } from './components/common/LoginModal';
+import { SplashScreen } from './components/common/SplashScreen';
 import { Match, Participant } from './types/tournament';
 
 // YouTube video ID from: https://youtu.be/vYRvqbxaW8U
@@ -41,6 +42,7 @@ declare global {
 
 const MainApp: React.FC = () => {
   const { brackets, selectedBracketId, soundEnabled } = useTournament();
+  const [hasEntered, setHasEntered] = useState(false);
   const currentBracket = brackets[selectedBracketId];
 
   const [activeTab, setActiveTab] = useState<'bracket' | 'roster' | 'podium'>('bracket');
@@ -57,8 +59,9 @@ const MainApp: React.FC = () => {
   const ytReadyRef = useRef(false);
   const pendingPlayRef = useRef(false);
 
-  // Load YouTube IFrame API once
+  // Load YouTube IFrame API once — triggered AFTER user clicks splash (hasEntered)
   useEffect(() => {
+    if (!hasEntered) return; // Wait for user interaction first
     if (document.getElementById('yt-iframe-api')) return;
     const tag = document.createElement('script');
     tag.id = 'yt-iframe-api';
@@ -82,16 +85,16 @@ const MainApp: React.FC = () => {
         events: {
           onReady: (event) => {
             ytReadyRef.current = true;
-            // Auto-play if sound is enabled when player is ready
-            if (pendingPlayRef.current) {
+            // Play immediately since user already interacted via splash screen
+            if (soundEnabled) {
               event.target.playVideo();
-              pendingPlayRef.current = false;
             }
+            pendingPlayRef.current = false;
           },
         },
       });
     };
-  }, []);
+  }, [hasEntered]);
 
   // Sync play/pause with soundEnabled
   useEffect(() => {
@@ -116,6 +119,15 @@ const MainApp: React.FC = () => {
     setIsParticipantModalOpen(true);
   };
 
+  // When user enters from splash, start music if sound is enabled
+  const handleSplashEnter = () => {
+    setHasEntered(true);
+  };
+
+  if (!hasEntered) {
+    return <SplashScreen onEnter={handleSplashEnter} />;
+  }
+
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black">
       
@@ -128,7 +140,6 @@ const MainApp: React.FC = () => {
 
       {/* Dynamic Background Particle System */}
       <ParticleCanvas theme={currentBracket?.theme || 'ocean'} />
-
 
       {/* Top Header with Login Modal Trigger */}
       <Header
