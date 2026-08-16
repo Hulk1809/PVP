@@ -163,7 +163,6 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     <div className="space-y-1.5 text-xs text-zinc-300 pt-2 border-t border-zinc-800">
                       <p><span className="text-zinc-500">Võ Hồn:</span> {p1.martialSoul}</p>
                       <p><span className="text-zinc-500">Cấp bậc:</span> Lv.{p1.soulLevel} ({p1.soulRank})</p>
-                      <p><span className="text-zinc-500">Thành tích:</span> {p1.winRate}% ({p1.wins}T - {p1.losses}B)</p>
                     </div>
 
                     {/* Fan Prediction Vote Button */}
@@ -222,7 +221,6 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     <div className="space-y-1.5 text-xs text-zinc-300 pt-2 border-t border-zinc-800">
                       <p><span className="text-zinc-500">Võ Hồn:</span> {p2.martialSoul}</p>
                       <p><span className="text-zinc-500">Cấp bậc:</span> Lv.{p2.soulLevel} ({p2.soulRank})</p>
-                      <p><span className="text-zinc-500">Thành tích:</span> {p2.winRate}% ({p2.wins}T - {p2.losses}B)</p>
                     </div>
 
                     {/* Fan Prediction Vote Button */}

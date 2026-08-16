@@ -23,7 +23,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     handleDeleteParticipant,
   } = useTournament();
 
-  const [sortBy, setSortBy] = useState<'seed' | 'name' | 'level' | 'winrate'>('seed');
+  const [sortBy, setSortBy] = useState<'seed' | 'name' | 'level'>('seed');
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
@@ -46,7 +46,6 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     if (sortBy === 'seed') return (a.seedRank || 999) - (b.seedRank || 999);
     if (sortBy === 'name') return a.name.localeCompare(b.name);
     if (sortBy === 'level') return (b.soulLevel || 0) - (a.soulLevel || 0);
-    if (sortBy === 'winrate') return (b.winRate || 0) - (a.winRate || 0);
     return 0;
   });
 
@@ -104,7 +103,6 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
               { key: 'seed', label: 'Hạt Giống' },
               { key: 'name', label: 'Tên A-Z' },
               { key: 'level', label: 'Cấp Độ' },
-              { key: 'winrate', label: 'Tỉ Lệ Thắng' },
             ] as const
           ).map((s) => (
             <button
@@ -165,13 +163,6 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                     <span>Cấp bậc:</span>
                     <span className="text-amber-400 font-mono font-semibold">
                       Lv.{p.soulLevel}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-zinc-400">
-                    <span>Tỉ lệ thắng:</span>
-                    <span className="text-emerald-400 font-mono font-semibold">
-                      {p.winRate}% ({p.wins}T - {p.losses}B)
                     </span>
                   </div>
                 </div>
