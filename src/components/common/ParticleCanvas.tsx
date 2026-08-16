@@ -23,10 +23,12 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let animationFrameId: number;
+    const isMobile = window.innerWidth < 768 || window.innerHeight < 500;
+
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
@@ -35,7 +37,8 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('orientationchange', handleResize, { passive: true });
 
     // Color palettes by theme
     const themeColors: Record<DivisionTheme, string[]> = {
@@ -45,20 +48,21 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
     };
 
     const colors = themeColors[theme] || themeColors.ocean;
-    const particleCount = 45;
+    // Lower count on mobile to keep 60 FPS
+    const particleCount = isMobile ? 16 : 32;
     const particles: Particle[] = [];
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: -Math.random() * 0.8 - 0.2, // Float upwards like soul energy
-        size: Math.random() * 3 + 1,
-        alpha: Math.random() * 0.6 + 0.2,
-        maxAlpha: Math.random() * 0.7 + 0.3,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -Math.random() * 0.6 - 0.15,
+        size: Math.random() * 2.5 + 1,
+        alpha: Math.random() * 0.5 + 0.2,
+        maxAlpha: Math.random() * 0.6 + 0.25,
         color: colors[Math.floor(Math.random() * colors.length)],
-        speed: Math.random() * 0.02 + 0.005,
+        speed: Math.random() * 0.015 + 0.005,
       });
     }
 
@@ -78,18 +82,22 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
         if (p.x > width + 10) p.x = -10;
 
         // Pulse glow
-        p.alpha += Math.sin(Date.now() * p.speed) * 0.01;
-        p.alpha = Math.max(0.1, Math.min(p.maxAlpha, p.alpha));
+        p.alpha += Math.sin(Date.now() * p.speed) * 0.008;
+        const currentAlpha = Math.max(0.1, Math.min(p.maxAlpha, p.alpha));
 
-        ctx.save();
+        // Draw particle dot - fast without expensive software shadowBlur
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 12;
+        ctx.globalAlpha = currentAlpha;
         ctx.fill();
-        ctx.restore();
+
+        // Subtle outer glow halo with cheap circle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = currentAlpha * 0.25;
+        ctx.fill();
       });
 
       animationFrameId = requestAnimationFrame(render);
@@ -99,6 +107,7 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
   }, [theme]);
@@ -106,7 +115,12 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[2] opacity-60"
+      className="fixed inset-0 pointer-events-none z-[2] opacity-70 will-change-transform"
+      style={{
+        width: '100vw',
+        height: '100dvh',
+      }}
     />
   );
 };
+

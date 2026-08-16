@@ -149,21 +149,34 @@ const MainApp: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* Fullscreen Background Video — continuous single stream */}
+      {/* Fullscreen Background Video — Hardware Accelerated 60FPS Mobile Stream */}
       <video
         autoPlay
         muted
         loop
         playsInline
+        webkit-playsinline="true"
+        x5-playsinline="true"
+        disablePictureInPicture
+        disableRemotePlayback
         preload="auto"
         style={{
           position: 'fixed',
-          inset: 0,
-          width: '100%',
-          height: '100%',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100dvh',
+          minHeight: '100%',
+          minWidth: '100%',
           objectFit: 'cover',
+          objectPosition: 'center center',
           zIndex: 0,
           pointerEvents: 'none',
+          transform: 'translate3d(0,0,0)',
+          WebkitTransform: 'translate3d(0,0,0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          willChange: 'transform',
         }}
       >
         <source src="/assets/bg-video.mp4" type="video/mp4" />
@@ -174,9 +187,12 @@ const MainApp: React.FC = () => {
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%)',
+          width: '100vw',
+          height: '100dvh',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.38) 100%)',
           zIndex: 1,
           pointerEvents: 'none',
+          transform: 'translate3d(0,0,0)',
         }}
       />
 

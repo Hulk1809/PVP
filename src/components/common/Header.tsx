@@ -40,27 +40,27 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/25 backdrop-blur-md transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-13 sm:h-16 lg:h-20 gap-2 sm:gap-4">
           
           {/* 1. Left: Brand Title */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/80 to-amber-700/80 p-0.5 shadow-lg shadow-amber-500/20 flex items-center justify-center backdrop-blur-md">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500/80 to-amber-700/80 p-0.5 shadow-lg shadow-amber-500/20 flex items-center justify-center backdrop-blur-md">
               <div className="w-full h-full bg-black/60 rounded-[10px] flex items-center justify-center">
-                <Swords className="w-5 h-5 text-amber-400" />
+                <Swords className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="text-base sm:text-lg font-black tracking-tight text-white font-heading drop-shadow-md">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <h1 className="text-sm sm:text-base lg:text-lg font-black tracking-tight text-white font-heading drop-shadow-md whitespace-nowrap">
                   TÔNG MÔN TRANH BÁ
                 </h1>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-sm">
                   PVP 2026
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-zinc-300 font-mono tracking-wider drop-shadow">
+              <p className="hidden xs:block text-[9px] sm:text-[11px] text-zinc-300 font-mono tracking-wider drop-shadow">
                 SOUL LAND ESPORTS PLATFORM
               </p>
             </div>
@@ -102,20 +102,20 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
             <button
               onClick={toggleSound}
               title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}
-              className={`p-2 rounded-xl border backdrop-blur-md transition-all ${
+              className={`p-1.5 sm:p-2 rounded-xl border backdrop-blur-md transition-all ${
                 soundEnabled
                   ? 'bg-black/40 text-amber-400 border-amber-500/40 hover:bg-white/10 shadow-sm shadow-amber-500/20'
                   : 'bg-black/30 text-zinc-400 border-white/10 hover:text-zinc-200 hover:bg-white/10'
               }`}
             >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </button>
 
             {/* Admin Session or Login Button */}
             {isLoggedIn && adminUser ? (
-              <div className="flex items-center space-x-2 p-1.5 pr-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-amber-500/30 shadow-sm">
-                <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                  <ShieldCheck className="w-4 h-4" />
+              <div className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1.5 pr-2 sm:pr-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-amber-500/30 shadow-sm">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div className="text-left hidden sm:block">
                   <p className="text-[11px] font-bold text-white leading-tight font-heading">
@@ -126,17 +126,17 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
                 <button
                   onClick={logoutAdmin}
                   title="Đăng xuất"
-                  className="p-1 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-white/10 transition-colors ml-1"
+                  className="p-1 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-white/10 transition-colors ml-0.5 sm:ml-1"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             ) : (
               <button
                 onClick={onOpenLoginModal}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 hover:from-amber-400 hover:to-amber-500 shadow-lg shadow-amber-500/25 active:scale-95 transition-all border border-amber-400/30"
+                className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 hover:from-amber-400 hover:to-amber-500 shadow-lg shadow-amber-500/25 active:scale-95 transition-all border border-amber-400/30"
               >
-                <LogIn className="w-3.5 h-3.5" />
+                <LogIn className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>Đăng Nhập</span>
               </button>
             )}
@@ -146,10 +146,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
         </div>
 
         {/* Sub-bar: Mobile Division Switcher & Main View Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-2 py-2 border-t border-white/10">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 py-1.5 sm:py-2 border-t border-white/10">
           
           {/* Mobile Division Selector */}
-          <div className="flex md:hidden items-center space-x-1 overflow-x-auto py-1">
+          <div className="flex md:hidden items-center space-x-1 overflow-x-auto py-0.5 no-scrollbar">
             {divisionTabs.map((tab) => (
               <button
                 key={tab.id}
