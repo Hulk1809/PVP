@@ -64,23 +64,27 @@ const MainApp: React.FC = () => {
   // Background Video Ref for guaranteed Mobile Autoplay Recovery
   const bgVideoRef = useRef<HTMLVideoElement | null>(null);
 
+  const forcePlayVideo = () => {
+    const v = bgVideoRef.current;
+    if (v) {
+      v.defaultMuted = true;
+      v.muted = true;
+      v.play().catch(() => {});
+    }
+  };
+
   useEffect(() => {
-    const playBgVideo = () => {
-      if (bgVideoRef.current && bgVideoRef.current.paused) {
-        bgVideoRef.current.play().catch(() => {});
-      }
-    };
+    forcePlayVideo();
 
-    // Attempt autoplay immediately
-    playBgVideo();
-
-    // Auto-resume video on first mobile touch/click in case browser battery saver paused it
-    window.addEventListener('touchstart', playBgVideo, { once: true, passive: true });
-    window.addEventListener('click', playBgVideo, { once: true, passive: true });
+    // Auto-resume video on first touch/pointerdown anywhere on screen
+    window.addEventListener('touchstart', forcePlayVideo, { passive: true });
+    window.addEventListener('pointerdown', forcePlayVideo, { passive: true });
+    window.addEventListener('click', forcePlayVideo, { passive: true });
 
     return () => {
-      window.removeEventListener('touchstart', playBgVideo);
-      window.removeEventListener('click', playBgVideo);
+      window.removeEventListener('touchstart', forcePlayVideo);
+      window.removeEventListener('pointerdown', forcePlayVideo);
+      window.removeEventListener('click', forcePlayVideo);
     };
   }, []);
 
@@ -188,6 +192,17 @@ const MainApp: React.FC = () => {
         disablePictureInPicture
         disableRemotePlayback
         preload="auto"
+        onLoadedData={(e) => {
+          e.currentTarget.defaultMuted = true;
+          e.currentTarget.muted = true;
+          e.currentTarget.play().catch(() => {});
+        }}
+        onCanPlay={(e) => {
+          e.currentTarget.play().catch(() => {});
+        }}
+        onSuspend={(e) => {
+          e.currentTarget.play().catch(() => {});
+        }}
         style={{
           position: 'fixed',
           top: 0,
