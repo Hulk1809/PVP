@@ -66,16 +66,21 @@ export function generateTournamentBracket(
   // If match m gets a Bye, slot (2*m + 1) is null, and slot (2*m) gets a player.
   const matchHasBye: boolean[] = new Array(totalFirstRoundMatches).fill(false);
 
-  // Step 1: Assign 1 bye per Round-2 pair (match 0, 2, 4, 6...)
+  // Step 1: Assign 1 bye per even match in R2 pairs (match 0, 2, 4, 6...)
+  // This guarantees: Bye winner at match[i] meets contested winner at match[i+1] in R2
   let assignedByes = 0;
   for (let i = 0; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
     matchHasBye[i] = true;
     assignedByes++;
   }
-  // Step 2: If more byes remain, assign to the remaining matches (match 1, 3, 5...)
-  for (let i = 1; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
-    matchHasBye[i] = true;
-    assignedByes++;
+  // Step 2: If more byes remain (e.g. 5 byes for 11 players), assign to the LAST
+  // matches from the end — never to odd matches (which would break contested pairs).
+  // Example: N=11 → 5 byes → matches 0,2,4,6 get byes (4 byes), match 7 gets the 5th.
+  for (let i = totalFirstRoundMatches - 1; i >= 0 && assignedByes < byesCount; i--) {
+    if (!matchHasBye[i]) {
+      matchHasBye[i] = true;
+      assignedByes++;
+    }
   }
 
   // Populate slotToPlayerMap
