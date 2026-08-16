@@ -14,33 +14,6 @@ import { SplashScreen } from './components/common/SplashScreen';
 import { RotatePrompt } from './components/common/RotatePrompt';
 import { Match, Participant } from './types/tournament';
 
-// YouTube video ID from: https://youtu.be/vYRvqbxaW8U
-const YT_VIDEO_ID = 'vYRvqbxaW8U';
-
-// Declare YouTube IFrame API types
-declare global {
-  interface Window {
-    YT: {
-      Player: new (
-        elementId: string,
-        options: {
-          videoId: string;
-          playerVars?: Record<string, number | string>;
-          events?: {
-            onReady?: (event: { target: { playVideo: () => void; pauseVideo: () => void } }) => void;
-          };
-        }
-      ) => {
-        playVideo: () => void;
-        pauseVideo: () => void;
-        destroy: () => void;
-      };
-    };
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
-
 const MainApp: React.FC = () => {
   const { brackets, selectedBracketId, soundEnabled } = useTournament();
   const [hasEntered, setHasEntered] = useState(false);
@@ -149,13 +122,14 @@ const MainApp: React.FC = () => {
         />
       )}
       
-      {/* Native HTML5 Background Music Player (Zero collision with video on mobile) */}
+      {/* Native Direct Background Music Player using videoplayback.weba */}
       <audio
         ref={bgAudioRef}
         loop
         preload="auto"
         style={{ display: 'none' }}
       >
+        <source src="/assets/videoplayback.weba" type="audio/webm" />
         <source src="/assets/bg-music.weba" type="audio/webm" />
         <source src="/assets/bg-music.mp3" type="audio/mpeg" />
       </audio>
