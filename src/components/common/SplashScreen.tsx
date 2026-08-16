@@ -10,20 +10,16 @@ type Phase = 'loop' | 'action' | 'flash' | 'done';
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   const [phase, setPhase] = useState<Phase>('loop');
   const loopRef = useRef<HTMLVideoElement>(null);
-  const loopSwapRef = useRef<HTMLVideoElement>(null);
   const actionRef = useRef<HTMLVideoElement>(null);
   const calledRef = useRef(false);
   const flashTriggeredRef = useRef(false);
   const finishTimerRef = useRef<number | null>(null);
-  const activeLoopRef = useRef<0 | 1>(0);
+  const introPlayedRef = useRef(false);
 
   // Preload the action video silently so it's ready
   useEffect(() => {
     if (loopRef.current) {
       loopRef.current.load();
-    }
-    if (loopSwapRef.current) {
-      loopSwapRef.current.load();
     }
     if (actionRef.current) {
       actionRef.current.load();
@@ -36,38 +32,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
     };
   }, []);
 
-  const swapLoopLayer = () => {
-    const currentVideo = activeLoopRef.current === 0 ? loopRef.current : loopSwapRef.current;
-    const nextVideo = activeLoopRef.current === 0 ? loopSwapRef.current : loopRef.current;
-
-    if (!currentVideo || !nextVideo || phase !== 'loop') return;
-
-    nextVideo.currentTime = 0;
-    nextVideo.playbackRate = currentVideo.playbackRate;
-    nextVideo.style.opacity = '1';
-    currentVideo.style.opacity = '0';
-    nextVideo.play().catch(() => {});
-
-    window.setTimeout(() => {
-      currentVideo.pause();
-      currentVideo.currentTime = 0;
-      activeLoopRef.current = activeLoopRef.current === 0 ? 1 : 0;
-    }, 160);
-  };
-
   const handleEnter = () => {
     if (phase !== 'loop') return;
 
+    introPlayedRef.current = true;
     flashTriggeredRef.current = false;
     setPhase('action');
 
     if (loopRef.current) {
       loopRef.current.pause();
       loopRef.current.currentTime = 0;
-    }
-    if (loopSwapRef.current) {
-      loopSwapRef.current.pause();
-      loopSwapRef.current.currentTime = 0;
     }
 
     const vid = actionRef.current;
@@ -185,46 +159,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         {/* ─── VIDEO 1: LOOP (idle stance) ─── */}
         <video
           ref={loopRef}
-          autoPlay muted playsInline preload="metadata"
-          onTimeUpdate={(event) => {
-            const video = event.currentTarget;
-            if (phase !== 'loop' || activeLoopRef.current !== 0) return;
-            if (!video.duration || Number.isNaN(video.duration)) return;
-            if (video.currentTime >= video.duration - 0.65) {
-              swapLoopLayer();
-            }
+          autoPlay muted playsInline preload="auto"
+          onEnded={() => {
+            if (phase !== 'loop' || introPlayedRef.current) return;
+            handleEnter();
           }}
-          onEnded={swapLoopLayer}
           style={{
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
             objectFit: 'cover',
-            opacity: phase === 'loop' && activeLoopRef.current === 0 ? 1 : 0,
-            transform: 'scale(1.04)',
-            transition: 'opacity 0.35s ease, transform 0.25s ease',
-            zIndex: 0,
-          }}
-        >
-          <source src="/assets/splash-loop.mp4" type="video/mp4" />
-        </video>
-
-        <video
-          ref={loopSwapRef}
-          muted playsInline preload="metadata"
-          onTimeUpdate={(event) => {
-            const video = event.currentTarget;
-            if (phase !== 'loop' || activeLoopRef.current !== 1) return;
-            if (!video.duration || Number.isNaN(video.duration)) return;
-            if (video.currentTime >= video.duration - 0.65) {
-              swapLoopLayer();
-            }
-          }}
-          onEnded={swapLoopLayer}
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover',
-            opacity: phase === 'loop' && activeLoopRef.current === 1 ? 1 : 0,
+            opacity: phase === 'loop' ? 1 : 0,
             transform: 'scale(1.04)',
             transition: 'opacity 0.35s ease, transform 0.25s ease',
             zIndex: 0,
