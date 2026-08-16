@@ -77,7 +77,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
           inset: 0,
           zIndex: 9999,
           overflow: 'hidden',
-          background: '#050608',
+          background: 'transparent',
           animation: phase === 'done' ? 'splashFadeOut 0.35s ease forwards' : undefined,
           pointerEvents: phase === 'done' ? 'none' : 'auto',
         }}
@@ -98,21 +98,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
             objectFit: 'cover',
             transform: 'scale(1.03)',
             zIndex: 0,
-            filter: 'saturate(0.95) contrast(1.08) brightness(0.74)',
+            filter: 'saturate(1) contrast(1.02) brightness(0.88)',
           }}
         >
           <source src="/assets/bg-video.mp4" type="video/mp4" />
         </video>
-
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 1,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.18) 100%)',
-            pointerEvents: 'none',
-          }}
-        />
 
         {phase === 'idle' && (
           <div
@@ -120,7 +110,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
               position: 'absolute',
               inset: 0,
               zIndex: 5,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.24) 0%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.02) 100%)',
+              background: 'transparent',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -138,7 +128,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
                 borderRadius: '16px',
                 background: 'linear-gradient(135deg,#f59e0b,#d97706)',
                 marginBottom: '1rem',
-                boxShadow: '0 0 22px rgba(245,158,11,0.35)',
+                boxShadow: '0 0 18px rgba(245,158,11,0.28)',
                 animation: 'fadeInUp 0.7s ease both',
               }}
             >
@@ -155,8 +145,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
                 marginBottom: '0.3rem',
                 lineHeight: 1.1,
                 fontFamily: '"Montserrat","Be Vietnam Pro",sans-serif',
-                textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+                textShadow: '0 2px 14px rgba(0,0,0,0.45)',
                 textAlign: 'center',
+                backdropFilter: 'blur(1px)',
+                background: 'rgba(0,0,0,0.08)',
+                padding: '0.1rem 0.5rem',
+                borderRadius: '10px',
               }}
             >
               TÔNG MÔN TRANH BÁ
@@ -166,12 +160,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
               className="splash-sub splash-hint"
               style={{
                 fontSize: '0.78rem',
-                color: '#cbd5e1',
+                color: 'rgba(203, 213, 225, 0.92)',
                 letterSpacing: '0.25em',
                 fontFamily: 'monospace',
                 marginBottom: '1.2rem',
                 textTransform: 'uppercase',
-                textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+                textShadow: '0 1px 8px rgba(0,0,0,0.45)',
+                background: 'rgba(0,0,0,0.05)',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '999px',
               }}
             >
               Soul Land Esports Platform • PVP 2026
@@ -193,12 +190,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
                   style={{
                     padding: '4px 12px',
                     borderRadius: '999px',
-                    background: 'rgba(245,158,11,0.15)',
-                    border: '1px solid rgba(245,158,11,0.4)',
-                    color: '#fbbf24',
+                      background: 'rgba(245,158,11,0.10)',
+                      border: '1px solid rgba(245,158,11,0.28)',
+                      color: 'rgba(251, 191, 36, 0.95)',
                     fontSize: '0.72rem',
                     fontWeight: 600,
-                    backdropFilter: 'blur(4px)',
+                      backdropFilter: 'blur(6px)',
                   }}
                 >
                   {b}
@@ -215,7 +212,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
                 gap: '10px',
                 padding: '15px 46px',
                 borderRadius: '14px',
-                background: 'linear-gradient(135deg,#f59e0b,#d97706)',
+                background: 'linear-gradient(135deg, rgba(245,158,11,0.92), rgba(217,119,6,0.92))',
                 color: '#0a0a0f',
                 fontSize: '1.05rem',
                 fontWeight: 800,
@@ -224,6 +221,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
                 letterSpacing: '0.06em',
                 fontFamily: '"Montserrat",sans-serif',
                 transition: 'transform 0.12s, filter 0.15s',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 0 24px rgba(245,158,11,0.28)',
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
