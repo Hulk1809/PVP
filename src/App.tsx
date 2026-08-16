@@ -76,15 +76,27 @@ const MainApp: React.FC = () => {
   useEffect(() => {
     forcePlayVideo();
 
-    // Auto-resume video on first touch/pointerdown anywhere on screen
+    // Auto-resume video on any touch or click anywhere
     window.addEventListener('touchstart', forcePlayVideo, { passive: true });
     window.addEventListener('pointerdown', forcePlayVideo, { passive: true });
     window.addEventListener('click', forcePlayVideo, { passive: true });
+    window.addEventListener('scroll', forcePlayVideo, { passive: true });
+    window.addEventListener('resize', forcePlayVideo, { passive: true });
+
+    // 1-second Keep-Alive Heartbeat: ensures video never stays paused on mobile
+    const keepAliveTimer = setInterval(() => {
+      if (bgVideoRef.current && bgVideoRef.current.paused) {
+        bgVideoRef.current.play().catch(() => {});
+      }
+    }, 1000);
 
     return () => {
       window.removeEventListener('touchstart', forcePlayVideo);
       window.removeEventListener('pointerdown', forcePlayVideo);
       window.removeEventListener('click', forcePlayVideo);
+      window.removeEventListener('scroll', forcePlayVideo);
+      window.removeEventListener('resize', forcePlayVideo);
+      clearInterval(keepAliveTimer);
     };
   }, []);
 
@@ -201,6 +213,14 @@ const MainApp: React.FC = () => {
           e.currentTarget.play().catch(() => {});
         }}
         onSuspend={(e) => {
+          e.currentTarget.play().catch(() => {});
+        }}
+        onPause={(e) => {
+          // If mobile OS pauses the background video, resume it immediately
+          e.currentTarget.play().catch(() => {});
+        }}
+        onEnded={(e) => {
+          e.currentTarget.currentTime = 0;
           e.currentTarget.play().catch(() => {});
         }}
         style={{
