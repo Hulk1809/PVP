@@ -287,11 +287,13 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                     </p>
                   </div>
 
-                  {/* Matches Column with Blue Silver Grass Tree Vines */}
-                  <div className="flex flex-col justify-around flex-1 space-y-4 sm:space-y-8">
+                  {/* Matches Column with Mathematically Aligned Blue Silver Grass Vines */}
+                  <div className="flex flex-col flex-1">
                     {(() => {
+                      const BASE_SLOT = 284; // Exact slot height for 1 Round 1 pair (2 cards + spacing)
+
+                      // 1. FINAL ROUND
                       if (isLastRound) {
-                        // Final match (single)
                         const m = roundMatches[0];
                         if (!m) return null;
                         const p1 = m.player1Id ? participants[m.player1Id] : null;
@@ -301,29 +303,123 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                           ((p1 && p1.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
                             (p2 && p2.name.toLowerCase().includes(searchQuery.toLowerCase())));
 
+                        const slotHeight = BASE_SLOT * Math.pow(2, Math.max(0, rIdx - 1));
+
                         return (
                           <div
                             key={m.id}
-                            className={`relative transition-all duration-300 ${
-                              isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
-                            }`}
+                            style={{ height: `${slotHeight}px` }}
+                            className="flex items-center justify-center"
                           >
-                            <MatchCard
-                              match={m}
-                              player1={p1}
-                              player2={p2}
-                              userRole={userRole}
-                              theme={currentBracket.theme}
-                              onAdvanceWinner={handleRequestAdvance}
-                              onResetMatch={handleRequestReset}
-                              onOpenScheduler={onOpenScheduler}
-                              onOpenMatchDetails={onOpenMatchDetails}
-                            />
+                            <div
+                              className={`relative transition-all duration-300 ${
+                                isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                              }`}
+                            >
+                              <MatchCard
+                                match={m}
+                                player1={p1}
+                                player2={p2}
+                                userRole={userRole}
+                                theme={currentBracket.theme}
+                                onAdvanceWinner={handleRequestAdvance}
+                                onResetMatch={handleRequestReset}
+                                onOpenScheduler={onOpenScheduler}
+                                onOpenMatchDetails={onOpenMatchDetails}
+                              />
+                            </div>
                           </div>
                         );
                       }
 
-                      // Group matches in pairs of 2
+                      // 2. ROUND 1 (rIdx === 0)
+                      if (rIdx === 0) {
+                        const pairs: [Match, Match | undefined][] = [];
+                        for (let i = 0; i < roundMatches.length; i += 2) {
+                          pairs.push([roundMatches[i], roundMatches[i + 1]]);
+                        }
+
+                        return pairs.map(([mTop, mBottom]) => {
+                          const p1Top = mTop.player1Id ? participants[mTop.player1Id] : null;
+                          const p2Top = mTop.player2Id ? participants[mTop.player2Id] : null;
+                          const isTopHighlighted =
+                            searchQuery.trim() !== '' &&
+                            ((p1Top && p1Top.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                              (p2Top && p2Top.name.toLowerCase().includes(searchQuery.toLowerCase())));
+
+                          const p1Bottom = mBottom?.player1Id ? participants[mBottom.player1Id] : null;
+                          const p2Bottom = mBottom?.player2Id ? participants[mBottom.player2Id] : null;
+                          const isBottomHighlighted =
+                            Boolean(mBottom) &&
+                            searchQuery.trim() !== '' &&
+                            ((p1Bottom && p1Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                              (p2Bottom && p2Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())));
+
+                          return (
+                            <div
+                              key={mTop.id}
+                              style={{ height: `${BASE_SLOT}px` }}
+                              className="relative flex flex-col justify-between py-3"
+                            >
+                              {/* Top Match in Round 1 */}
+                              <div
+                                className={`relative transition-all duration-300 ${
+                                  isTopHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                                }`}
+                              >
+                                <MatchCard
+                                  match={mTop}
+                                  player1={p1Top}
+                                  player2={p2Top}
+                                  userRole={userRole}
+                                  theme={currentBracket.theme}
+                                  onAdvanceWinner={handleRequestAdvance}
+                                  onResetMatch={handleRequestReset}
+                                  onOpenScheduler={onOpenScheduler}
+                                  onOpenMatchDetails={onOpenMatchDetails}
+                                />
+                              </div>
+
+                              {/* Bottom Match in Round 1 */}
+                              {mBottom && (
+                                <div
+                                  className={`relative transition-all duration-300 ${
+                                    isBottomHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                                  }`}
+                                >
+                                  <MatchCard
+                                    match={mBottom}
+                                    player1={p1Bottom}
+                                    player2={p2Bottom}
+                                    userRole={userRole}
+                                    theme={currentBracket.theme}
+                                    onAdvanceWinner={handleRequestAdvance}
+                                    onResetMatch={handleRequestReset}
+                                    onOpenScheduler={onOpenScheduler}
+                                    onOpenMatchDetails={onOpenMatchDetails}
+                                  />
+                                </div>
+                              )}
+
+                              {/* Dây Lam Ngân Thảo Chuẩn Xác 100% */}
+                              <BlueSilverVineConnector
+                                hasTopWinner={Boolean(mTop.winnerId)}
+                                hasBottomWinner={Boolean(mBottom?.winnerId)}
+                                isSingle={!mBottom}
+                                theme={currentBracket.theme}
+                                yTop={64}
+                                yBottom={220}
+                                totalHeight={BASE_SLOT}
+                              />
+                            </div>
+                          );
+                        });
+                      }
+
+                      // 3. INTERMEDIATE ROUNDS (rIdx >= 1)
+                      const slotHeight = BASE_SLOT * Math.pow(2, rIdx - 1);
+                      const pairHeight = slotHeight * 2;
+
                       const pairs: [Match, Match | undefined][] = [];
                       for (let i = 0; i < roundMatches.length; i += 2) {
                         pairs.push([roundMatches[i], roundMatches[i + 1]]);
@@ -345,41 +441,29 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                           ((p1Bottom && p1Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
                             (p2Bottom && p2Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())));
 
+                        const yTop = slotHeight / 2;
+                        const yBottom = slotHeight + slotHeight / 2;
+
                         return (
                           <div
                             key={mTop.id}
-                            className="relative flex flex-col justify-around space-y-3 sm:space-y-6"
+                            style={{ height: `${pairHeight}px` }}
+                            className="relative flex flex-col justify-between"
                           >
-                            {/* Top Match in Pair */}
+                            {/* Top Match Cell */}
                             <div
-                              className={`relative transition-all duration-300 ${
-                                isTopHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
-                              }`}
+                              style={{ height: `${slotHeight}px` }}
+                              className="flex items-center justify-center"
                             >
-                              <MatchCard
-                                match={mTop}
-                                player1={p1Top}
-                                player2={p2Top}
-                                userRole={userRole}
-                                theme={currentBracket.theme}
-                                onAdvanceWinner={handleRequestAdvance}
-                                onResetMatch={handleRequestReset}
-                                onOpenScheduler={onOpenScheduler}
-                                onOpenMatchDetails={onOpenMatchDetails}
-                              />
-                            </div>
-
-                            {/* Bottom Match in Pair */}
-                            {mBottom && (
                               <div
                                 className={`relative transition-all duration-300 ${
-                                  isBottomHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                                  isTopHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
                                 }`}
                               >
                                 <MatchCard
-                                  match={mBottom}
-                                  player1={p1Bottom}
-                                  player2={p2Bottom}
+                                  match={mTop}
+                                  player1={p1Top}
+                                  player2={p2Top}
                                   userRole={userRole}
                                   theme={currentBracket.theme}
                                   onAdvanceWinner={handleRequestAdvance}
@@ -388,14 +472,43 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                   onOpenMatchDetails={onOpenMatchDetails}
                                 />
                               </div>
+                            </div>
+
+                            {/* Bottom Match Cell */}
+                            {mBottom && (
+                              <div
+                                style={{ height: `${slotHeight}px` }}
+                                className="flex items-center justify-center"
+                              >
+                                <div
+                                  className={`relative transition-all duration-300 ${
+                                    isBottomHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                                  }`}
+                                >
+                                  <MatchCard
+                                    match={mBottom}
+                                    player1={p1Bottom}
+                                    player2={p2Bottom}
+                                    userRole={userRole}
+                                    theme={currentBracket.theme}
+                                    onAdvanceWinner={handleRequestAdvance}
+                                    onResetMatch={handleRequestReset}
+                                    onOpenScheduler={onOpenScheduler}
+                                    onOpenMatchDetails={onOpenMatchDetails}
+                                  />
+                                </div>
+                              </div>
                             )}
 
-                            {/* Dây Lam Ngân Thảo Liên Kết Sang Vòng Tiếp Theo */}
+                            {/* Dây Lam Ngân Thảo Nối Chính Xác Tâm Trận Kế Tiếp */}
                             <BlueSilverVineConnector
                               hasTopWinner={Boolean(mTop.winnerId)}
                               hasBottomWinner={Boolean(mBottom?.winnerId)}
                               isSingle={!mBottom}
                               theme={currentBracket.theme}
+                              yTop={yTop}
+                              yBottom={yBottom}
+                              totalHeight={pairHeight}
                             />
                           </div>
                         );

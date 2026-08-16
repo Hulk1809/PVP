@@ -6,8 +6,9 @@ interface BlueSilverVineConnectorProps {
   hasBottomWinner?: boolean;
   isSingle?: boolean;
   theme?: DivisionTheme;
-  topWinnerName?: string;
-  bottomWinnerName?: string;
+  yTop?: number;
+  yBottom?: number;
+  totalHeight?: number;
 }
 
 export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = ({
@@ -15,6 +16,9 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
   hasBottomWinner = false,
   isSingle = false,
   theme = 'ocean',
+  yTop = 52,
+  yBottom = 172,
+  totalHeight = 260,
 }) => {
   // Theme Color Configurations for Lam Ngan Thao Vines
   const vinePalette = {
@@ -56,11 +60,12 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
   };
 
   const isAnyWinner = hasTopWinner || hasBottomWinner;
+  const yMid = (yTop + yBottom) / 2;
 
   if (isSingle) {
     // Single straight horizontal vine for odd matches / finals
     return (
-      <div className="hidden sm:block absolute top-1/2 -right-10 sm:-right-16 w-10 sm:w-16 h-8 -translate-y-1/2 pointer-events-none select-none z-10">
+      <div className="hidden sm:block absolute top-1/2 -right-8 sm:-right-16 w-8 sm:w-16 h-8 -translate-y-1/2 pointer-events-none select-none z-10">
         <svg className="w-full h-full overflow-visible" viewBox="0 0 64 32" fill="none">
           <defs>
             <linearGradient id="singleVineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -68,7 +73,7 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
               <stop offset="50%" stopColor={vinePalette.coreGlow} stopOpacity="1" />
               <stop offset="100%" stopColor={vinePalette.glowColor} stopOpacity="0.9" />
             </linearGradient>
-            <filter id="vineGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <filter id="vineGlowSingle" x="-30%" y="-30%" width="160%" height="160%">
               <feGaussianBlur stdDeviation="2.5" result="glow" />
               <feMerge>
                 <feMergeNode in="glow" />
@@ -84,7 +89,7 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
               stroke={vinePalette.glowColor}
               strokeWidth="6"
               strokeOpacity="0.4"
-              filter="url(#vineGlow)"
+              filter="url(#vineGlowSingle)"
             />
           )}
 
@@ -110,7 +115,7 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
 
           {/* Leaf 1 */}
           <path
-            d="M 28,16 C 26,10 36,9 34,16 C 36,12 28,12 28,16"
+            d="M 24,16 C 22,10 32,9 30,16 C 32,12 24,12 24,16"
             fill={hasTopWinner ? vinePalette.leafActiveFill : vinePalette.leafFill}
             opacity={hasTopWinner ? 0.95 : 0.4}
           />
@@ -126,8 +131,8 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
   }
 
   return (
-    <div className="hidden sm:block absolute top-0 -right-10 sm:-right-16 w-10 sm:w-16 h-full pointer-events-none select-none z-10">
-      <svg className="w-full h-full overflow-visible" viewBox="0 0 64 100" preserveAspectRatio="none" fill="none">
+    <div className="hidden sm:block absolute top-0 -right-8 sm:-right-16 w-8 sm:w-16 h-full pointer-events-none select-none z-10">
+      <svg className="w-full h-full overflow-visible" viewBox={`0 0 64 ${totalHeight}`} fill="none">
         <defs>
           <linearGradient id="oceanVineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#0284c7" stopOpacity="0.9" />
@@ -163,31 +168,28 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
         {/* Glow Layer if winner */}
         {hasTopWinner && (
           <path
-            d="M 0,22 C 28,22 36,50 64,50"
+            d={`M 0,${yTop} C 28,${yTop} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.glowColor}
             strokeWidth="6"
             strokeOpacity="0.35"
-            vectorEffect="non-scaling-stroke"
             filter="url(#vineGlowMulti)"
           />
         )}
         {/* Main Stem */}
         <path
-          d="M 0,22 C 28,22 36,50 64,50"
+          d={`M 0,${yTop} C 28,${yTop} 36,${yMid} 64,${yMid}`}
           stroke={hasTopWinner ? vinePalette.activeStem : vinePalette.baseStem}
           strokeWidth="3"
           strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
         />
         {/* Inner Light Core Pulse */}
         {hasTopWinner && (
           <path
-            d="M 0,22 C 28,22 36,50 64,50"
+            d={`M 0,${yTop} C 28,${yTop} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.coreGlow}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeDasharray="6 5"
-            vectorEffect="non-scaling-stroke"
           />
         )}
 
@@ -195,37 +197,34 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
         {/* Glow Layer if winner */}
         {hasBottomWinner && (
           <path
-            d="M 0,78 C 28,78 36,50 64,50"
+            d={`M 0,${yBottom} C 28,${yBottom} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.glowColor}
             strokeWidth="6"
             strokeOpacity="0.35"
-            vectorEffect="non-scaling-stroke"
             filter="url(#vineGlowMulti)"
           />
         )}
         {/* Main Stem */}
         <path
-          d="M 0,78 C 28,78 36,50 64,50"
+          d={`M 0,${yBottom} C 28,${yBottom} 36,${yMid} 64,${yMid}`}
           stroke={hasBottomWinner ? vinePalette.activeStem : vinePalette.baseStem}
           strokeWidth="3"
           strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
         />
         {/* Inner Light Core Pulse */}
         {hasBottomWinner && (
           <path
-            d="M 0,78 C 28,78 36,50 64,50"
+            d={`M 0,${yBottom} C 28,${yBottom} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.coreGlow}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeDasharray="6 5"
-            vectorEffect="non-scaling-stroke"
           />
         )}
 
-        {/* 3. SPIRITUAL LEAF NODES (Lá Lam Ngân Thảo Mọc Dọc Thân Dây Leo) */}
-        {/* Leaf 1 on Top Branch */}
-        <g transform="translate(18, 22)">
+        {/* 3. SPIRITUAL LEAF NODES (Lá Lam Ngân Thảo) */}
+        {/* Leaf on Top Branch */}
+        <g transform={`translate(16, ${yTop})`}>
           <path
             d="M 0,0 C -4,-8 8,-9 4,0 C 8,-4 0,-4 0,0"
             fill={hasTopWinner ? vinePalette.leafActiveFill : vinePalette.leafFill}
@@ -233,8 +232,8 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
           />
         </g>
 
-        {/* Leaf 2 on Bottom Branch */}
-        <g transform="translate(18, 78)">
+        {/* Leaf on Bottom Branch */}
+        <g transform={`translate(16, ${yBottom})`}>
           <path
             d="M 0,0 C -4,8 8,9 4,0 C 8,4 0,4 0,0"
             fill={hasBottomWinner ? vinePalette.leafActiveFill : vinePalette.leafFill}
@@ -242,8 +241,8 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
           />
         </g>
 
-        {/* Leaf 3 at Convergence Node */}
-        <g transform="translate(42, 50)">
+        {/* Leaf & Crystal Node at Convergence (Trúng Chính Giữa Trận Đấu Kế Tiếp) */}
+        <g transform={`translate(48, ${yMid})`}>
           <path
             d="M 0,0 C 2,-7 11,-5 5,0 C 9,-3 2,-2 0,0"
             fill={isAnyWinner ? vinePalette.leafActiveFill : vinePalette.leafFill}
@@ -252,9 +251,9 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
           <circle
             cx="0"
             cy="0"
-            r="3"
+            r="3.5"
             fill={isAnyWinner ? vinePalette.coreGlow : vinePalette.leafFill}
-            opacity={isAnyWinner ? 0.9 : 0.4}
+            opacity={isAnyWinner ? 0.95 : 0.4}
           />
         </g>
       </svg>
