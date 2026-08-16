@@ -56,7 +56,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
                 <h1
                   className="text-sm sm:text-base lg:text-lg font-black tracking-wider drop-shadow-md whitespace-nowrap"
                   style={{
-                    fontFamily: '"Cinzel Decorative", "Cinzel", serif',
+                    fontFamily: '"Playfair Display", "Philosopher", serif',
+                    fontStyle: 'italic',
                     background: 'linear-gradient(110deg, #94a3b8 0%, #cbd5e1 20%, #ffffff 40%, #f8fafc 55%, #cbd5e1 75%, #64748b 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',

@@ -108,7 +108,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
         }
 
         .soul-land-cinematic-title {
-          font-family: 'Cinzel Decorative', 'Cinzel', 'Outfit', serif;
+          font-family: 'Playfair Display', 'Cinzel Decorative', 'Philosopher', serif;
+          font-weight: 900;
+          font-style: italic;
           background: linear-gradient(
             110deg,
             #64748b 0%,
@@ -212,12 +214,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
             <span
               style={{
                 color: '#f8fafc',
-                fontSize: 'clamp(0.68rem, 1.4vw, 0.78rem)',
+                fontSize: 'clamp(0.72rem, 1.5vw, 0.85rem)',
                 fontWeight: 900,
-                letterSpacing: '0.3em',
-                fontFamily: '"Be Vietnam Pro", "Montserrat", sans-serif',
+                letterSpacing: '0.22em',
+                fontFamily: '"Playfair Display", "Philosopher", "Cormorant Garamond", serif',
+                fontStyle: 'italic',
                 textTransform: 'uppercase',
-                textShadow: '0 0 12px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.8)',
+                textShadow: '0 0 14px rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
               斗罗大陆 • ĐẤU LA ĐẠI LỤC
