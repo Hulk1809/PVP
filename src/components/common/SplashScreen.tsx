@@ -1,23 +1,21 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Swords } from 'lucide-react';
 
 interface SplashScreenProps {
   onEnter: () => void;
 }
 
-type Phase = 'idle' | 'action' | 'flash' | 'done';
+type Phase = 'idle' | 'done';
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   const [phase, setPhase] = useState<Phase>('idle');
-  const actionRef = useRef<HTMLVideoElement>(null);
+  const idleVideoRef = useRef<HTMLVideoElement>(null);
   const calledRef = useRef(false);
-  const flashTriggeredRef = useRef(false);
   const finishTimerRef = useRef<number | null>(null);
 
-  // Preload the action video silently so it's ready
   useEffect(() => {
-    if (actionRef.current) {
-      actionRef.current.load();
+    if (idleVideoRef.current) {
+      idleVideoRef.current.load();
     }
 
     return () => {
@@ -27,53 +25,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
     };
   }, []);
 
-  const handleEnter = () => {
-    if (phase !== 'idle') return;
-
-    flashTriggeredRef.current = false;
-    setPhase('action');
-
-    const vid = actionRef.current;
-    if (!vid) { finish(); return; }
-
-    vid.currentTime = 0;
-    vid.play().catch(() => {});
-
-    // Trigger impact flash near the end of the action clip.
-    const onTimeUpdate = () => {
-      if (flashTriggeredRef.current) return;
-      if (!vid.duration || Number.isNaN(vid.duration)) return;
-
-      const impactMoment = Math.max(vid.duration - 0.9, vid.duration * 0.86);
-      if (vid.currentTime >= impactMoment) {
-        flashTriggeredRef.current = true;
-        setPhase('flash');
-        finishTimerRef.current = window.setTimeout(finish, 650);
-      }
-    };
-
-    // Listen for video end as a fallback.
-    const onEnded = () => {
-      if (!flashTriggeredRef.current) {
-        flashTriggeredRef.current = true;
-        setPhase('flash');
-        finishTimerRef.current = window.setTimeout(finish, 650);
-      }
-    };
-
-    vid.addEventListener('timeupdate', onTimeUpdate);
-    vid.addEventListener('ended', onEnded);
-
-    // Safety fallback: if the clip stalls, force the transition.
-    finishTimerRef.current = window.setTimeout(() => {
-      if (!calledRef.current) {
-        vid.removeEventListener('timeupdate', onTimeUpdate);
-        vid.removeEventListener('ended', onEnded);
-        finish();
-      }
-    }, 20000);
-  };
-
   const finish = () => {
     if (calledRef.current) return;
     calledRef.current = true;
@@ -82,7 +33,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
       window.clearTimeout(finishTimerRef.current);
       finishTimerRef.current = null;
     }
-    setTimeout(onEnter, 400);
+    setTimeout(onEnter, 180);
+  };
+
+  const handleEnter = () => {
+    if (phase !== 'idle') return;
+    finishTimerRef.current = window.setTimeout(finish, 80);
   };
 
   return (
@@ -90,228 +46,205 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
       <style>{`
         @keyframes splashFadeOut {
           from { opacity: 1; }
-          to   { opacity: 0; }
-        }
-        @keyframes flashIn {
-          0%   { opacity: 0; }
-          25%  { opacity: 1; }
-          100% { opacity: 1; }
+          to { opacity: 0; }
         }
         @keyframes titleFloat {
           0%,100% { transform: translateY(0px); }
-          50%     { transform: translateY(-6px); }
+          50% { transform: translateY(-6px); }
         }
         @keyframes glowPulse {
           0%,100% { box-shadow: 0 0 24px 4px rgba(251,191,36,0.35), 0 0 60px 10px rgba(251,191,36,0.1); }
-          50%     { box-shadow: 0 0 44px 8px rgba(251,191,36,0.65), 0 0 100px 20px rgba(251,191,36,0.25); }
-        }
-        @keyframes sceneShake {
-          0%,100% { transform: translate3d(0,0,0) scale(1.04); }
-          10% { transform: translate3d(-2px, 1px, 0) scale(1.045); }
-          20% { transform: translate3d(3px, -2px, 0) scale(1.05); }
-          30% { transform: translate3d(-4px, 2px, 0) scale(1.052); }
-          40% { transform: translate3d(4px, -1px, 0) scale(1.056); }
-          50% { transform: translate3d(-2px, 2px, 0) scale(1.06); }
-          60% { transform: translate3d(2px, -2px, 0) scale(1.058); }
-          70% { transform: translate3d(-1px, 1px, 0) scale(1.055); }
-          80% { transform: translate3d(1px, -1px, 0) scale(1.05); }
-          90% { transform: translate3d(0, 0, 0) scale(1.045); }
-        }
-        @keyframes impactGlow {
-          0% { opacity: 0; transform: scale(0.95); }
-          25% { opacity: 1; transform: scale(1); }
-          100% { opacity: 0.85; transform: scale(1.04); }
+          50% { box-shadow: 0 0 44px 8px rgba(251,191,36,0.65), 0 0 100px 20px rgba(251,191,36,0.25); }
         }
         @keyframes fadeInUp {
-          from { opacity:0; transform:translateY(18px); }
-          to   { opacity:1; transform:translateY(0); }
+          from { opacity: 0; transform: translateY(18px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes hintPulse {
           0%,100% { transform: translateY(0); opacity: 0.92; }
           50% { transform: translateY(-2px); opacity: 1; }
         }
-        .splash-title  { animation: titleFloat 3s ease-in-out infinite, fadeInUp 0.7s 0.1s both; }
-        .splash-sub    { animation: fadeInUp 0.7s 0.3s both; }
+        .splash-title { animation: titleFloat 3s ease-in-out infinite, fadeInUp 0.7s 0.1s both; }
+        .splash-sub { animation: fadeInUp 0.7s 0.3s both; }
         .splash-badges { animation: fadeInUp 0.7s 0.5s both; }
-        .splash-btn    { animation: glowPulse 2s ease-in-out infinite, fadeInUp 0.7s 0.7s both; }
-        .splash-hint   { animation: hintPulse 1.8s ease-in-out infinite; }
-        .splash-stage  { animation: fadeInUp 0.6s ease both; }
+        .splash-btn { animation: glowPulse 2s ease-in-out infinite, fadeInUp 0.7s 0.7s both; }
+        .splash-hint { animation: hintPulse 1.8s ease-in-out infinite; }
       `}</style>
 
-      {/* === OUTER WRAPPER — fades out when done === */}
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        overflow: 'hidden',
-        animation: phase === 'done' ? 'splashFadeOut 0.4s ease forwards' : undefined,
-        pointerEvents: phase === 'done' ? 'none' : 'auto',
-      }}>
-
-        {/* ─── BACKGROUND VIDEO for idle state ─── */}
-        {phase === 'idle' && (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/assets/poster_a.jpg"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transform: 'scale(1.02)',
-              zIndex: 0,
-              filter: 'saturate(0.9) contrast(1.05) brightness(0.55)',
-            }}
-          >
-            <source src="/assets/bg-video.mp4" type="video/mp4" />
-          </video>
-        )}
-
-        {/* Fallback cinematic stage so the idle state is never empty */}
-        <div
-          className="splash-stage"
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          overflow: 'hidden',
+          background: '#050608',
+          animation: phase === 'done' ? 'splashFadeOut 0.35s ease forwards' : undefined,
+          pointerEvents: phase === 'done' ? 'none' : 'auto',
+        }}
+      >
+        <video
+          ref={idleVideoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/assets/poster_a.jpg"
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at center, rgba(120, 53, 15, 0.22) 0%, rgba(2, 6, 23, 0.88) 58%, rgba(2, 6, 23, 0.98) 100%)',
-            transform: 'scale(1.01)',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: 'scale(1.03)',
             zIndex: 0,
+            filter: 'saturate(0.95) contrast(1.08) brightness(0.74)',
           }}
-        />
+        >
+          <source src="/assets/bg-video.mp4" type="video/mp4" />
+        </video>
 
         <div
           style={{
             position: 'absolute',
             inset: 0,
             zIndex: 1,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.65) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.18) 100%)',
             pointerEvents: 'none',
           }}
         />
 
-        {/* ─── VIDEO 2: ACTION (fly & clash) ─── */}
-        <video
-          ref={actionRef}
-          muted playsInline preload="auto"
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover',
-            opacity: phase === 'action' || phase === 'flash' || phase === 'done' ? 1 : 0,
-            transform: phase === 'action' || phase === 'flash' ? 'scale(1.08)' : 'scale(1.02)',
-            animation: phase === 'action' ? 'sceneShake 1.3s ease-out both' : undefined,
-            transition: 'opacity 0.18s, transform 0.2s, filter 0.2s',
-            zIndex: 2,
-          }}
-        >
-          <source src="/assets/splash-action.mp4" type="video/mp4" />
-        </video>
-
-        {/* ─── WHITE FLASH on impact ─── */}
-        {phase === 'flash' && (
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,244,214,0.96) 18%, rgba(251,191,36,0.65) 42%, rgba(0,0,0,0) 74%)',
-            animation: 'impactGlow 0.65s ease forwards',
-            zIndex: 10,
-            mixBlendMode: 'screen',
-          }} />
-        )}
-
-        {/* ─── DARK OVERLAY + UI (only during idle phase) ─── */}
         {phase === 'idle' && (
-          <div style={{
-            position: 'absolute', inset: 0, zIndex: 5,
-            background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'flex-end',
-            paddingBottom: '8vh',
-          }}>
-
-            {/* Logo icon */}
-            <div style={{
-              display:'inline-flex', alignItems:'center', justifyContent:'center',
-              width:'64px', height:'64px', borderRadius:'16px',
-              background:'linear-gradient(135deg,#f59e0b,#d97706)',
-              marginBottom:'1rem',
-              boxShadow:'0 0 30px rgba(245,158,11,0.5)',
-              animation:'fadeInUp 0.7s ease both',
-            }}>
-              <Swords style={{ width:'30px', height:'30px', color:'#0a0a0f' }} />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 5,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.24) 0%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.02) 100%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: '8vh',
+            }}
+          >
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '64px',
+                height: '64px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg,#f59e0b,#d97706)',
+                marginBottom: '1rem',
+                boxShadow: '0 0 22px rgba(245,158,11,0.35)',
+                animation: 'fadeInUp 0.7s ease both',
+              }}
+            >
+              <Swords style={{ width: '30px', height: '30px', color: '#0a0a0f' }} />
             </div>
 
-            {/* Title */}
-            <h1 className="splash-title" style={{
-              fontSize: 'clamp(1.8rem,5vw,3rem)',
-              fontWeight: 900, color: '#fff',
-              letterSpacing: '-0.02em',
-              marginBottom: '0.3rem', lineHeight: 1.1,
-              fontFamily: '"Montserrat","Be Vietnam Pro",sans-serif',
-              textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-              textAlign: 'center',
-            }}>
+            <h1
+              className="splash-title"
+              style={{
+                fontSize: 'clamp(1.8rem,5vw,3rem)',
+                fontWeight: 900,
+                color: '#fff',
+                letterSpacing: '-0.02em',
+                marginBottom: '0.3rem',
+                lineHeight: 1.1,
+                fontFamily: '"Montserrat","Be Vietnam Pro",sans-serif',
+                textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+                textAlign: 'center',
+              }}
+            >
               TÔNG MÔN TRANH BÁ
             </h1>
 
-            <p className="splash-sub splash-hint" style={{
-              fontSize: '0.78rem', color: '#cbd5e1',
-              letterSpacing: '0.25em', fontFamily: 'monospace',
-              marginBottom: '1.2rem', textTransform: 'uppercase',
-              textShadow: '0 1px 8px rgba(0,0,0,0.8)',
-            }}>
+            <p
+              className="splash-sub splash-hint"
+              style={{
+                fontSize: '0.78rem',
+                color: '#cbd5e1',
+                letterSpacing: '0.25em',
+                fontFamily: 'monospace',
+                marginBottom: '1.2rem',
+                textTransform: 'uppercase',
+                textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+              }}
+            >
               Soul Land Esports Platform • PVP 2026
             </p>
 
-            {/* Division badges */}
-            <div className="splash-badges" style={{
-              display:'inline-flex', gap:'8px', marginBottom:'1.8rem',
-            }}>
-              {['⚔️ Bảng A','🌲 Bảng B','🔥 Bảng C'].map((b) => (
-                <span key={b} style={{
-                  padding:'4px 12px', borderRadius:'999px',
-                  background:'rgba(245,158,11,0.15)',
-                  border:'1px solid rgba(245,158,11,0.4)',
-                  color:'#fbbf24', fontSize:'0.72rem', fontWeight:600,
-                  backdropFilter:'blur(4px)',
-                }}>{b}</span>
+            <div
+              className="splash-badges"
+              style={{
+                display: 'inline-flex',
+                gap: '8px',
+                marginBottom: '1.8rem',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+            >
+              {['⚔️ Bảng A', '🌲 Bảng B', '🔥 Bảng C'].map((b) => (
+                <span
+                  key={b}
+                  style={{
+                    padding: '4px 12px',
+                    borderRadius: '999px',
+                    background: 'rgba(245,158,11,0.15)',
+                    border: '1px solid rgba(245,158,11,0.4)',
+                    color: '#fbbf24',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    backdropFilter: 'blur(4px)',
+                  }}
+                >
+                  {b}
+                </span>
               ))}
             </div>
 
-            {/* CTA Button */}
             <button
               className="splash-btn"
               onClick={handleEnter}
               style={{
-                display:'inline-flex', alignItems:'center', gap:'10px',
-                padding:'15px 46px', borderRadius:'14px',
-                background:'linear-gradient(135deg,#f59e0b,#d97706)',
-                color:'#0a0a0f', fontSize:'1.05rem', fontWeight:800,
-                border:'none', cursor:'pointer',
-                letterSpacing:'0.06em',
-                fontFamily:'"Montserrat",sans-serif',
-                transition:'transform 0.12s, filter 0.15s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '15px 46px',
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg,#f59e0b,#d97706)',
+                color: '#0a0a0f',
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                border: 'none',
+                cursor: 'pointer',
+                letterSpacing: '0.06em',
+                fontFamily: '"Montserrat",sans-serif',
+                transition: 'transform 0.12s, filter 0.15s',
               }}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
                 (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1.15)';
               }}
-              onMouseLeave={e => {
+              onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
                 (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1)';
               }}
-              onMouseDown={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.97)'; }}
-              onMouseUp={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
+              onMouseDown={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.97)';
+              }}
+              onMouseUp={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+              }}
             >
-              <Swords style={{ width:'18px', height:'18px' }} />
+              <Swords style={{ width: '18px', height: '18px' }} />
               BẮT ĐẦU
             </button>
-
           </div>
         )}
-
       </div>
     </>
   );
