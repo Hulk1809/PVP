@@ -34,40 +34,49 @@ const MainApp: React.FC = () => {
 
   // Background Video Ref for guaranteed Mobile Autoplay Recovery
   const bgVideoRef = useRef<HTMLVideoElement | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
 
-  const forcePlayVideo = () => {
+  const safePlayVideo = () => {
     const v = bgVideoRef.current;
-    if (v) {
-      v.defaultMuted = true;
-      v.muted = true;
-      v.play().catch(() => {});
+    if (!v) return;
+    if (!v.paused) return; // Already playing smoothly, do NOT interrupt
+    if (playPromiseRef.current) return; // A play request is already in progress
+
+    v.defaultMuted = true;
+    v.muted = true;
+    try {
+      const promise = v.play();
+      if (promise !== undefined) {
+        playPromiseRef.current = promise;
+        promise
+          .then(() => {
+            playPromiseRef.current = null;
+          })
+          .catch(() => {
+            playPromiseRef.current = null;
+          });
+      }
+    } catch {
+      playPromiseRef.current = null;
     }
   };
 
   useEffect(() => {
-    forcePlayVideo();
+    safePlayVideo();
 
-    // Auto-resume video on any touch or click anywhere
-    window.addEventListener('touchstart', forcePlayVideo, { passive: true });
-    window.addEventListener('pointerdown', forcePlayVideo, { passive: true });
-    window.addEventListener('click', forcePlayVideo, { passive: true });
-    window.addEventListener('scroll', forcePlayVideo, { passive: true });
-    window.addEventListener('resize', forcePlayVideo, { passive: true });
+    // Unlock playback on first user gesture once
+    const handleFirstGesture = () => {
+      safePlayVideo();
+    };
 
-    // 1-second Keep-Alive Heartbeat: ensures video never stays paused on mobile
-    const keepAliveTimer = setInterval(() => {
-      if (bgVideoRef.current && bgVideoRef.current.paused) {
-        bgVideoRef.current.play().catch(() => {});
-      }
-    }, 800);
+    window.addEventListener('pointerdown', handleFirstGesture, { once: true, passive: true });
+    window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
+    window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
 
     return () => {
-      window.removeEventListener('touchstart', forcePlayVideo);
-      window.removeEventListener('pointerdown', forcePlayVideo);
-      window.removeEventListener('click', forcePlayVideo);
-      window.removeEventListener('scroll', forcePlayVideo);
-      window.removeEventListener('resize', forcePlayVideo);
-      clearInterval(keepAliveTimer);
+      window.removeEventListener('pointerdown', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+      window.removeEventListener('click', handleFirstGesture);
     };
   }, []);
 
@@ -94,7 +103,7 @@ const MainApp: React.FC = () => {
   // When user begins entry from splash
   const handleSplashStartEnter = () => {
     setIsEntering(true);
-    forcePlayVideo();
+    safePlayVideo();
     if (soundEnabled && bgAudioRef.current) {
       bgAudioRef.current.play().catch(() => {});
     }
@@ -103,7 +112,7 @@ const MainApp: React.FC = () => {
   // When splash overlay finishes fading out
   const handleSplashFinishEnter = () => {
     setHasEntered(true);
-    forcePlayVideo();
+    safePlayVideo();
   };
 
   const isUIVisible = isEntering || hasEntered;
@@ -149,21 +158,7 @@ const MainApp: React.FC = () => {
         onLoadedData={(e) => {
           e.currentTarget.defaultMuted = true;
           e.currentTarget.muted = true;
-          e.currentTarget.play().catch(() => {});
-        }}
-        onCanPlay={(e) => {
-          e.currentTarget.play().catch(() => {});
-        }}
-        onSuspend={(e) => {
-          e.currentTarget.play().catch(() => {});
-        }}
-        onPause={(e) => {
-          // If mobile OS pauses the background video, resume it immediately
-          e.currentTarget.play().catch(() => {});
-        }}
-        onEnded={(e) => {
-          e.currentTarget.currentTime = 0;
-          e.currentTarget.play().catch(() => {});
+          safePlayVideo();
         }}
         style={{
           position: 'fixed',
