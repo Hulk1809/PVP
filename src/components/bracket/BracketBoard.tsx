@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
@@ -32,6 +32,11 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [confirmAction, setConfirmAction] = useState<ConfirmActionType | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Mouse Drag-To-Scroll states
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftState, setScrollLeftState] = useState(0);
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
@@ -67,6 +72,57 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
   const handleResetZoom = () => {
     setZoomLevel(1);
+  };
+
+  // Scroll Navigation Buttons
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
+    }
+  };
+
+  // Mouse Drag to Pan Handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    // Don't drag if clicking buttons, inputs, or interactive controls
+    if (target.closest('button') || target.closest('input') || target.closest('select')) {
+      return;
+    }
+    if (!containerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - containerRef.current.offsetLeft);
+    setScrollLeftState(containerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Drag sensitivity
+    containerRef.current.scrollLeft = scrollLeftState - walk;
+  };
+
+  // Wheel to Horizontal Scroll
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    // If vertical delta is significant, scroll horizontally
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      containerRef.current.scrollLeft += e.deltaY * 1.2;
+    }
   };
 
   // Intercept advance with confirmation modal
@@ -110,9 +166,9 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   };
 
   return (
-    <div className="relative w-full min-h-[600px] flex flex-col">
+    <div className="relative w-full min-h-[600px] flex flex-col select-none">
       
-      {/* Control Bar: Search & Zoom */}
+      {/* Control Bar: Search, Pan/Slide Buttons, Zoom */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-2 flex flex-wrap items-center justify-between gap-3">
         
         {/* Left: Search & Add Player */}
@@ -139,47 +195,83 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
           )}
         </div>
 
-        {/* Right: Zoom Controls */}
-        <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800 ml-auto">
-          <button
-            onClick={() => handleZoom(-0.1)}
-            title="Thu nhỏ"
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </button>
+        {/* Center/Right: Slide Left/Right Navigation + Zoom Controls */}
+        <div className="flex items-center space-x-2 ml-auto">
+          
+          {/* Pan Hint Badge */}
+          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800 text-[11px] text-zinc-400">
+            <MoveHorizontal className="w-3.5 h-3.5 text-amber-400" />
+            <span>Kéo chuột hoặc lăn chuột để xem các vòng</span>
+          </div>
 
-          <span className="text-[11px] font-mono font-bold text-amber-400 px-2">
-            {Math.round(zoomLevel * 100)}%
-          </span>
+          {/* Quick Slide Navigation Buttons */}
+          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+            <button
+              onClick={handleScrollLeft}
+              title="Lướt sang trái (Vòng trước)"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleScrollRight}
+              title="Lướt sang phải (Vòng sau)"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
 
-          <button
-            onClick={() => handleZoom(0.1)}
-            title="Phóng to"
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </button>
+          {/* Zoom Controls */}
+          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+            <button
+              onClick={() => handleZoom(-0.1)}
+              title="Thu nhỏ"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
 
-          <button
-            onClick={handleResetZoom}
-            title="Căn giữa / Mặc định"
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-          </button>
+            <span className="text-[11px] font-mono font-bold text-amber-400 px-2">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+
+            <button
+              onClick={() => handleZoom(0.1)}
+              title="Phóng to"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleResetZoom}
+              title="Căn giữa / Mặc định"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
 
       </div>
 
-      {/* Main Bracket Interactive Scroll Area */}
+      {/* Main Bracket Interactive Scroll Area with Drag-To-Pan */}
       <div
         ref={containerRef}
-        className="w-full overflow-x-auto overflow-y-hidden py-8 px-4 sm:px-8 cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onWheel={handleWheel}
+        className={`w-full overflow-x-auto overflow-y-hidden py-8 px-4 sm:px-8 transition-colors ${
+          isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+        }`}
       >
         <div
           style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-          className="min-w-max mx-auto transition-transform duration-200 flex flex-col items-center"
+          className="min-w-max mx-auto transition-transform duration-200 flex flex-col items-center pointer-events-auto"
         >
           {/* Rounds Container */}
           <div className="flex items-stretch space-x-12 sm:space-x-16 justify-center">
