@@ -59,6 +59,7 @@ const MainApp: React.FC = () => {
           <BracketBoard
             onOpenScheduler={(m) => setMatchToSchedule(m)}
             onOpenMatchDetails={(mId) => setSelectedMatchForDetail(mId)}
+            onOpenAddParticipant={handleOpenAddParticipant}
           />
         )}
 

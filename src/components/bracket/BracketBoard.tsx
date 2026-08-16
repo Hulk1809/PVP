@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Search, Filter, Swords } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Search, Filter, Swords, UserPlus } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
@@ -10,11 +10,13 @@ import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerMo
 interface BracketBoardProps {
   onOpenScheduler: (match: Match) => void;
   onOpenMatchDetails: (matchId: string) => void;
+  onOpenAddParticipant?: () => void;
 }
 
 export const BracketBoard: React.FC<BracketBoardProps> = ({
   onOpenScheduler,
   onOpenMatchDetails,
+  onOpenAddParticipant,
 }) => {
   const {
     brackets,
@@ -146,6 +148,17 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
               ))}
             </select>
           </div>
+
+          {/* Add Participant quick button for Admin */}
+          {userRole === 'admin' && onOpenAddParticipant && (
+            <button
+              onClick={onOpenAddParticipant}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-amber-500 shadow-glow-gold transition-all"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>+ Thêm Tuyển Thủ (Tự Động Bốc Thăm)</span>
+            </button>
+          )}
         </div>
 
         {/* Zoom Controls */}

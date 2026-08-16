@@ -215,6 +215,14 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
             />
           </div>
 
+          {/* Note regarding auto shuffle */}
+          <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-500/40 text-xs text-purple-200 flex items-start space-x-2">
+            <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] leading-relaxed">
+              <strong>Tự động bốc thăm:</strong> Sau khi bạn nhấn nút <strong>"Lưu & Xếp Ngẫu Nhiên"</strong>, đấu thủ mới sẽ được lưu và hệ thống sẽ lập tức bốc thăm xếp ngẫu nhiên lại các cặp đấu trên nhánh đấu.
+            </p>
+          </div>
+
           {/* Footer Actions */}
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <button
@@ -227,10 +235,10 @@ export const ParticipantManager: React.FC<ParticipantManagerProps> = ({
 
             <button
               type="submit"
-              className="flex items-center space-x-1.5 px-5 py-2 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-glow-gold transition-all"
+              className="flex items-center space-x-1.5 px-5 py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 hover:from-amber-400 hover:to-yellow-300 shadow-glow-gold transition-all"
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{participantToEdit ? 'Lưu Thay Đổi' : 'Thêm Vào Giải'}</span>
+              <Save className="w-4 h-4" />
+              <span>{participantToEdit ? 'Lưu Thay Đổi' : 'Lưu & Tự Động Xếp Ngẫu Nhiên'}</span>
             </button>
           </div>
 
