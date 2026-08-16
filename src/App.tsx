@@ -124,12 +124,11 @@ const MainApp: React.FC = () => {
     setHasEntered(true);
   };
 
-  if (!hasEntered) {
-    return <SplashScreen onEnter={handleSplashEnter} />;
-  }
-
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black">
+      
+      {/* Splash Screen Vignette Overlay (fades away without interrupting video) */}
+      {!hasEntered && <SplashScreen onEnter={handleSplashEnter} />}
       
       {/* Hidden YouTube Background Music Player */}
       <div
