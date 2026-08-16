@@ -43,6 +43,7 @@ declare global {
 const MainApp: React.FC = () => {
   const { brackets, selectedBracketId, soundEnabled } = useTournament();
   const [hasEntered, setHasEntered] = useState(false);
+  const [isEntering, setIsEntering] = useState(false);
   const currentBracket = brackets[selectedBracketId];
 
   const [activeTab, setActiveTab] = useState<'bracket' | 'roster' | 'podium'>('bracket');
@@ -59,9 +60,9 @@ const MainApp: React.FC = () => {
   const ytReadyRef = useRef(false);
   const pendingPlayRef = useRef(false);
 
-  // Load YouTube IFrame API once — triggered AFTER user clicks splash (hasEntered)
+  // Load YouTube IFrame API once — triggered AFTER user clicks splash (isEntering)
   useEffect(() => {
-    if (!hasEntered) return; // Wait for user interaction first
+    if (!isEntering && !hasEntered) return; // Wait for user interaction first
     if (document.getElementById('yt-iframe-api')) return;
     const tag = document.createElement('script');
     tag.id = 'yt-iframe-api';
@@ -85,7 +86,6 @@ const MainApp: React.FC = () => {
         events: {
           onReady: (event) => {
             ytReadyRef.current = true;
-            // Play immediately since user already interacted via splash screen
             if (soundEnabled) {
               event.target.playVideo();
             }
@@ -94,7 +94,7 @@ const MainApp: React.FC = () => {
         },
       });
     };
-  }, [hasEntered]);
+  }, [isEntering, hasEntered]);
 
   // Sync play/pause with soundEnabled
   useEffect(() => {
@@ -119,16 +119,28 @@ const MainApp: React.FC = () => {
     setIsParticipantModalOpen(true);
   };
 
-  // When user enters from splash, start music if sound is enabled
-  const handleSplashEnter = () => {
+  // When user begins entry from splash
+  const handleSplashStartEnter = () => {
+    setIsEntering(true);
+  };
+
+  // When splash overlay finishes fading out
+  const handleSplashFinishEnter = () => {
     setHasEntered(true);
   };
 
+  const isUIVisible = isEntering || hasEntered;
+
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black">
+    <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black overflow-x-hidden">
       
-      {/* Splash Screen Vignette Overlay (fades away without interrupting video) */}
-      {!hasEntered && <SplashScreen onEnter={handleSplashEnter} />}
+      {/* Splash Screen Vignette Overlay (fades away smoothly while video continues) */}
+      {!hasEntered && (
+        <SplashScreen
+          onStartEnter={handleSplashStartEnter}
+          onEnter={handleSplashFinishEnter}
+        />
+      )}
       
       {/* Hidden YouTube Background Music Player */}
       <div
@@ -137,7 +149,7 @@ const MainApp: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* Fullscreen Background Video — muted, looping, seamless */}
+      {/* Fullscreen Background Video — continuous single stream */}
       <video
         autoPlay
         muted
@@ -162,7 +174,7 @@ const MainApp: React.FC = () => {
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%)',
           zIndex: 1,
           pointerEvents: 'none',
         }}
@@ -171,15 +183,32 @@ const MainApp: React.FC = () => {
       {/* Soul Power Particle System on top of video */}
       <ParticleCanvas theme={currentBracket?.theme || 'ocean'} />
 
-      {/* Top Header with Login Modal Trigger */}
-      <Header
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onOpenLoginModal={() => setIsLoginModalOpen(true)}
-      />
+      {/* Top Header — Slides in smoothly from TOP */}
+      <div
+        style={{
+          transform: isUIVisible ? 'translateY(0)' : 'translateY(-120%)',
+          opacity: isUIVisible ? 1 : 0,
+          transition: 'transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s ease',
+          zIndex: 40,
+        }}
+      >
+        <Header
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        />
+      </div>
 
-      {/* Main Content Area */}
-      <main className="relative z-10 flex-1 flex flex-col pt-2">
+      {/* Main Content Area — Slides & scales in smoothly from SURROUNDING / BOTTOM */}
+      <main
+        className="relative z-10 flex-1 flex flex-col pt-2"
+        style={{
+          transform: isUIVisible ? 'translateY(0) scale(1)' : 'translateY(60px) scale(0.96)',
+          opacity: isUIVisible ? 1 : 0,
+          transition: 'transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.85s ease 0.1s',
+          pointerEvents: isUIVisible ? 'auto' : 'none',
+        }}
+      >
         {/* Tab Content */}
         {activeTab === 'bracket' && (
           <BracketBoard

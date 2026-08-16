@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { Swords } from 'lucide-react';
 
 interface SplashScreenProps {
+  onStartEnter?: () => void;
   onEnter: () => void;
 }
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
+export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnter }) => {
   const [isFading, setIsFading] = useState(false);
 
   const handleEnter = () => {
     setIsFading(true);
-    setTimeout(onEnter, 800);
+    if (onStartEnter) {
+      onStartEnter();
+    }
+    setTimeout(onEnter, 850);
   };
 
   return (
@@ -34,7 +38,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         .splash-btn    { animation: glowPulse 2s ease-in-out infinite, fadeInUp 0.7s 0.7s both; }
       `}</style>
 
-      {/* Cinematic Vignette Overlay (Dark edges, clear glowing center, seamlessly reveals video) */}
+      {/* Cinematic Vignette Overlay (Dark edges, clear glowing center, dissolves when entering) */}
       <div
         style={{
           position: 'fixed',
@@ -45,11 +49,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
           alignItems: 'center',
           justifyContent: 'flex-end',
           paddingBottom: '9vh',
-          background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.95) 100%)',
+          background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.95) 100%)',
           backdropFilter: 'blur(1px)',
           opacity: isFading ? 0 : 1,
-          transform: isFading ? 'scale(1.04)' : 'scale(1)',
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isFading ? 'scale(1.08)' : 'scale(1)',
+          transition: 'opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)',
           pointerEvents: isFading ? 'none' : 'auto',
         }}
       >
