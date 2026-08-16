@@ -117,11 +117,12 @@ export const RotatePrompt: React.FC = () => {
           fontStyle: 'italic',
           background: 'linear-gradient(110deg, #94a3b8 0%, #cbd5e1 20%, #ffffff 40%, #f8fafc 55%, #cbd5e1 75%, #64748b 100%)',
           WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '0.4rem',
-          filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.5))',
           textTransform: 'uppercase',
           lineHeight: 1.25,
+          display: 'inline-block',
         }}
       >
         Mở Web Ngoài & Xoay Ngang

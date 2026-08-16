@@ -44,20 +44,22 @@ export const ChampionPodium: React.FC = () => {
           <span>Vinh Danh Đỉnh Phong • {currentBracket.name}</span>
         </div>
         
-        <h2
-          className="text-3xl sm:text-5xl font-black font-heading tracking-wider"
-          style={{
-            fontFamily: '"Playfair Display", "Cinzel Decorative", serif',
-            fontStyle: 'italic',
-            background: themeConfig.titleGradient,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            WebkitTextStroke: '0.6px rgba(255, 255, 255, 0.9)',
-            filter: 'drop-shadow(0 0 16px rgba(255, 255, 255, 0.6))',
-          }}
-        >
-          {currentBracket.divisionTitle}
-        </h2>
+        <div className="relative inline-block my-1">
+          <h2
+            className="text-3xl sm:text-5xl font-black font-heading tracking-wider inline-block select-none"
+            style={{
+              fontFamily: '"Playfair Display", "Cinzel Decorative", serif',
+              fontStyle: 'italic',
+              backgroundImage: themeConfig.titleGradient,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              display: 'inline-block',
+            }}
+          >
+            {currentBracket.divisionTitle}
+          </h2>
+        </div>
         
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-sans drop-shadow">
           {themeConfig.elementName} • Bảng vàng vinh danh những hồn sư xuất sắc nhất đã vượt qua các ải tử chiến để ghi tên lên đỉnh cao Thần vị.
