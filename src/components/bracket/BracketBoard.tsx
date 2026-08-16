@@ -1,10 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Search, Filter, Swords, UserPlus } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
 import { Match } from '../../types/tournament';
-import { DEFAULT_SECTS } from '../../engine/defaultData';
 import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerModal';
 
 interface BracketBoardProps {
@@ -26,8 +25,6 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     userRole,
     searchQuery,
     setSearchQuery,
-    selectedSectFilter,
-    setSelectedSectFilter,
     handleAdvanceWinner,
     handleResetMatch,
   } = useTournament();
@@ -65,7 +62,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     .sort((a, b) => a - b);
 
   const handleZoom = (delta: number) => {
-    setZoomLevel((prev) => Math.min(1.4, Math.max(0.65, prev + delta)));
+    setZoomLevel((prev) => Math.min(1.3, Math.max(0.7, prev + delta)));
   };
 
   const handleResetZoom = () => {
@@ -115,45 +112,26 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   return (
     <div className="relative w-full min-h-[600px] flex flex-col">
       
-      {/* Control Bar: Filters, Search, Zoom */}
+      {/* Control Bar: Search & Zoom */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-2 flex flex-wrap items-center justify-between gap-3">
         
-        {/* Search & Sect Filter */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Search Input */}
+        {/* Left: Search & Add Player */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
-              placeholder="Tìm tên thí sinh..."
+              placeholder="Tìm tên thí sinh ING..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/30 transition-all w-44 sm:w-56"
+              className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all w-48 sm:w-60"
             />
           </div>
 
-          {/* Sect Filter */}
-          <div className="relative">
-            <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <select
-              value={selectedSectFilter}
-              onChange={(e) => setSelectedSectFilter(e.target.value)}
-              className="pl-8 pr-8 py-1.5 rounded-lg text-xs bg-slate-900 border border-slate-800 text-slate-200 focus:outline-none focus:border-amber-500/60 transition-all appearance-none cursor-pointer"
-            >
-              <option value="all">Tất Cả Tông Môn</option>
-              {Object.values(DEFAULT_SECTS).map((sect) => (
-                <option key={sect.id} value={sect.name}>
-                  {sect.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Add Participant quick button for Admin */}
           {userRole === 'admin' && onOpenAddParticipant && (
             <button
               onClick={onOpenAddParticipant}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-amber-500 shadow-glow-gold transition-all"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95 transition-all"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Thêm Tuyển Thủ (Tự Động Bốc Thăm)</span>
@@ -161,24 +139,24 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
           )}
         </div>
 
-        {/* Zoom Controls */}
-        <div className="flex items-center space-x-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800 ml-auto">
+        {/* Right: Zoom Controls */}
+        <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800 ml-auto">
           <button
             onClick={() => handleZoom(-0.1)}
             title="Thu nhỏ"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
 
-          <span className="text-[11px] font-mono font-bold text-amber-400 px-1.5">
+          <span className="text-[11px] font-mono font-bold text-amber-400 px-2">
             {Math.round(zoomLevel * 100)}%
           </span>
 
           <button
             onClick={() => handleZoom(0.1)}
             title="Phóng to"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
@@ -186,7 +164,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
           <button
             onClick={handleResetZoom}
             title="Căn giữa / Mặc định"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
@@ -215,17 +193,17 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                   
                   {/* Round Column Header */}
                   <div className="mb-6 text-center">
-                    <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900 border border-slate-800 text-amber-400 shadow-md">
+                    <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-amber-400 shadow-sm">
                       <Swords className="w-3 h-3 text-amber-400" />
                       <span>{roundName}</span>
                     </div>
-                    <p className="text-[10px] text-slate-500 mt-1 font-mono">
+                    <p className="text-[10px] text-zinc-500 mt-1 font-mono">
                       {roundMatches.length} trận đấu
                     </p>
                   </div>
 
                   {/* Matches Column */}
-                  <div className="flex flex-col justify-around flex-1 space-y-8">
+                  <div className="flex flex-col justify-around flex-1 space-y-6 sm:space-y-8">
                     {roundMatches.map((m) => {
                       const p1 = m.player1Id ? participants[m.player1Id] : null;
                       const p2 = m.player2Id ? participants[m.player2Id] : null;
@@ -253,14 +231,14 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                             onOpenMatchDetails={onOpenMatchDetails}
                           />
 
-                          {/* Dynamic SVG Branch Lines to Next Round */}
+                          {/* Clean Right-Angle Bracket Line to Next Round */}
                           {!isLastRound && (
-                            <div className="hidden sm:block absolute top-1/2 -right-12 sm:-right-16 w-12 sm:w-16 h-0.5 -translate-y-1/2 pointer-events-none">
+                            <div className="hidden sm:block absolute top-1/2 -right-12 sm:-right-16 w-12 sm:w-16 h-[2px] -translate-y-1/2 pointer-events-none">
                               <div
-                                className={`w-full h-full transition-all duration-500 ${
+                                className={`w-full h-full transition-all duration-300 ${
                                   m.winnerId
-                                    ? 'bg-gradient-to-r from-amber-500 to-amber-500/40 shadow-glow-gold'
-                                    : 'bg-slate-800'
+                                    ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
+                                    : 'bg-zinc-800'
                                 }`}
                               />
                             </div>

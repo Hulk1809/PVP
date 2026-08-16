@@ -24,7 +24,9 @@ export function getRoundName(round: number, totalRounds: number, isThirdPlace?: 
   if (round === totalRounds) return 'Chung Kết Đỉnh Cao';
   if (round === totalRounds - 1 && totalRounds > 1) return 'Vòng Bán Kết';
   if (round === totalRounds - 2 && totalRounds > 2) return 'Vòng Tứ Kết';
-  return `Vòng ${round} (Vòng Loại)`;
+  if (round === totalRounds - 3 && totalRounds > 3) return 'Vòng 1/8 (Vòng 16)';
+  if (round === totalRounds - 4 && totalRounds > 4) return 'Vòng 1/16 (Vòng 32)';
+  return `Vòng ${round} (Sơ Loại)`;
 }
 
 export function shuffleArray<T>(array: T[]): T[] {
@@ -36,24 +38,10 @@ export function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-// Seed distribution helper: Standard tournament seeding (1 vs 16, 8 vs 9, 4 vs 13, 5 vs 12, etc.)
-function getSeededPairings(bracketSize: number): number[] {
-  let seeds = [1, 2];
-  while (seeds.length < bracketSize) {
-    const nextSeeds: number[] = [];
-    const currentMax = seeds.length * 2 + 1;
-    for (const s of seeds) {
-      nextSeeds.push(s);
-      nextSeeds.push(currentMax - s);
-    }
-    seeds = nextSeeds;
-  }
-  return seeds;
-}
-
 /**
  * Generate full tree of matches for single-elimination tournament with Byes and 3rd Place Match.
- * Supports randomize mode for random draws / shuffling in each bracket.
+ * Optimal Bye Distribution: Distributes Byes across distinct Round 2 branches so that NO two Byes
+ * meet in Round 2 whenever possible (guaranteeing maximum Round 1 matchups).
  */
 export function generateTournamentBracket(
   bracketId: BracketId,
@@ -66,23 +54,47 @@ export function generateTournamentBracket(
   const { totalRounds, bracketSize, byesCount } = calculateBracketDimensions(count);
   const matches: Record<string, Match> = {};
 
-  // Sort or Shuffle participants based on randomize parameter
+  // Shuffle or sort participants
   const processedParticipants = randomize
     ? shuffleArray(participants)
     : [...participants].sort((a, b) => (a.seedRank || 999) - (b.seedRank || 999));
 
-  // Map seeds to participants or Byes
-  const seedSlots = getSeededPairings(bracketSize);
+  const totalFirstRoundMatches = bracketSize / 2;
   const slotToPlayerMap: (Participant | null)[] = new Array(bracketSize).fill(null);
 
-  // Top 'byesCount' seeds get Byes (their opponent in R1 is null)
-  let playerIdx = 0;
-  for (let i = 0; i < bracketSize; i++) {
-    const seed = seedSlots[i];
-    if (seed <= count) {
-      slotToPlayerMap[i] = processedParticipants[playerIdx++] || null;
+  // Distribute byes across first round matches:
+  // Match m has slots (2*m, 2*m + 1).
+  // If match m gets a Bye, slot (2*m + 1) is null, and slot (2*m) gets a player.
+  // To avoid two Byes meeting in Round 2, alternate placing Byes in even/odd matches.
+  const matchHasBye: boolean[] = new Array(totalFirstRoundMatches).fill(false);
+
+  // We have 'byesCount' byes to distribute among 'totalFirstRoundMatches' matches.
+  // Step 1: Assign 1 bye per Round-2 pair (match 0 vs 1, match 2 vs 3, etc.)
+  let assignedByes = 0;
+  for (let i = 0; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
+    matchHasBye[i] = true;
+    assignedByes++;
+  }
+  // Step 2: If more byes remain, assign to the other matches in pairs
+  for (let i = 1; i < totalFirstRoundMatches && assignedByes < byesCount; i += 2) {
+    matchHasBye[i] = true;
+    assignedByes++;
+  }
+
+  // Now populate slotToPlayerMap:
+  let pIdx = 0;
+  for (let m = 0; m < totalFirstRoundMatches; m++) {
+    const slot1 = m * 2;
+    const slot2 = m * 2 + 1;
+
+    if (matchHasBye[m]) {
+      // 1 real player, 1 Bye
+      slotToPlayerMap[slot1] = processedParticipants[pIdx++] || null;
+      slotToPlayerMap[slot2] = null; // Bye
     } else {
-      slotToPlayerMap[i] = null; // Ghost Bye
+      // 2 real players
+      slotToPlayerMap[slot1] = processedParticipants[pIdx++] || null;
+      slotToPlayerMap[slot2] = processedParticipants[pIdx++] || null;
     }
   }
 
@@ -188,9 +200,9 @@ export function generateTournamentBracket(
   }
 
   // Propagate Bye winners to Round 2
-  for (let m = 0; m < bracketSize / 2; m++) {
+  for (let m = 0; m < totalFirstRoundMatches; m++) {
     const r1Match = matches[roundMatchIds[0][m]];
-    if (r1Match.status === 'bye' && r1Match.winnerId && r1Match.nextMatchId) {
+    if (r1Match && r1Match.status === 'bye' && r1Match.winnerId && r1Match.nextMatchId) {
       const nextMatch = matches[r1Match.nextMatchId];
       if (nextMatch) {
         if (m % 2 === 0) {
@@ -205,9 +217,6 @@ export function generateTournamentBracket(
   return matches;
 }
 
-/**
- * 1-Click Advance: Advances winner, routes losers if semi-final, cascades updates.
- */
 /**
  * Advance Winner: Advances winner, handles downstream cascades and overrides.
  */

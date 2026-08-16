@@ -1,14 +1,9 @@
 import React from 'react';
-import { Flame, Trophy, Users, CheckCircle2, Sparkles, Clock, ShieldCheck } from 'lucide-react';
+import { Trophy, Users, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 
 export const HeroBanner: React.FC = () => {
-  const {
-    brackets,
-    participants,
-    matches,
-    selectedBracketId,
-  } = useTournament();
+  const { brackets, participants, matches, selectedBracketId } = useTournament();
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
@@ -17,114 +12,101 @@ export const HeroBanner: React.FC = () => {
   const bracketMatches = Object.values(matches).filter((m) => m.bracketId === selectedBracketId);
   const completedMatches = bracketMatches.filter((m) => m.status === 'completed' || m.status === 'bye');
 
-  // Determine champion if final match completed
   const finalMatch = bracketMatches.find((m) => m.round === currentBracket.totalRounds && !m.isThirdPlaceMatch);
   const champion = finalMatch?.winnerId ? participants[finalMatch.winnerId] : null;
 
-  const themeBorderColor =
-    currentBracket.theme === 'ocean'
-      ? 'border-cyan-500/30'
-      : currentBracket.theme === 'forest'
-      ? 'border-emerald-500/30'
-      : 'border-lime-500/30';
-
-  const themeGlowColor =
-    currentBracket.theme === 'ocean'
-      ? 'shadow-[0_0_50px_rgba(6,182,212,0.15)]'
-      : currentBracket.theme === 'forest'
-      ? 'shadow-[0_0_50px_rgba(16,185,129,0.15)]'
-      : 'shadow-[0_0_50px_rgba(132,204,22,0.15)]';
-
   return (
-    <div className={`relative w-full overflow-hidden border-b border-slate-800/80 bg-slate-950 ${themeGlowColor} transition-all duration-700 min-h-[340px] flex items-center`}>
+    <div className="relative w-full overflow-hidden border-b border-zinc-800/80 bg-[#090a0f] min-h-[260px] flex items-center">
       
-      {/* 1. Full-Bleed Division Poster Background (Widescreen Artwork) */}
+      {/* Background with Dark Subtle Atmosphere */}
       <div className="absolute inset-0 z-0">
         <img
           key={currentBracket.posterUrl}
           src={currentBracket.posterUrl}
           alt={currentBracket.divisionTitle}
-          className="w-full h-full object-cover object-center scale-100 animate-in fade-in duration-700 brightness-[0.55] contrast-125"
+          className="w-full h-full object-cover object-center brightness-[0.35] contrast-125 transition-all duration-700"
         />
-        {/* Layered Cinematic Vignettes & Gradients for Crisp Readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
-        <div className="absolute inset-0 bg-radial-vignette opacity-80 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07080b] via-[#07080b]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07080b] via-[#07080b]/90 to-transparent" />
       </div>
 
-      {/* 2. Banner Content Overlay (Wide full-container presentation) */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="max-w-3xl space-y-5">
+      {/* Content Container */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="max-w-3xl space-y-4">
           
-          {/* Top Badges */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-glow-gold backdrop-blur-md">
-              <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+          {/* Tags */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
               {currentBracket.name}
             </span>
-
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-900/80 text-cyan-300 border border-cyan-500/40 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              {currentBracket.tierName}
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-900/80 text-zinc-300 border border-zinc-700">
+              Hạng: {currentBracket.tierName}
             </span>
-
             {champion && (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow-glow-gold animate-pulse">
-                <Trophy className="w-4 h-4" /> Quán Quân: {champion.name}
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-zinc-950 shadow-md">
+                <Trophy className="w-3.5 h-3.5" /> Quán Quân: {champion.name}
               </span>
             )}
           </div>
 
-          {/* Division Grand Title & Lore */}
-          <div className="space-y-2.5">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] font-heading">
+          {/* Championship Title */}
+          <div>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white font-heading">
               <span className="text-gold-gradient">{currentBracket.divisionTitle}</span>
             </h1>
-            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans-accent max-w-2xl drop-shadow-md">
+            <p className="mt-1.5 text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans max-w-2xl">
               {currentBracket.description}
             </p>
           </div>
 
-          {/* Key Statistics Glassmorphism Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl">
             
-            <div className={`bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border ${themeBorderColor} shadow-lg hover:border-amber-500/40 transition-all`}>
-              <div className="flex items-center space-x-2 text-slate-400 text-xs font-medium">
-                <Users className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Tổng Đấu Thủ</span>
+            <div className="bg-zinc-900/80 backdrop-blur-md p-2.5 rounded-xl border border-zinc-800 flex items-center space-x-3">
+              <div className="p-2 rounded-lg bg-zinc-800/80 text-cyan-400">
+                <Users className="w-4 h-4" />
               </div>
-              <div className="mt-1 text-2xl font-black text-white font-heading">
-                {bracketParticipants.length} <span className="text-xs text-slate-400 font-normal">hồn sư</span>
-              </div>
-            </div>
-
-            <div className={`bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border ${themeBorderColor} shadow-lg hover:border-amber-500/40 transition-all`}>
-              <div className="flex items-center space-x-2 text-slate-400 text-xs font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Tiến Độ</span>
-              </div>
-              <div className="mt-1 text-2xl font-black text-white font-heading">
-                {completedMatches.length}/{bracketMatches.length} <span className="text-xs text-slate-400 font-normal">trận</span>
+              <div>
+                <p className="text-[10px] text-zinc-400 font-medium">Tuyển Thủ</p>
+                <p className="text-base font-bold text-white font-heading leading-tight">
+                  {bracketParticipants.length} <span className="text-[10px] font-normal text-zinc-500">người</span>
+                </p>
               </div>
             </div>
 
-            <div className={`bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border ${themeBorderColor} shadow-lg hover:border-amber-500/40 transition-all`}>
-              <div className="flex items-center space-x-2 text-slate-400 text-xs font-medium">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span>Số Vòng Đấu</span>
+            <div className="bg-zinc-900/80 backdrop-blur-md p-2.5 rounded-xl border border-zinc-800 flex items-center space-x-3">
+              <div className="p-2 rounded-lg bg-zinc-800/80 text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
               </div>
-              <div className="mt-1 text-2xl font-black text-white font-heading">
-                {currentBracket.totalRounds} <span className="text-xs text-slate-400 font-normal">vòng</span>
+              <div>
+                <p className="text-[10px] text-zinc-400 font-medium">Tiến Độ</p>
+                <p className="text-base font-bold text-white font-heading leading-tight">
+                  {completedMatches.length}/{bracketMatches.length} <span className="text-[10px] font-normal text-zinc-500">trận</span>
+                </p>
               </div>
             </div>
 
-            <div className={`bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border ${themeBorderColor} shadow-lg hover:border-amber-500/40 transition-all`}>
-              <div className="flex items-center space-x-2 text-slate-400 text-xs font-medium">
-                <Trophy className="w-3.5 h-3.5 text-yellow-400" />
-                <span>Thể Thức</span>
+            <div className="bg-zinc-900/80 backdrop-blur-md p-2.5 rounded-xl border border-zinc-800 flex items-center space-x-3">
+              <div className="p-2 rounded-lg bg-zinc-800/80 text-amber-400">
+                <Clock className="w-4 h-4" />
               </div>
-              <div className="mt-1 text-base font-bold text-amber-400 font-heading truncate">
-                Loại Trực Tiếp
+              <div>
+                <p className="text-[10px] text-zinc-400 font-medium">Số Vòng</p>
+                <p className="text-base font-bold text-white font-heading leading-tight">
+                  {currentBracket.totalRounds} <span className="text-[10px] font-normal text-zinc-500">vòng</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-zinc-900/80 backdrop-blur-md p-2.5 rounded-xl border border-zinc-800 flex items-center space-x-3">
+              <div className="p-2 rounded-lg bg-zinc-800/80 text-yellow-400">
+                <Trophy className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-[10px] text-zinc-400 font-medium">Thể Thức</p>
+                <p className="text-xs font-bold text-amber-400 font-heading leading-tight">
+                  Loại Trực Tiếp
+                </p>
               </div>
             </div>
 

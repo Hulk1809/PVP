@@ -4,131 +4,74 @@
 
 @layer base {
   :root {
-    --font-cinzel: 'Cinzel', serif;
-    --font-outfit: 'Outfit', sans-serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-heading: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   body {
     font-family: var(--font-body);
-    background-color: #030712;
-    color: #f8fafc;
+    background-color: #07080b;
+    color: #f1f5f9;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .font-heading {
-    font-family: var(--font-cinzel);
-  }
-
-  .font-sans-accent {
-    font-family: var(--font-outfit);
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: -0.015em;
   }
 }
 
-/* Custom Scrollbars */
+/* Custom Esports Minimal Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #090a0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: #222533;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-  border-color: rgba(245, 158, 11, 0.5);
+  background: #383d54;
 }
 
-/* Glassmorphism and Soul Land Glows */
-.glass-panel {
-  background: rgba(11, 17, 32, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* Esports Surface Cards */
+.esports-card {
+  background: linear-gradient(180deg, rgba(20, 22, 31, 0.95) 0%, rgba(12, 13, 18, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
-.glass-panel-gold {
-  background: linear-gradient(135deg, rgba(20, 17, 10, 0.85), rgba(11, 17, 32, 0.9));
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.2);
+.esports-card:hover {
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
-.glass-panel-ocean {
-  background: linear-gradient(135deg, rgba(8, 20, 45, 0.88), rgba(5, 12, 28, 0.92));
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.2);
+.esports-card-active {
+  background: linear-gradient(180deg, rgba(30, 27, 20, 0.95) 0%, rgba(15, 14, 10, 0.98) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
 }
 
-.glass-panel-forest {
-  background: linear-gradient(135deg, rgba(6, 32, 24, 0.88), rgba(4, 20, 15, 0.92));
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.2);
+/* Gold Gradient Accents */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #fde047 40%, #f59e0b 80%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.glass-panel-village {
-  background: linear-gradient(135deg, rgba(25, 28, 36, 0.88), rgba(15, 19, 26, 0.92));
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(163, 230, 53, 0.3);
-  box-shadow: 0 0 25px -5px rgba(163, 230, 53, 0.2);
+/* Esports Bracket Connectors */
+.bracket-connector-line {
+  stroke: #2a2e42;
+  stroke-width: 2;
 }
 
-/* Soul Ring Orbit Animation */
-@keyframes ring-spin {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.04); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-.soul-ring-spin {
-  animation: ring-spin 12s linear infinite;
-}
-
-/* Bracket Connecting Lines */
-.bracket-connector-active {
+.bracket-connector-line-active {
   stroke: #f59e0b;
   stroke-width: 2.5;
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
-}
-
-.bracket-connector-inactive {
-  stroke: #334155;
-  stroke-width: 1.5;
-}
-
-/* Sharp MMO Angular cuts */
-.mmo-clip {
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-}
-
-.mmo-clip-sm {
-  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
-}
-
-/* Gold Shimmer Text */
-.text-gold-gradient {
-  background: linear-gradient(135deg, #FFFBEB 0%, #FDE047 30%, #F59E0B 70%, #B45309 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-cyan-gradient {
-  background: linear-gradient(135deg, #ECFEFF 0%, #67E8F9 30%, #06B6D4 70%, #0E7490 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-emerald-gradient {
-  background: linear-gradient(135deg, #ECFDF5 0%, #6EE7B7 30%, #10B981 70%, #047857 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
 }
