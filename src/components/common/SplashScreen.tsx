@@ -11,11 +11,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
 
   useEffect(() => {
     // Generate floating soul energy sparks around title
-    const pts = Array.from({ length: 18 }, (_, i) => ({
+    const pts = Array.from({ length: 16 }, (_, i) => ({
       id: i,
-      x: 35 + Math.random() * 30, // Centered around title
-      y: 40 + Math.random() * 30,
-      size: Math.random() * 3.5 + 1.5,
+      x: 25 + Math.random() * 50,
+      y: 30 + Math.random() * 40,
+      size: Math.random() * 3 + 1.5,
       delay: Math.random() * 3,
       dur: Math.random() * 2 + 2,
     }));
@@ -36,17 +36,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
         /* Soul Land Movie 3D Title Floating & Breathing Aura */
         @keyframes soulLandTitleFloat {
           0%, 100% {
-            transform: translateY(0px) scale(1) rotateX(0deg);
-            filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8))
-                    drop-shadow(0 0 45px rgba(234, 88, 12, 0.5))
-                    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.95));
+            transform: translateY(0px) scale(1);
+            filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.8))
+                    drop-shadow(0 0 35px rgba(234, 88, 12, 0.5))
+                    drop-shadow(0 10px 22px rgba(0, 0, 0, 0.95));
           }
           50% {
-            transform: translateY(-8px) scale(1.025) rotateX(2deg);
-            filter: drop-shadow(0 0 30px rgba(254, 240, 138, 0.95))
-                    drop-shadow(0 0 75px rgba(245, 158, 11, 0.75))
-                    drop-shadow(0 0 110px rgba(234, 88, 12, 0.45))
-                    drop-shadow(0 18px 36px rgba(0, 0, 0, 1));
+            transform: translateY(-6px) scale(1.02);
+            filter: drop-shadow(0 0 26px rgba(254, 240, 138, 0.95))
+                    drop-shadow(0 0 60px rgba(245, 158, 11, 0.75))
+                    drop-shadow(0 0 90px rgba(234, 88, 12, 0.4))
+                    drop-shadow(0 14px 28px rgba(0, 0, 0, 1));
           }
         }
 
@@ -68,7 +68,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           }
           50% {
             opacity: 1;
-            transform: scaleX(1.18);
+            transform: scaleX(1.15);
           }
         }
 
@@ -85,7 +85,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
             opacity: 0.7;
           }
           100% {
-            transform: translateY(-55px) scale(1.2);
+            transform: translateY(-45px) scale(1.2);
             opacity: 0;
           }
         }
@@ -97,13 +97,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
             border-color: rgba(251,191,36,0.4);
           }
           50% { 
-            box-shadow: 0 0 35px 5px rgba(251,191,36,0.55), 0 0 65px 12px rgba(234,88,12,0.35);
+            box-shadow: 0 0 32px 5px rgba(251,191,36,0.55), 0 0 55px 10px rgba(234,88,12,0.3);
             border-color: rgba(251,191,36,0.85);
           }
         }
 
         @keyframes fadeInUpCinematic {
-          from { opacity: 0; transform: translateY(28px); }
+          from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }
         }
 
@@ -123,7 +123,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           background-size: 250% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          -webkit-text-stroke: 1.2px rgba(255, 245, 180, 0.9);
+          -webkit-text-stroke: 1px rgba(255, 245, 180, 0.85);
           animation: swordGlintSweep 4.5s linear infinite, soulLandTitleFloat 3.8s ease-in-out infinite, fadeInUpCinematic 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -140,7 +140,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
         }
       `}</style>
 
-      {/* Cinematic Vignette Overlay */}
+      {/* Cinematic Vignette Overlay (Always vertically centered on all devices) */}
       <div
         style={{
           position: 'fixed',
@@ -149,14 +149,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-end',
-          paddingBottom: '11vh',
-          background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.92) 100%)',
+          justifyContent: 'center',
+          padding: '1rem',
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.92) 100%)',
           backdropFilter: 'blur(1px)',
           opacity: isFading ? 0 : 1,
           transform: isFading ? 'scale(1.08)' : 'scale(1)',
           transition: 'opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)',
           pointerEvents: isFading ? 'none' : 'auto',
+          overflow: 'hidden',
         }}
       >
         {/* Floating Soul Energy Sparks */}
@@ -188,8 +189,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center',
-            padding: '1.5rem',
-            maxWidth: '1000px',
+            padding: '0.5rem 1rem',
+            maxWidth: '900px',
             width: '100%',
           }}
         >
@@ -200,44 +201,44 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '14px',
-              marginBottom: '0.6rem',
+              gap: '10px',
+              marginBottom: '0.4rem',
               width: '100%',
-              maxWidth: '520px',
+              maxWidth: '420px',
             }}
           >
             <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.9))' }} />
-            <span style={{ color: '#fbbf24', fontSize: '0.9rem', textShadow: '0 0 12px rgba(251,191,36,0.9)' }}>❖</span>
+            <span style={{ color: '#fbbf24', fontSize: '0.8rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>❖</span>
             <span
               style={{
                 color: '#fef08a',
-                fontSize: 'clamp(0.72rem, 1.6vw, 0.82rem)',
+                fontSize: 'clamp(0.68rem, 1.4vw, 0.78rem)',
                 fontWeight: 900,
-                letterSpacing: '0.35em',
+                letterSpacing: '0.3em',
                 fontFamily: '"Cinzel", monospace',
                 textTransform: 'uppercase',
-                textShadow: '0 0 14px rgba(251,191,36,0.7), 0 2px 4px rgba(0,0,0,0.8)',
+                textShadow: '0 0 12px rgba(251,191,36,0.7), 0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
               斗罗大陆 • ĐẤU LA ĐẠI LỤC
             </span>
-            <span style={{ color: '#fbbf24', fontSize: '0.9rem', textShadow: '0 0 12px rgba(251,191,36,0.9)' }}>❖</span>
+            <span style={{ color: '#fbbf24', fontSize: '0.8rem', textShadow: '0 0 10px rgba(251,191,36,0.9)' }}>❖</span>
             <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, rgba(251,191,36,0.9), transparent)' }} />
           </div>
 
-          {/* Cinematic Epic Movie Title: TÔNG MÔN TRANH BÁ */}
+          {/* Cinematic Epic Movie Title: TÔNG MÔN TRANH BÁ (Properly clamped for landscape mobile) */}
           <h1
             className="soul-land-cinematic-title"
             style={{
-              fontSize: 'clamp(2.4rem, 7.8vw, 4.8rem)',
+              fontSize: 'clamp(1.6rem, 5.8vw, 3.8rem)',
               fontWeight: 900,
-              letterSpacing: '0.06em',
-              marginBottom: '0.6rem',
+              letterSpacing: '0.04em',
+              marginBottom: '0.35rem',
               lineHeight: 1.15,
               textTransform: 'uppercase',
               userSelect: 'none',
-              padding: '0 12px',
-              perspective: '1000px',
+              padding: '0 8px',
+              whiteSpace: 'nowrap',
             }}
           >
             TÔNG MÔN TRANH BÁ
@@ -247,13 +248,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
           <p
             className="soul-land-sub-text"
             style={{
-              fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
+              fontSize: 'clamp(0.68rem, 1.5vw, 0.82rem)',
               color: '#f8fafc',
-              letterSpacing: '0.34em',
+              letterSpacing: '0.28em',
               fontFamily: 'monospace',
-              marginBottom: '2.6rem',
+              marginBottom: '1.4rem',
               textTransform: 'uppercase',
-              textShadow: '0 2px 14px rgba(0,0,0,0.95), 0 0 14px rgba(251,191,36,0.4)',
+              textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 0 10px rgba(251,191,36,0.4)',
               fontWeight: 700,
             }}
           >
@@ -268,15 +269,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStartEnter, onEnte
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '16px 64px',
-              borderRadius: '18px',
+              padding: '12px 52px',
+              borderRadius: '16px',
               background: 'rgba(0, 0, 0, 0.45)',
               color: '#fbbf24',
-              fontSize: '1.15rem',
+              fontSize: '1rem',
               fontWeight: 900,
               border: '1.5px solid rgba(251,191,36,0.45)',
               cursor: 'pointer',
-              letterSpacing: '0.18em',
+              letterSpacing: '0.16em',
               fontFamily: '"Montserrat", sans-serif',
               backdropFilter: 'blur(14px)',
               transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
