@@ -11,6 +11,7 @@ import { SchedulerModal } from './components/admin/SchedulerModal';
 import { ParticipantManager } from './components/admin/ParticipantManager';
 import { LoginModal } from './components/common/LoginModal';
 import { SplashScreen } from './components/common/SplashScreen';
+import { RotatePrompt } from './components/common/RotatePrompt';
 import { Match, Participant } from './types/tournament';
 
 // YouTube video ID from: https://youtu.be/vYRvqbxaW8U
@@ -59,6 +60,29 @@ const MainApp: React.FC = () => {
   const ytPlayerRef = useRef<{ playVideo: () => void; pauseVideo: () => void; destroy: () => void } | null>(null);
   const ytReadyRef = useRef(false);
   const pendingPlayRef = useRef(false);
+
+  // Background Video Ref for guaranteed Mobile Autoplay Recovery
+  const bgVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const playBgVideo = () => {
+      if (bgVideoRef.current && bgVideoRef.current.paused) {
+        bgVideoRef.current.play().catch(() => {});
+      }
+    };
+
+    // Attempt autoplay immediately
+    playBgVideo();
+
+    // Auto-resume video on first mobile touch/click in case browser battery saver paused it
+    window.addEventListener('touchstart', playBgVideo, { once: true, passive: true });
+    window.addEventListener('click', playBgVideo, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', playBgVideo);
+      window.removeEventListener('click', playBgVideo);
+    };
+  }, []);
 
   // Load YouTube IFrame API once — triggered AFTER user clicks splash (isEntering)
   useEffect(() => {
@@ -134,6 +158,9 @@ const MainApp: React.FC = () => {
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-black overflow-x-hidden">
       
+      {/* Mobile Orientation Lock Prompt: Ask user to rotate phone to landscape for optimal experience */}
+      <RotatePrompt />
+
       {/* Splash Screen Vignette Overlay (fades away smoothly while video continues) */}
       {!hasEntered && (
         <SplashScreen
@@ -151,6 +178,7 @@ const MainApp: React.FC = () => {
 
       {/* Fullscreen Background Video — Hardware Accelerated 60FPS Mobile Stream */}
       <video
+        ref={bgVideoRef}
         autoPlay
         muted
         loop
