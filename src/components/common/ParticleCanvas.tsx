@@ -106,7 +106,7 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-60"
+      className="fixed inset-0 pointer-events-none z-[2] opacity-60"
     />
   );
 };

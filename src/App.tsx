@@ -138,8 +138,40 @@ const MainApp: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* Dynamic Background Particle System */}
+      {/* Fullscreen Background Video — muted, looping, seamless */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        <source src="/assets/bg-video.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay to keep UI readable over video */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.58)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Soul Power Particle System on top of video */}
       <ParticleCanvas theme={currentBracket?.theme || 'ocean'} />
+
 
       {/* Top Header with Login Modal Trigger */}
       <Header
