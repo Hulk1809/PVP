@@ -3,6 +3,7 @@ import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, Chev
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
+import { BlueSilverVineConnector } from './BlueSilverVineConnector';
 import { Match } from '../../types/tournament';
 import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerModal';
 import { getDivisionTheme } from '../../utils/themeStyles';
@@ -286,51 +287,120 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                     </p>
                   </div>
 
-                  {/* Matches Column */}
-                  <div className="flex flex-col justify-around flex-1 space-y-3 sm:space-y-6">
-                    {roundMatches.map((m) => {
-                      const p1 = m.player1Id ? participants[m.player1Id] : null;
-                      const p2 = m.player2Id ? participants[m.player2Id] : null;
+                  {/* Matches Column with Blue Silver Grass Tree Vines */}
+                  <div className="flex flex-col justify-around flex-1 space-y-4 sm:space-y-8">
+                    {(() => {
+                      if (isLastRound) {
+                        // Final match (single)
+                        const m = roundMatches[0];
+                        if (!m) return null;
+                        const p1 = m.player1Id ? participants[m.player1Id] : null;
+                        const p2 = m.player2Id ? participants[m.player2Id] : null;
+                        const isHighlighted =
+                          searchQuery.trim() !== '' &&
+                          ((p1 && p1.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            (p2 && p2.name.toLowerCase().includes(searchQuery.toLowerCase())));
 
-                      const isHighlighted =
-                        searchQuery.trim() !== '' &&
-                        ((p1 && p1.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          (p2 && p2.name.toLowerCase().includes(searchQuery.toLowerCase())));
+                        return (
+                          <div
+                            key={m.id}
+                            className={`relative transition-all duration-300 ${
+                              isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                            }`}
+                          >
+                            <MatchCard
+                              match={m}
+                              player1={p1}
+                              player2={p2}
+                              userRole={userRole}
+                              theme={currentBracket.theme}
+                              onAdvanceWinner={handleRequestAdvance}
+                              onResetMatch={handleRequestReset}
+                              onOpenScheduler={onOpenScheduler}
+                              onOpenMatchDetails={onOpenMatchDetails}
+                            />
+                          </div>
+                        );
+                      }
 
-                      return (
-                        <div
-                          key={m.id}
-                          className={`relative transition-all duration-300 ${
-                            isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
-                          }`}
-                        >
-                          <MatchCard
-                            match={m}
-                            player1={p1}
-                            player2={p2}
-                            userRole={userRole}
-                            theme={currentBracket.theme}
-                            onAdvanceWinner={handleRequestAdvance}
-                            onResetMatch={handleRequestReset}
-                            onOpenScheduler={onOpenScheduler}
-                            onOpenMatchDetails={onOpenMatchDetails}
-                          />
+                      // Group matches in pairs of 2
+                      const pairs: [Match, Match | undefined][] = [];
+                      for (let i = 0; i < roundMatches.length; i += 2) {
+                        pairs.push([roundMatches[i], roundMatches[i + 1]]);
+                      }
 
-                          {/* Clean Right-Angle Bracket Line to Next Round */}
-                          {!isLastRound && (
-                            <div className="hidden sm:block absolute top-1/2 -right-8 sm:-right-16 w-8 sm:w-16 h-[2px] -translate-y-1/2 pointer-events-none">
-                              <div
-                                className={`w-full h-full transition-all duration-300 ${
-                                  m.winnerId
-                                    ? `${themeConfig.connectorLineColor} shadow-sm`
-                                    : 'bg-white/15'
-                                }`}
+                      return pairs.map(([mTop, mBottom]) => {
+                        const p1Top = mTop.player1Id ? participants[mTop.player1Id] : null;
+                        const p2Top = mTop.player2Id ? participants[mTop.player2Id] : null;
+                        const isTopHighlighted =
+                          searchQuery.trim() !== '' &&
+                          ((p1Top && p1Top.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            (p2Top && p2Top.name.toLowerCase().includes(searchQuery.toLowerCase())));
+
+                        const p1Bottom = mBottom?.player1Id ? participants[mBottom.player1Id] : null;
+                        const p2Bottom = mBottom?.player2Id ? participants[mBottom.player2Id] : null;
+                        const isBottomHighlighted =
+                          Boolean(mBottom) &&
+                          searchQuery.trim() !== '' &&
+                          ((p1Bottom && p1Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            (p2Bottom && p2Bottom.name.toLowerCase().includes(searchQuery.toLowerCase())));
+
+                        return (
+                          <div
+                            key={mTop.id}
+                            className="relative flex flex-col justify-around space-y-3 sm:space-y-6"
+                          >
+                            {/* Top Match in Pair */}
+                            <div
+                              className={`relative transition-all duration-300 ${
+                                isTopHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                              }`}
+                            >
+                              <MatchCard
+                                match={mTop}
+                                player1={p1Top}
+                                player2={p2Top}
+                                userRole={userRole}
+                                theme={currentBracket.theme}
+                                onAdvanceWinner={handleRequestAdvance}
+                                onResetMatch={handleRequestReset}
+                                onOpenScheduler={onOpenScheduler}
+                                onOpenMatchDetails={onOpenMatchDetails}
                               />
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
+
+                            {/* Bottom Match in Pair */}
+                            {mBottom && (
+                              <div
+                                className={`relative transition-all duration-300 ${
+                                  isBottomHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
+                                }`}
+                              >
+                                <MatchCard
+                                  match={mBottom}
+                                  player1={p1Bottom}
+                                  player2={p2Bottom}
+                                  userRole={userRole}
+                                  theme={currentBracket.theme}
+                                  onAdvanceWinner={handleRequestAdvance}
+                                  onResetMatch={handleRequestReset}
+                                  onOpenScheduler={onOpenScheduler}
+                                  onOpenMatchDetails={onOpenMatchDetails}
+                                />
+                              </div>
+                            )}
+
+                            {/* Dây Lam Ngân Thảo Liên Kết Sang Vòng Tiếp Theo */}
+                            <BlueSilverVineConnector
+                              hasTopWinner={Boolean(mTop.winnerId)}
+                              hasBottomWinner={Boolean(mBottom?.winnerId)}
+                              isSingle={!mBottom}
+                              theme={currentBracket.theme}
+                            />
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
 
                 </div>
