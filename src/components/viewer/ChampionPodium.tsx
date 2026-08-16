@@ -3,12 +3,15 @@ import { Trophy, Medal, Crown, Sparkles, Swords } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { Participant } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
+import { getDivisionTheme } from '../../utils/themeStyles';
 
 export const ChampionPodium: React.FC = () => {
   const { brackets, participants, matches, selectedBracketId } = useTournament();
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
+
+  const themeConfig = getDivisionTheme(currentBracket.theme);
 
   const bracketMatches = Object.values(matches).filter((m) => m.bracketId === selectedBracketId);
   const finalMatch = bracketMatches.find(
@@ -34,10 +37,10 @@ export const ChampionPodium: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Header in Soul Land Platinum Silver */}
+      {/* Header with Division Theme Aesthetics */}
       <div className="text-center space-y-2.5">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/10 text-slate-200 border border-white/20 backdrop-blur-md shadow-md">
-          <Trophy className="w-4 h-4 text-slate-200" />
+        <div className={`inline-flex items-center space-x-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${themeConfig.roundBadgeBg} ${themeConfig.roundBadgeBorder} ${themeConfig.roundBadgeText} ${themeConfig.roundBadgeShadow} backdrop-blur-md border shadow-md`}>
+          <Trophy className="w-4 h-4 text-current" />
           <span>Vinh Danh Đỉnh Phong • {currentBracket.name}</span>
         </div>
         
@@ -46,7 +49,7 @@ export const ChampionPodium: React.FC = () => {
           style={{
             fontFamily: '"Playfair Display", "Cinzel Decorative", serif',
             fontStyle: 'italic',
-            background: 'linear-gradient(110deg, #94a3b8 0%, #cbd5e1 20%, #ffffff 40%, #f8fafc 55%, #cbd5e1 75%, #64748b 100%)',
+            background: themeConfig.titleGradient,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             WebkitTextStroke: '0.6px rgba(255, 255, 255, 0.9)',
@@ -57,11 +60,11 @@ export const ChampionPodium: React.FC = () => {
         </h2>
         
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-sans drop-shadow">
-          Bảng vàng vinh danh những hồn sư xuất sắc nhất đã vượt qua các ải tử chiến để ghi tên lên đỉnh cao Thần vị.
+          {themeConfig.elementName} • Bảng vàng vinh danh những hồn sư xuất sắc nhất đã vượt qua các ải tử chiến để ghi tên lên đỉnh cao Thần vị.
         </p>
       </div>
 
-      {/* Podium Display (Platinum Silver Theme) */}
+      {/* Podium Display (Themed for each Division) */}
       <div className="relative max-w-4xl mx-auto pt-6 pb-4">
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
@@ -99,7 +102,7 @@ export const ChampionPodium: React.FC = () => {
             </div>
           </div>
 
-          {/* 🥇 1st Place: Quán Quân (Radiant Platinum Silver Chrome - Elevated Center) */}
+          {/* 🥇 1st Place: Quán Quân (Radiant Champion Pillar - Elevated Center) */}
           <div className="flex flex-col items-center order-1 md:order-2">
             <div className="flex flex-col items-center mb-3">
               <div className="mb-1 text-white" style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.9))' }}>
@@ -110,7 +113,7 @@ export const ChampionPodium: React.FC = () => {
                 {champion ? (
                   <PlayerAvatar name={champion.name} size="xl" />
                 ) : (
-                  <div className="w-20 h-20 rounded-xl bg-black/70 border-2 border-white/60 backdrop-blur-md flex items-center justify-center text-slate-200 font-black text-2xl shadow-lg shadow-white/20">
+                  <div className={`w-20 h-20 rounded-xl bg-black/70 border-2 ${themeConfig.cardBorder} backdrop-blur-md flex items-center justify-center text-slate-200 font-black text-2xl shadow-lg ${themeConfig.roundBadgeShadow}`}>
                     ?
                   </div>
                 )}
@@ -129,11 +132,11 @@ export const ChampionPodium: React.FC = () => {
               </div>
             </div>
 
-            {/* Podium Pillar Platinum */}
-            <div className="w-full h-44 rounded-t-xl bg-gradient-to-b from-white/30 via-slate-800/90 to-black/95 border-t-2 border-l border-r border-white flex flex-col items-center justify-center shadow-2xl shadow-white/20 backdrop-blur-md">
+            {/* Podium Pillar Themed */}
+            <div className={`w-full h-44 rounded-t-xl bg-gradient-to-b from-white/30 via-slate-800/90 to-black/95 border-t-2 border-l border-r border-white flex flex-col items-center justify-center shadow-2xl ${themeConfig.roundBadgeShadow} backdrop-blur-md`}>
               <span className="text-3xl font-black text-white font-heading drop-shadow(0 0 16px rgba(255,255,255,0.9))">1</span>
               <span className="text-xs font-black uppercase tracking-widest text-white mt-0.5 drop-shadow">QUÁN QUÂN</span>
-              <span className="text-[9px] font-bold text-slate-300 font-mono tracking-wider">BẠCH KIM CHI VƯƠNG</span>
+              <span className="text-[9px] font-bold text-slate-300 font-mono tracking-wider">{themeConfig.title.toUpperCase()}</span>
             </div>
           </div>
 

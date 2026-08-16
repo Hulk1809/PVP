@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { DivisionTheme } from '../../types/tournament';
+import { getDivisionTheme } from '../../utils/themeStyles';
 
 interface ParticleCanvasProps {
   theme: DivisionTheme;
@@ -40,14 +41,8 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
     window.addEventListener('resize', handleResize, { passive: true });
     window.addEventListener('orientationchange', handleResize, { passive: true });
 
-    // Soul Land Platinum Silver & Celestial Soul Energy Palettes
-    const themeColors: Record<DivisionTheme, string[]> = {
-      ocean: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#38bdf8', '#94a3b8'],
-      forest: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#60a5fa', '#94a3b8'],
-      village: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#a78bfa', '#94a3b8'],
-    };
-
-    const colors = themeColors[theme] || themeColors.ocean;
+    const themeConfig = getDivisionTheme(theme);
+    const colors = themeConfig.particleColors;
     // Lower count on mobile to keep 60 FPS
     const particleCount = isMobile ? 16 : 32;
     const particles: Particle[] = [];

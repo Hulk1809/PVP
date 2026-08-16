@@ -5,6 +5,7 @@ import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
 import { Match } from '../../types/tournament';
 import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerModal';
+import { getDivisionTheme } from '../../utils/themeStyles';
 
 interface BracketBoardProps {
   onOpenScheduler: (match: Match) => void;
@@ -269,14 +270,15 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
               const roundMatches = roundsMap[roundNumber];
               const roundName = roundMatches[0]?.roundName || `Vòng ${roundNumber}`;
               const isLastRound = rIdx === sortedRounds.length - 1;
+              const themeConfig = getDivisionTheme(currentBracket.theme);
 
               return (
                 <div key={roundNumber} className="flex flex-col items-center">
                   
-                  {/* Round Column Header */}
+                  {/* Round Column Header styled by division theme */}
                   <div className="mb-2 sm:mb-5 text-center">
-                    <div className="inline-flex items-center space-x-1.5 px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider bg-black/45 backdrop-blur-md border border-white/25 text-slate-200 shadow-md">
-                      <Swords className="w-3 h-3 text-slate-200" />
+                    <div className={`inline-flex items-center space-x-1.5 px-3.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider ${themeConfig.roundBadgeBg} ${themeConfig.roundBadgeBorder} ${themeConfig.roundBadgeText} ${themeConfig.roundBadgeShadow} backdrop-blur-md border shadow-md`}>
+                      <Swords className="w-3 h-3 text-current" />
                       <span>{roundName}</span>
                     </div>
                     <p className="text-[9px] sm:text-[10px] text-zinc-300 mt-0.5 font-mono drop-shadow">
@@ -299,7 +301,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                         <div
                           key={m.id}
                           className={`relative transition-all duration-300 ${
-                            isHighlighted ? 'scale-105 ring-2 ring-amber-400 rounded-xl' : ''
+                            isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
                           }`}
                         >
                           <MatchCard
@@ -307,6 +309,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                             player1={p1}
                             player2={p2}
                             userRole={userRole}
+                            theme={currentBracket.theme}
                             onAdvanceWinner={handleRequestAdvance}
                             onResetMatch={handleRequestReset}
                             onOpenScheduler={onOpenScheduler}
@@ -315,12 +318,12 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
                           {/* Clean Right-Angle Bracket Line to Next Round */}
                           {!isLastRound && (
-                            <div className="hidden sm:block absolute top-1/2 -right-12 sm:-right-16 w-12 sm:w-16 h-[2px] -translate-y-1/2 pointer-events-none">
+                            <div className="hidden sm:block absolute top-1/2 -right-8 sm:-right-16 w-8 sm:w-16 h-[2px] -translate-y-1/2 pointer-events-none">
                               <div
                                 className={`w-full h-full transition-all duration-300 ${
                                   m.winnerId
-                                    ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                                    : 'bg-zinc-800'
+                                    ? `${themeConfig.connectorLineColor} shadow-sm`
+                                    : 'bg-white/15'
                                 }`}
                               />
                             </div>

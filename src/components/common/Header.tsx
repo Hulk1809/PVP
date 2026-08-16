@@ -1,7 +1,8 @@
 import React from 'react';
 import { Swords, Volume2, VolumeX, Trophy, Users, LogIn, LogOut, ShieldCheck, Flame } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
-import { BracketId } from '../../types/tournament';
+import { BracketId, DivisionTheme } from '../../types/tournament';
+import { getDivisionTheme } from '../../utils/themeStyles';
 
 interface HeaderProps {
   activeTab: 'bracket' | 'roster' | 'podium';
@@ -20,21 +21,24 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
     toggleSound,
   } = useTournament();
 
-  const divisionTabs: { id: BracketId; label: string; badge: string }[] = [
+  const divisionTabs: { id: BracketId; label: string; badge: string; theme: DivisionTheme }[] = [
     {
       id: 'bracket-a',
       label: 'Bảng A',
       badge: 'Tối Thượng > 50',
+      theme: 'ocean',
     },
     {
       id: 'bracket-b',
       label: 'Bảng B',
       badge: 'Tối Thượng < 10',
+      theme: 'forest',
     },
     {
       id: 'bracket-c',
       label: 'Bảng C',
       badge: 'Rực Rỡ',
+      theme: 'village',
     },
   ];
 
@@ -81,13 +85,14 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
           <nav className="flex items-center p-0.5 sm:p-1 rounded-xl sm:rounded-2xl bg-black/35 backdrop-blur-md border border-white/15 shadow-lg">
             {divisionTabs.map((tab) => {
               const isSelected = selectedBracketId === tab.id;
+              const tabTheme = getDivisionTheme(tab.theme);
               return (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedBracketId(tab.id)}
                   className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold transition-all ${
                     isSelected
-                      ? 'bg-gradient-to-r from-slate-200 to-white text-zinc-950 font-black shadow-md shadow-white/20'
+                      ? `${tabTheme.tabActiveBg} ${tabTheme.tabActiveGlow} shadow-md`
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -161,19 +166,23 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
           
           {/* Mobile Division Selector */}
           <div className="flex md:hidden items-center space-x-1 overflow-x-auto py-0.5 no-scrollbar">
-            {divisionTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedBracketId(tab.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap backdrop-blur-md ${
-                  selectedBracketId === tab.id
-                    ? 'bg-slate-200 text-zinc-950 font-bold shadow-md shadow-white/20'
-                    : 'bg-black/35 text-slate-300 border border-white/10'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {divisionTabs.map((tab) => {
+              const isSelected = selectedBracketId === tab.id;
+              const tabTheme = getDivisionTheme(tab.theme);
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedBracketId(tab.id)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap backdrop-blur-md transition-all ${
+                    isSelected
+                      ? `${tabTheme.tabActiveBg} ${tabTheme.tabActiveGlow} shadow-md`
+                      : 'bg-black/35 text-slate-300 border border-white/10'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* View Tabs (Transparent Floating Glass) */}

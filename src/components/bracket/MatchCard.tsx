@@ -1,13 +1,15 @@
 import React from 'react';
 import { Clock, Trophy, Edit3, Crown, RotateCcw, Swords, Sparkles } from 'lucide-react';
-import { Match, Participant, UserRole } from '../../types/tournament';
+import { Match, Participant, UserRole, DivisionTheme } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
+import { getDivisionTheme } from '../../utils/themeStyles';
 
 interface MatchCardProps {
   match: Match;
   player1: Participant | null;
   player2: Participant | null;
   userRole: UserRole;
+  theme?: DivisionTheme;
   onAdvanceWinner: (matchId: string, winnerId: string) => void;
   onResetMatch: (matchId: string) => void;
   onOpenScheduler: (match: Match) => void;
@@ -19,11 +21,13 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   player1,
   player2,
   userRole,
+  theme = 'ocean',
   onAdvanceWinner,
   onResetMatch,
   onOpenScheduler,
   onOpenMatchDetails,
 }) => {
+  const themeConfig = getDivisionTheme(theme);
   const isCompleted = match.status === 'completed';
   const isBye = match.status === 'bye';
   const isLive = match.status === 'live';
@@ -39,22 +43,22 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   return (
     <div
       onClick={() => onOpenMatchDetails(match.id)}
-      className={`group relative w-64 sm:w-72 rounded-xl transition-all duration-200 cursor-pointer overflow-hidden border backdrop-blur-md ${
+      className={`group relative w-64 sm:w-72 rounded-xl transition-all duration-200 cursor-pointer overflow-hidden border backdrop-blur-md shadow-lg ${
         isCompleted
-          ? 'bg-black/65 border-white/20 shadow-md'
+          ? `${themeConfig.cardBg} border-white/20 shadow-md`
           : isLive
-          ? 'bg-black/80 border-white/60 shadow-lg shadow-white/15'
+          ? `${themeConfig.cardBg} border-white/80 ${themeConfig.tabActiveGlow} ring-1 ring-white/50`
           : isBye
           ? 'bg-black/45 border-white/10 opacity-80'
-          : 'bg-black/55 border-white/15 hover:border-white/40 hover:bg-black/75'
+          : `${themeConfig.cardBg} ${themeConfig.cardBorder} ${themeConfig.cardHoverBorder} hover:bg-black/80`
       }`}
     >
       {/* Top Meta Bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-black/60 border-b border-white/10 text-[10px] text-zinc-400">
+      <div className={`flex items-center justify-between px-3 py-1.5 ${themeConfig.cardTopBarBg} border-b ${themeConfig.cardTopBarBorder} text-[10px] text-zinc-400`}>
         <div className="flex items-center space-x-1.5">
           <Clock className="w-3 h-3 text-slate-400" />
-          <span className="font-mono">{timeString}</span>
-          <span>•</span>
+          <span className="font-mono text-slate-300">{timeString}</span>
+          <span className="text-slate-500">•</span>
           <span className="font-semibold text-slate-300">
             {match.bestOf === 1 ? 'Bo1' : match.bestOf === 3 ? 'Bo3' : 'Bo5'}
           </span>
@@ -67,8 +71,8 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             </span>
           )}
           {isLive && (
-            <span className="flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-white/20 text-white border border-white/40 animate-pulse shadow-sm shadow-white/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-white"></span> LIVE
+            <span className={`flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${themeConfig.liveBadgeBg} ${themeConfig.liveBadgeText} ${themeConfig.liveBadgeBorder} animate-pulse shadow-sm`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current"></span> LIVE
             </span>
           )}
           {isBye && (
@@ -95,7 +99,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       {/* Contestant 1 Row */}
       <div
         className={`flex items-center justify-between px-3 py-2 border-b border-white/10 transition-colors ${
-          isP1Winner ? 'bg-white/15 font-bold' : isCompleted && !isP1Winner ? 'opacity-40' : ''
+          isP1Winner ? `${themeConfig.winnerRowBg} font-bold` : isCompleted && !isP1Winner ? 'opacity-40' : ''
         }`}
       >
         <div className="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
@@ -138,7 +142,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           <div
             className={`w-6 h-6 rounded flex items-center justify-center font-mono text-xs font-bold border ${
               isP1Winner
-                ? 'bg-gradient-to-br from-slate-200 to-white text-zinc-950 border-white shadow-sm shadow-white/30'
+                ? themeConfig.winnerScoreBg
                 : 'bg-black/60 text-slate-300 border-white/10'
             }`}
           >
@@ -150,7 +154,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       {/* Contestant 2 Row */}
       <div
         className={`flex items-center justify-between px-3 py-2 transition-colors ${
-          isP2Winner ? 'bg-white/15 font-bold' : isCompleted && !isP2Winner ? 'opacity-40' : ''
+          isP2Winner ? `${themeConfig.winnerRowBg} font-bold` : isCompleted && !isP2Winner ? 'opacity-40' : ''
         }`}
       >
         <div className="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
@@ -195,7 +199,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           <div
             className={`w-6 h-6 rounded flex items-center justify-center font-mono text-xs font-bold border ${
               isP2Winner
-                ? 'bg-gradient-to-br from-slate-200 to-white text-zinc-950 border-white shadow-sm shadow-white/30'
+                ? themeConfig.winnerScoreBg
                 : 'bg-black/60 text-slate-300 border-white/10'
             }`}
           >
