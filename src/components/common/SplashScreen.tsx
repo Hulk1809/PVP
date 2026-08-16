@@ -5,22 +5,17 @@ interface SplashScreenProps {
   onEnter: () => void;
 }
 
-type Phase = 'loop' | 'action' | 'flash' | 'done';
+type Phase = 'idle' | 'action' | 'flash' | 'done';
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
-  const [phase, setPhase] = useState<Phase>('loop');
-  const loopRef = useRef<HTMLVideoElement>(null);
+  const [phase, setPhase] = useState<Phase>('idle');
   const actionRef = useRef<HTMLVideoElement>(null);
   const calledRef = useRef(false);
   const flashTriggeredRef = useRef(false);
   const finishTimerRef = useRef<number | null>(null);
-  const introPlayedRef = useRef(false);
 
   // Preload the action video silently so it's ready
   useEffect(() => {
-    if (loopRef.current) {
-      loopRef.current.load();
-    }
     if (actionRef.current) {
       actionRef.current.load();
     }
@@ -33,16 +28,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
   }, []);
 
   const handleEnter = () => {
-    if (phase !== 'loop') return;
+    if (phase !== 'idle') return;
 
-    introPlayedRef.current = true;
     flashTriggeredRef.current = false;
     setPhase('action');
-
-    if (loopRef.current) {
-      loopRef.current.pause();
-      loopRef.current.currentTime = 0;
-    }
 
     const vid = actionRef.current;
     if (!vid) { finish(); return; }
@@ -146,6 +135,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         .splash-badges { animation: fadeInUp 0.7s 0.5s both; }
         .splash-btn    { animation: glowPulse 2s ease-in-out infinite, fadeInUp 0.7s 0.7s both; }
         .splash-hint   { animation: hintPulse 1.8s ease-in-out infinite; }
+        .splash-stage  { animation: fadeInUp 0.6s ease both; }
       `}</style>
 
       {/* === OUTER WRAPPER — fades out when done === */}
@@ -156,26 +146,27 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         pointerEvents: phase === 'done' ? 'none' : 'auto',
       }}>
 
-        {/* ─── VIDEO 1: LOOP (idle stance) ─── */}
-        <video
-          ref={loopRef}
-          autoPlay muted playsInline preload="auto"
-          onEnded={() => {
-            if (phase !== 'loop' || introPlayedRef.current) return;
-            handleEnter();
-          }}
+        {/* ─── STATIC INTRO STAGE (no first video) ─── */}
+        <div
+          className="splash-stage"
           style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover',
-            opacity: phase === 'loop' ? 1 : 0,
-            transform: 'scale(1.04)',
-            transition: 'opacity 0.35s ease, transform 0.25s ease',
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at center, rgba(120, 53, 15, 0.3) 0%, rgba(2, 6, 23, 0.92) 58%, rgba(2, 6, 23, 1) 100%)',
+            transform: 'scale(1.01)',
             zIndex: 0,
           }}
-        >
-          <source src="/assets/splash-loop.mp4" type="video/mp4" />
-        </video>
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.65) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
 
         {/* ─── VIDEO 2: ACTION (fly & clash) ─── */}
         <video
@@ -186,10 +177,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
             width: '100%', height: '100%',
             objectFit: 'cover',
             opacity: phase === 'action' || phase === 'flash' || phase === 'done' ? 1 : 0,
-            transform: phase === 'action' || phase === 'flash' ? 'scale(1.06)' : 'scale(1.02)',
+            transform: phase === 'action' || phase === 'flash' ? 'scale(1.08)' : 'scale(1.02)',
             animation: phase === 'action' ? 'sceneShake 1.3s ease-out both' : undefined,
             transition: 'opacity 0.18s, transform 0.2s, filter 0.2s',
-            zIndex: 1,
+            zIndex: 2,
           }}
         >
           <source src="/assets/splash-action.mp4" type="video/mp4" />
@@ -206,8 +197,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
           }} />
         )}
 
-        {/* ─── DARK OVERLAY + UI (only during loop phase) ─── */}
-        {phase === 'loop' && (
+        {/* ─── DARK OVERLAY + UI (only during idle phase) ─── */}
+        {phase === 'idle' && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 5,
             background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)',
