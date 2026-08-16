@@ -69,9 +69,9 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
         <div className="relative w-full max-w-2xl rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden">
           
           {/* Modal Header */}
-          <div className="flex items-center justify-between px-6 py-4 bg-zinc-900/90 border-b border-zinc-800">
+          <div className="flex items-center justify-between px-6 py-4 bg-zinc-900/90 border-b border-white/10">
             <div className="flex items-center space-x-2">
-              <Swords className="w-5 h-5 text-amber-400" />
+              <Swords className="w-5 h-5 text-slate-200" />
               <h3 className="text-base sm:text-lg font-bold text-white font-heading">
                 {match.roundName} {match.isThirdPlaceMatch ? '(Tranh Hạng Ba)' : ''}
               </h3>
@@ -79,7 +79,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -89,22 +89,22 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
           <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
             
             {/* Match Info Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs">
-              <div className="flex items-center space-x-2 text-zinc-300">
-                <Clock className="w-4 h-4 text-amber-400" />
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-black/60 border border-white/15 text-xs">
+              <div className="flex items-center space-x-2 text-slate-300">
+                <Clock className="w-4 h-4 text-slate-300" />
                 <span>Thời gian: {formattedTime}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="px-2.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
+                <span className="px-2.5 py-0.5 rounded bg-white/10 text-slate-200 font-mono border border-white/10">
                   {match.bestOf === 1 ? 'Bo1' : match.bestOf === 3 ? 'Bo3' : 'Bo5'}
                 </span>
                 <span
                   className={`px-2.5 py-0.5 rounded font-semibold ${
                     match.status === 'completed'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      ? 'bg-white/20 text-slate-100 border border-white/40'
                       : match.status === 'live'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse'
-                      : 'bg-zinc-800 text-zinc-400'
+                      ? 'bg-white/25 text-white border border-white/50 animate-pulse shadow-sm'
+                      : 'bg-black/50 text-slate-400 border border-white/10'
                   }`}
                 >
                   {match.status === 'completed'
@@ -119,19 +119,19 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
             </div>
 
             {/* Score & VS Banner */}
-            <div className="flex items-center justify-around py-4 px-6 rounded-2xl bg-zinc-900 border border-zinc-800">
+            <div className="flex items-center justify-around py-4 px-6 rounded-2xl bg-black/65 border border-white/15 backdrop-blur-md">
               <div className="text-center">
                 <p className="text-3xl font-black text-white font-mono">{match.player1Score}</p>
-                <p className="text-xs text-zinc-400 mt-1">{p1?.name || 'Đang chờ'}</p>
+                <p className="text-xs text-slate-300 mt-1">{p1?.name || 'Đang chờ'}</p>
               </div>
 
-              <div className="px-4 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-xs">
+              <div className="px-4 py-1.5 rounded-full bg-white/15 text-white border border-white/30 font-bold text-xs shadow-sm">
                 VS
               </div>
 
               <div className="text-center">
                 <p className="text-3xl font-black text-white font-mono">{match.player2Score}</p>
-                <p className="text-xs text-zinc-400 mt-1">{p2?.name || 'Đang chờ'}</p>
+                <p className="text-xs text-slate-300 mt-1">{p2?.name || 'Đang chờ'}</p>
               </div>
             </div>
 
@@ -142,8 +142,8 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   match.winnerId === p1?.id
-                    ? 'bg-amber-500/10 border-amber-500/60 shadow-md'
-                    : 'bg-zinc-900/60 border-zinc-800'
+                    ? 'bg-white/15 border-white/60 shadow-lg shadow-white/10'
+                    : 'bg-black/50 border-white/15'
                 }`}
               >
                 {p1 ? (
@@ -153,16 +153,16 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                       <div>
                         <div className="flex items-center space-x-1.5">
                           <h4 className="text-sm font-bold text-white font-heading">{p1.name}</h4>
-                          {match.winnerId === p1.id && <Crown className="w-4 h-4 text-amber-400" />}
+                          {match.winnerId === p1.id && <Crown className="w-4 h-4 text-white drop-shadow" />}
                         </div>
-                        <p className="text-xs text-zinc-400">{p1.sect}</p>
-                        <p className="text-[11px] text-zinc-500 font-mono">Hạt giống #{p1.seedRank}</p>
+                        <p className="text-xs text-slate-300">{p1.sect}</p>
+                        <p className="text-[11px] text-slate-400 font-mono">Hạt giống #{p1.seedRank}</p>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5 text-xs text-zinc-300 pt-2 border-t border-zinc-800">
-                      <p><span className="text-zinc-500">Võ Hồn:</span> {p1.martialSoul}</p>
-                      <p><span className="text-zinc-500">Cấp bậc:</span> Lv.{p1.soulLevel} ({p1.soulRank})</p>
+                    <div className="space-y-1.5 text-xs text-slate-200 pt-2 border-t border-white/10">
+                      <p><span className="text-slate-400">Võ Hồn:</span> {p1.martialSoul}</p>
+                      <p><span className="text-slate-400">Cấp bậc:</span> Lv.{p1.soulLevel} ({p1.soulRank})</p>
                     </div>
 
                     {/* Fan Prediction Vote Button */}
@@ -170,8 +170,8 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                       onClick={() => handleVote(p1.id)}
                       className={`w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 border transition-all ${
                         votedPlayer === p1.id
-                          ? 'bg-amber-500 text-zinc-950 font-bold border-amber-400'
-                          : 'bg-zinc-950 text-zinc-300 hover:bg-zinc-800 border-zinc-800'
+                          ? 'bg-gradient-to-r from-slate-200 to-white text-zinc-950 font-bold border-white shadow-sm'
+                          : 'bg-black/60 text-slate-300 hover:bg-white/10 border-white/15'
                       }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
@@ -182,7 +182,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     {userRole === 'admin' && p2 && match.winnerId !== p1.id && (
                       <button
                         onClick={() => handleRequestAdvance(p1.id)}
-                        className="w-full py-2 rounded-lg text-xs font-bold bg-amber-500 text-zinc-950 hover:bg-amber-400 flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition-all"
+                        className="w-full py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-slate-200 to-white text-zinc-950 hover:from-white hover:to-slate-100 flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition-all border border-white/30"
                       >
                         <Trophy className="w-3.5 h-3.5" />
                         <span>{match.status === 'completed' ? `Đổi Người Thắng: ${p1.name}` : `Xác nhận ${p1.name} Thắng`}</span>
@@ -190,7 +190,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     )}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-zinc-500 italic text-xs">
+                  <div className="py-8 text-center text-slate-500 italic text-xs">
                     Chưa xác định tuyển thủ 1
                   </div>
                 )}
@@ -200,8 +200,8 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   match.winnerId === p2?.id
-                    ? 'bg-amber-500/10 border-amber-500/60 shadow-md'
-                    : 'bg-zinc-900/60 border-zinc-800'
+                    ? 'bg-white/15 border-white/60 shadow-lg shadow-white/10'
+                    : 'bg-black/50 border-white/15'
                 }`}
               >
                 {p2 ? (
@@ -211,16 +211,16 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                       <div>
                         <div className="flex items-center space-x-1.5">
                           <h4 className="text-sm font-bold text-white font-heading">{p2.name}</h4>
-                          {match.winnerId === p2.id && <Crown className="w-4 h-4 text-amber-400" />}
+                          {match.winnerId === p2.id && <Crown className="w-4 h-4 text-white drop-shadow" />}
                         </div>
-                        <p className="text-xs text-zinc-400">{p2.sect}</p>
-                        <p className="text-[11px] text-zinc-500 font-mono">Hạt giống #{p2.seedRank}</p>
+                        <p className="text-xs text-slate-300">{p2.sect}</p>
+                        <p className="text-[11px] text-slate-400 font-mono">Hạt giống #{p2.seedRank}</p>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5 text-xs text-zinc-300 pt-2 border-t border-zinc-800">
-                      <p><span className="text-zinc-500">Võ Hồn:</span> {p2.martialSoul}</p>
-                      <p><span className="text-zinc-500">Cấp bậc:</span> Lv.{p2.soulLevel} ({p2.soulRank})</p>
+                    <div className="space-y-1.5 text-xs text-slate-200 pt-2 border-t border-white/10">
+                      <p><span className="text-slate-400">Võ Hồn:</span> {p2.martialSoul}</p>
+                      <p><span className="text-slate-400">Cấp bậc:</span> Lv.{p2.soulLevel} ({p2.soulRank})</p>
                     </div>
 
                     {/* Fan Prediction Vote Button */}
@@ -228,8 +228,8 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                       onClick={() => handleVote(p2.id)}
                       className={`w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 border transition-all ${
                         votedPlayer === p2.id
-                          ? 'bg-amber-500 text-zinc-950 font-bold border-amber-400'
-                          : 'bg-zinc-950 text-zinc-300 hover:bg-zinc-800 border-zinc-800'
+                          ? 'bg-gradient-to-r from-slate-200 to-white text-zinc-950 font-bold border-white shadow-sm'
+                          : 'bg-black/60 text-slate-300 hover:bg-white/10 border-white/15'
                       }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
@@ -240,7 +240,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     {userRole === 'admin' && p1 && match.winnerId !== p2.id && (
                       <button
                         onClick={() => handleRequestAdvance(p2.id)}
-                        className="w-full py-2 rounded-lg text-xs font-bold bg-amber-500 text-zinc-950 hover:bg-amber-400 flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition-all"
+                        className="w-full py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-slate-200 to-white text-zinc-950 hover:from-white hover:to-slate-100 flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition-all border border-white/30"
                       >
                         <Trophy className="w-3.5 h-3.5" />
                         <span>{match.status === 'completed' ? `Đổi Người Thắng: ${p2.name}` : `Xác nhận ${p2.name} Thắng`}</span>
@@ -248,7 +248,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
                     )}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-zinc-500 italic text-xs">
+                  <div className="py-8 text-center text-slate-500 italic text-xs">
                     Chưa xác định tuyển thủ 2
                   </div>
                 )}

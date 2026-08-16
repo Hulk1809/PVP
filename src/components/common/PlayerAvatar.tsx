@@ -15,12 +15,12 @@ function getPlayerTheme(name: string) {
   }
 
   const themes = [
-    { bg: 'from-amber-600 to-yellow-800', border: 'border-amber-500/60', text: 'text-amber-300', glow: 'shadow-amber-500/20' },
-    { bg: 'from-cyan-600 to-blue-800', border: 'border-cyan-500/60', text: 'text-cyan-300', glow: 'shadow-cyan-500/20' },
-    { bg: 'from-emerald-600 to-teal-800', border: 'border-emerald-500/60', text: 'text-emerald-300', glow: 'shadow-emerald-500/20' },
-    { bg: 'from-purple-600 to-indigo-800', border: 'border-purple-500/60', text: 'text-purple-300', glow: 'shadow-purple-500/20' },
-    { bg: 'from-rose-600 to-red-800', border: 'border-rose-500/60', text: 'text-rose-300', glow: 'shadow-rose-500/20' },
-    { bg: 'from-orange-600 to-amber-800', border: 'border-orange-500/60', text: 'text-orange-300', glow: 'shadow-orange-500/20' },
+    { bg: 'from-slate-400 via-slate-600 to-zinc-800', border: 'border-white/50', text: 'text-white', glow: 'shadow-white/10' },
+    { bg: 'from-slate-500 via-zinc-700 to-zinc-900', border: 'border-slate-300/60', text: 'text-slate-100', glow: 'shadow-slate-300/10' },
+    { bg: 'from-sky-700 via-slate-800 to-zinc-950', border: 'border-sky-300/60', text: 'text-sky-100', glow: 'shadow-sky-400/10' },
+    { bg: 'from-purple-800 via-slate-800 to-zinc-950', border: 'border-purple-300/60', text: 'text-purple-100', glow: 'shadow-purple-400/10' },
+    { bg: 'from-zinc-600 via-zinc-800 to-black', border: 'border-slate-400/60', text: 'text-white', glow: 'shadow-white/10' },
+    { bg: 'from-indigo-800 via-slate-800 to-black', border: 'border-indigo-300/60', text: 'text-indigo-100', glow: 'shadow-indigo-400/10' },
   ];
 
   const index = Math.abs(hash) % themes.length;

@@ -198,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
                   : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Trophy className="w-3.5 h-3.5 text-yellow-300" />
+              <Trophy className="w-3.5 h-3.5 text-slate-200" />
               <span>Vinh Danh</span>
             </button>
 
@@ -210,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
                   : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Users className="w-3.5 h-3.5 text-cyan-300" />
+              <Users className="w-3.5 h-3.5 text-slate-200" />
               <span>Danh Sách Tuyển Thủ</span>
             </button>
           </div>

@@ -40,11 +40,11 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({ theme }) => {
     window.addEventListener('resize', handleResize, { passive: true });
     window.addEventListener('orientationchange', handleResize, { passive: true });
 
-    // Color palettes by theme
+    // Soul Land Platinum Silver & Celestial Soul Energy Palettes
     const themeColors: Record<DivisionTheme, string[]> = {
-      ocean: ['#06b6d4', '#38bdf8', '#f59e0b', '#0284c7', '#fbbf24'],
-      forest: ['#10b981', '#34d399', '#ef4444', '#059669', '#f87171'],
-      village: ['#84cc16', '#a3e635', '#f8fafc', '#65a30d', '#facc15'],
+      ocean: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#38bdf8', '#94a3b8'],
+      forest: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#60a5fa', '#94a3b8'],
+      village: ['#ffffff', '#f8fafc', '#e2e8f0', '#cbd5e1', '#a78bfa', '#94a3b8'],
     };
 
     const colors = themeColors[theme] || themeColors.ocean;
