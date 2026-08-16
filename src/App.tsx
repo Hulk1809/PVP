@@ -11,7 +11,6 @@ import { SchedulerModal } from './components/admin/SchedulerModal';
 import { ParticipantManager } from './components/admin/ParticipantManager';
 import { LoginModal } from './components/common/LoginModal';
 import { Match, Participant } from './types/tournament';
-import { ShieldCheck, Sparkles } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { brackets, selectedBracketId } = useTournament();
@@ -95,35 +94,6 @@ const MainApp: React.FC = () => {
         onClose={() => setIsParticipantModalOpen(false)}
         participantToEdit={participantToEdit}
       />
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-900 bg-slate-950/90 backdrop-blur-md py-6 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="font-mono text-[11px] text-slate-400">
-              Supabase Realtime Channel: <span className="text-emerald-400 font-semibold">CONNECTED</span>
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-1 text-slate-400">
-            <span>Tông Môn Tranh Bá • Soul Land: Awakening World eSports Engine</span>
-          </div>
-
-          <div className="flex items-center space-x-3 text-slate-500">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> RLS Protected
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Vibe Coding 2026
-            </span>
-          </div>
-        </div>
-      </footer>
 
     </div>
   );
