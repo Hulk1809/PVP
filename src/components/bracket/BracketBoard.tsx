@@ -165,20 +165,20 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         {/* Left: Search & Add Player */}
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
               placeholder="Tìm tên thí sinh ING..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-lg text-xs bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-all w-48 sm:w-60"
+              className="pl-8 pr-3 py-1.5 rounded-xl text-xs bg-black/35 backdrop-blur-md border border-white/15 text-white placeholder-zinc-400 focus:outline-none focus:border-amber-400 transition-all w-48 sm:w-60 shadow-inner"
             />
           </div>
 
           {userRole === 'admin' && onOpenAddParticipant && (
             <button
               onClick={onOpenAddParticipant}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-zinc-950 hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95 transition-all"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 hover:from-amber-400 hover:to-amber-500 shadow-md shadow-amber-500/20 active:scale-95 transition-all border border-amber-400/30"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Thêm Tuyển Thủ (Tự Động Bốc Thăm)</span>
@@ -190,47 +190,47 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         <div className="flex items-center space-x-2 ml-auto">
           
           {/* Pan Hint Badge */}
-          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800 text-[11px] text-zinc-400">
+          <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-black/35 backdrop-blur-md border border-white/15 text-[11px] text-zinc-300">
             <MoveHorizontal className="w-3.5 h-3.5 text-amber-400" />
             <span>Nhấn giữ chuột kéo trái / phải để xem các vòng</span>
           </div>
 
           {/* Quick Slide Navigation Buttons */}
-          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center space-x-1 bg-black/35 backdrop-blur-md p-1 rounded-xl border border-white/15">
             <button
               onClick={handleScrollLeft}
               title="Lướt sang trái (Vòng trước)"
-              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-white/10 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleScrollRight}
               title="Lướt sang phải (Vòng sau)"
-              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-amber-400 hover:bg-white/10 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* Zoom Controls */}
-          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center space-x-1 bg-black/35 backdrop-blur-md p-1 rounded-xl border border-white/15">
             <button
               onClick={() => handleZoom(-0.1)}
               title="Thu nhỏ"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
 
-            <span className="text-[11px] font-mono font-bold text-amber-400 px-2">
+            <span className="text-[11px] font-mono font-bold text-amber-400 px-2 drop-shadow">
               {Math.round(zoomLevel * 100)}%
             </span>
 
             <button
               onClick={() => handleZoom(0.1)}
               title="Phóng to"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <ZoomIn className="w-4 h-4" />
             </button>
@@ -238,7 +238,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
             <button
               onClick={handleResetZoom}
               title="Căn giữa / Mặc định"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Maximize2 className="w-3.5 h-3.5" />
             </button>
@@ -275,11 +275,11 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                   
                   {/* Round Column Header */}
                   <div className="mb-6 text-center">
-                    <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-amber-400 shadow-sm">
+                    <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/45 backdrop-blur-md border border-amber-500/40 text-amber-300 shadow-md shadow-amber-500/10">
                       <Swords className="w-3 h-3 text-amber-400" />
                       <span>{roundName}</span>
                     </div>
-                    <p className="text-[10px] text-zinc-500 mt-1 font-mono">
+                    <p className="text-[10px] text-zinc-300 mt-1 font-mono drop-shadow">
                       {roundMatches.length} trận đấu
                     </p>
                   </div>

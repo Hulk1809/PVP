@@ -158,12 +158,12 @@ const MainApp: React.FC = () => {
         <source src="/assets/bg-video.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark overlay to keep UI readable over video */}
+      {/* Dark subtle overlay to keep UI readable over video */}
       <div
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.58)',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)',
           zIndex: 1,
           pointerEvents: 'none',
         }}
@@ -171,7 +171,6 @@ const MainApp: React.FC = () => {
 
       {/* Soul Power Particle System on top of video */}
       <ParticleCanvas theme={currentBracket?.theme || 'ocean'} />
-
 
       {/* Top Header with Login Modal Trigger */}
       <Header
@@ -181,10 +180,7 @@ const MainApp: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 flex-1 flex flex-col">
-        {/* Hero Banner with active division art */}
-        <HeroBanner />
-
+      <main className="relative z-10 flex-1 flex flex-col pt-2">
         {/* Tab Content */}
         {activeTab === 'bracket' && (
           <BracketBoard
