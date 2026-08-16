@@ -146,13 +146,37 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter }) => {
         pointerEvents: phase === 'done' ? 'none' : 'auto',
       }}>
 
-        {/* ─── STATIC INTRO STAGE (no first video) ─── */}
+        {/* ─── BACKGROUND VIDEO for idle state ─── */}
+        {phase === 'idle' && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/assets/poster_a.jpg"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transform: 'scale(1.02)',
+              zIndex: 0,
+              filter: 'saturate(0.9) contrast(1.05) brightness(0.55)',
+            }}
+          >
+            <source src="/assets/bg-video.mp4" type="video/mp4" />
+          </video>
+        )}
+
+        {/* Fallback cinematic stage so the idle state is never empty */}
         <div
           className="splash-stage"
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at center, rgba(120, 53, 15, 0.3) 0%, rgba(2, 6, 23, 0.92) 58%, rgba(2, 6, 23, 1) 100%)',
+            background: 'radial-gradient(circle at center, rgba(120, 53, 15, 0.22) 0%, rgba(2, 6, 23, 0.88) 58%, rgba(2, 6, 23, 0.98) 100%)',
             transform: 'scale(1.01)',
             zIndex: 0,
           }}
