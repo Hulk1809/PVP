@@ -194,14 +194,17 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
 
   const [playerAccounts, setPlayerAccounts] = useState<Record<string, PlayerAccount>>(() => {
+    const defaultAccounts = getInitialTournamentData().playerAccounts || {};
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.playerAccounts) return parsed.playerAccounts;
+        if (parsed.playerAccounts) {
+          return { ...defaultAccounts, ...parsed.playerAccounts };
+        }
       } catch {}
     }
-    return {};
+    return defaultAccounts;
   });
 
   const [selectedBracketId, setSelectedBracketIdState] = useState<BracketId>('bracket-a');

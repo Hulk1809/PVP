@@ -7,12 +7,13 @@ export type MatchStatus = 'scheduled' | 'live' | 'completed' | 'bye';
 export type UserRole = 'viewer' | 'admin' | 'player';
 
 export interface PlayerAccount {
-  id: string; // e.g. 'acc-p-tea'
-  participantId: string;
+  id?: string; // e.g. 'acc-p-tea'
+  participantId?: string;
   playerName: string;
   username: string; // e.g. 'tea'
   password: string; // e.g. 'teadeptrai'
   email: string;
+  bracketName?: string;
   claimedAt: string;
 }
 
