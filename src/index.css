@@ -21,23 +21,36 @@
   }
 }
 
-/* Custom Esports Minimal Scrollbar */
+/* Custom Esports Minimal Transparent Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #222533;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #383d54;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Esports Surface Cards */

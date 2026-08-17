@@ -270,7 +270,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        className={`w-full overflow-auto max-h-[calc(100vh-140px)] py-2 sm:py-6 px-2 sm:px-8 transition-colors ${
+        className={`w-full overflow-auto flex-1 min-h-[calc(100vh-140px)] pb-16 pt-2 sm:py-6 px-2 sm:px-8 transition-colors ${
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         }`}
       >
