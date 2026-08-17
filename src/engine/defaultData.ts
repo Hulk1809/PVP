@@ -472,6 +472,7 @@ export const BRACKET_C_PARTICIPANTS: Participant[] = [
   { id: 'p-c23', bracketId: 'bracket-c', name: 'GOD乄Tít', sect: 'Tông Môn GOD', martialSoul: 'Lam Điện Bá Vương Long', soulRank: 'Rực rỡ trở xuống', soulLevel: 74, avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=GOD_Tit&backgroundColor=4f46e5', seedRank: 23, wins: 6, losses: 11, winRate: 35.3, bio: 'Tuyển thủ Bảng C - Rank Rực rỡ trở xuống.' },
   { id: 'p-c25', bracketId: 'bracket-c', name: 'GOD乄Huynh', sect: 'Tông Môn GOD', martialSoul: 'Thiên Cương Thuẫn', soulRank: 'Rực rỡ trở xuống', soulLevel: 73, avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=GOD_Huynh&backgroundColor=374151', seedRank: 25, wins: 5, losses: 11, winRate: 31.2, bio: 'Tuyển thủ Bảng C - Rank Rực rỡ trở xuống.' },
   { id: 'p-c28', bracketId: 'bracket-c', name: 'GOD乄DEATH', sect: 'Tông Môn GOD', martialSoul: 'Tử Thần Liêm Đao', soulRank: 'Rực rỡ trở xuống', soulLevel: 72, avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=GOD_DEATH&backgroundColor=0f172a', seedRank: 28, wins: 4, losses: 12, winRate: 25.0, bio: 'Tuyển thủ Bảng C - Rank Rực rỡ trở xuống.' },
+  { id: 'p-c34', bracketId: 'bracket-c', name: 'GOD乄DarkGirl', sect: 'Đường Môn', martialSoul: 'Chu hoàng', soulRank: 'Rực rỡ trở xuống', soulLevel: 90, avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=GOD_DarkGirl&backgroundColor=9333ea', seedRank: 34, wins: 10, losses: 6, winRate: 62.5, bio: 'Tuyển thủ Bảng C - Rank Rực rỡ trở xuống.' },
 ];
 
 export function getInitialTournamentData() {

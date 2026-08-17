@@ -134,33 +134,49 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
 
   const [participants, setParticipants] = useState<Record<string, Participant>>(() => {
+    const defaultParts = getInitialTournamentData().participants;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.participants) return parsed.participants;
+        if (parsed.participants) {
+          return { ...defaultParts, ...parsed.participants };
+        }
       } catch {}
     }
-    return getInitialTournamentData().participants;
+    return defaultParts;
   });
 
   const [matches, setMatches] = useState<Record<string, Match>>(() => {
     let initialMatches: Record<string, Match>;
+    const defaultData = getInitialTournamentData();
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.matches) initialMatches = parsed.matches;
-        else initialMatches = getInitialTournamentData().matches;
+        if (parsed.matches) {
+          initialMatches = parsed.matches;
+          // Check if bracket-c needs updating for new participants
+          const hasDarkGirl = Object.values(initialMatches).some(
+            m => m.player1Id === 'p-c34' || m.player2Id === 'p-c34'
+          );
+          if (!hasDarkGirl) {
+            const bCParts = Object.values(defaultData.participants).filter(p => p.bracketId === 'bracket-c');
+            const newBracketCMatches = generateTournamentBracket('bracket-c', bCParts, false);
+            initialMatches = { ...initialMatches, ...newBracketCMatches };
+          }
+        } else {
+          initialMatches = defaultData.matches;
+        }
       } catch {
-        initialMatches = getInitialTournamentData().matches;
+        initialMatches = defaultData.matches;
       }
     } else {
-      initialMatches = getInitialTournamentData().matches;
+      initialMatches = defaultData.matches;
     }
 
     // Auto-migrate: All regular rounds -> Bo1, Finals & 3rd Place -> Bo3
-    const initialBrackets = getInitialTournamentData().brackets;
+    const initialBrackets = defaultData.brackets;
     const migrated: Record<string, Match> = {};
     for (const [id, m] of Object.entries(initialMatches)) {
       const br = initialBrackets[m.bracketId];
@@ -554,9 +570,23 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const handleAddParticipant = (p: Participant) => {
     soundEngine.playClick();
-    const updated = { ...participants, [p.id]: p };
-    setParticipants(updated);
-    persistState(brackets, updated, matches);
+    const updatedParticipants = { ...participants, [p.id]: p };
+    setParticipants(updatedParticipants);
+
+    // Automatically generate bracket matches including the new participant
+    const bParticipants = Object.values(updatedParticipants).filter(x => x.bracketId === p.bracketId && !x.isGhost);
+    const newBracketMatches = generateTournamentBracket(p.bracketId, bParticipants, false);
+
+    const updatedMatches = { ...matches };
+    Object.keys(updatedMatches).forEach(k => {
+      if (updatedMatches[k].bracketId === p.bracketId) {
+        delete updatedMatches[k];
+      }
+    });
+
+    Object.assign(updatedMatches, newBracketMatches);
+    setMatches(updatedMatches);
+    persistState(brackets, updatedParticipants, updatedMatches);
   };
 
   const handleUpdateParticipant = (p: Participant) => {
