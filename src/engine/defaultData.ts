@@ -620,14 +620,6 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "email": "thaithien010104@gmail.com",
     "claimedAt": "Mon, 17 Aug 2026 13:14:38 +0000"
   },
-  "hulk": {
-    "playerName": "GOD乄HULK",
-    "username": "hulk",
-    "password": "hulkdeptrai",
-    "bracketName": "Bảng B (Tối Thượng < 10)",
-    "email": "voquocthang18092005@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 11:40:18 +0000"
-  },
   "jetjet": {
     "playerName": "GOD乄JetJet",
     "username": "jetjet",

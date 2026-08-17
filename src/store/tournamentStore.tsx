@@ -6,7 +6,7 @@ import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutc
 import { soundEngine } from '../engine/soundEngine';
 import { cloudSync } from '../engine/cloudSyncEngine';
 
-const STORAGE_KEY = 'soul_land_pvp_tournament_v12';
+const STORAGE_KEY = 'soul_land_pvp_tournament_v14';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
 const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
 const PLAYER_SESSION_KEY = 'soul_land_player_session_v1';
