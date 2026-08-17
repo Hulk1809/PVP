@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal, Shuffle } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { FinalMatchCard } from './FinalMatchCard';
@@ -31,6 +31,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     setSearchQuery,
     handleAdvanceWinner,
     handleResetMatch,
+    handleShuffleBracket,
   } = useTournament();
 
   const [zoomLevel, setZoomLevel] = useState<number>(1);
@@ -198,6 +199,21 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Thêm Tuyển Thủ</span>
+            </button>
+          )}
+
+          {userRole === 'admin' && (
+            <button
+              onClick={() => {
+                if (confirm(`Bạn có chắc muốn XÀO LẠI toàn bộ cặp đấu cho ${currentBracket.name}? Toàn bộ tỉ số và cấm tướng của bảng này sẽ được làm mới ngẫu nhiên!`)) {
+                  handleShuffleBracket(selectedBracketId);
+                }
+              }}
+              title="Xáo trộn ngẫu nhiên toàn bộ cặp đấu cho bảng này"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 hover:from-amber-400 hover:to-yellow-300 shadow-md shadow-amber-500/30 active:scale-95 transition-all border border-amber-300"
+            >
+              <Shuffle className="w-3.5 h-3.5" />
+              <span>🎲 Xào Lại Nhánh</span>
             </button>
           )}
         </div>

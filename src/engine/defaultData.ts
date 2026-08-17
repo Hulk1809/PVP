@@ -669,8 +669,8 @@ export function getInitialTournamentData() {
   });
 
   const matchesMap: Record<string, any> = {
-    ...generateTournamentBracket('bracket-a', BRACKET_A_PARTICIPANTS, false),
-    ...generateTournamentBracket('bracket-b', BRACKET_B_PARTICIPANTS, false),
+    ...generateTournamentBracket('bracket-a', BRACKET_A_PARTICIPANTS, true),
+    ...generateTournamentBracket('bracket-b', BRACKET_B_PARTICIPANTS, true),
     ...generateTournamentBracket('bracket-c', BRACKET_C_PARTICIPANTS, false),
   };
 
