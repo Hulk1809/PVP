@@ -4,6 +4,7 @@ import { Bracket, BracketId, Match, Participant, UserRole, PlayerAccount } from 
 import { getInitialTournamentData } from '../engine/defaultData';
 import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutcome } from '../engine/bracketEngine';
 import { soundEngine } from '../engine/soundEngine';
+import { cloudSync } from '../engine/cloudSyncEngine';
 
 const STORAGE_KEY = 'soul_land_pvp_tournament_v8';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
@@ -225,7 +226,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
-  // Sync state to LocalStorage
+  // Sync state to LocalStorage, BroadcastChannel, and Cloud Backend
   const persistState = useCallback((
     b: typeof brackets,
     p: typeof participants,
@@ -236,30 +237,63 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const data = { brackets: b, participants: p, matches: m, playerAccounts: accs };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-      // Broadcast to other tabs
+      // 1. Broadcast to other tabs on same device
       if (typeof BroadcastChannel !== 'undefined') {
         const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
         channel.postMessage({ type: 'STATE_UPDATE', payload: data });
         channel.close();
       }
+
+      // 2. Push to Cloud Backend & WebSockets for cross-device realtime sync
+      cloudSync.pushState(data);
     } catch {}
   }, [playerAccounts]);
 
-  // Listen to BroadcastChannel for real-time cross-tab updates
+  // Listen to BroadcastChannel and CloudSync for real-time cross-device updates
   useEffect(() => {
-    if (typeof BroadcastChannel === 'undefined') return;
-    const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
-    channel.onmessage = (event) => {
-      if (event.data?.type === 'STATE_UPDATE') {
-        const { brackets: b, participants: p, matches: m, playerAccounts: accs } = event.data.payload;
-        if (b) setBrackets(b);
-        if (p) setParticipants(p);
-        if (m) setMatches(m);
-        if (accs) setPlayerAccounts(accs);
+    // 1. Initial Cloud Fetch
+    cloudSync.fetchLatestState().then((cloudData) => {
+      if (cloudData) {
+        if (cloudData.brackets) setBrackets(cloudData.brackets);
+        if (cloudData.participants) setParticipants(cloudData.participants);
+        if (cloudData.matches) setMatches(cloudData.matches);
+        if (cloudData.playerAccounts) setPlayerAccounts(cloudData.playerAccounts);
       }
-    };
+    });
+
+    // 2. Subscribe to Real-time Cloud updates (WebSockets + Polling)
+    const unsubscribeCloud = cloudSync.onUpdate((cloudData) => {
+      if (cloudData) {
+        if (cloudData.brackets) setBrackets(cloudData.brackets);
+        if (cloudData.participants) setParticipants(cloudData.participants);
+        if (cloudData.matches) setMatches(cloudData.matches);
+        if (cloudData.playerAccounts) setPlayerAccounts(cloudData.playerAccounts);
+
+        // Update local storage cache
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+        } catch {}
+      }
+    });
+
+    // 3. Listen to local BroadcastChannel for same-device tabs
+    let channel: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== 'undefined') {
+      channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'STATE_UPDATE') {
+          const { brackets: b, participants: p, matches: m, playerAccounts: accs } = event.data.payload;
+          if (b) setBrackets(b);
+          if (p) setParticipants(p);
+          if (m) setMatches(m);
+          if (accs) setPlayerAccounts(accs);
+        }
+      };
+    }
+
     return () => {
-      channel.close();
+      unsubscribeCloud();
+      if (channel) channel.close();
     };
   }, []);
 
