@@ -6,7 +6,7 @@ import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutc
 import { soundEngine } from '../engine/soundEngine';
 import { cloudSync } from '../engine/cloudSyncEngine';
 
-const STORAGE_KEY = 'soul_land_pvp_tournament_v11';
+const STORAGE_KEY = 'soul_land_pvp_tournament_v12';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
 const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
 const PLAYER_SESSION_KEY = 'soul_land_player_session_v1';
@@ -274,19 +274,38 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   useEffect(() => {
     // 1. Initial Cloud Fetch & Auto-Seed
     cloudSync.fetchLatestState().then((cloudData) => {
+      const defaultData = getInitialTournamentData();
       if (isValidTournamentPayload(cloudData)) {
         if (cloudData.brackets) setBrackets(cloudData.brackets);
-        if (cloudData.participants) setParticipants(cloudData.participants);
         if (cloudData.matches) setMatches(cloudData.matches);
-        if (cloudData.playerAccounts) setPlayerAccounts(cloudData.playerAccounts);
+
+        // Merge accounts so default 24 accounts are ALWAYS preserved and merged with any new cloud accounts
+        const mergedAccounts = {
+          ...(defaultData.playerAccounts || {}),
+          ...(cloudData.playerAccounts || {}),
+        };
+        setPlayerAccounts(mergedAccounts);
+
+        // Merge participants and mark claimed
+        if (cloudData.participants) {
+          const mergedParts = { ...cloudData.participants };
+          for (const p of Object.values(mergedParts) as Participant[]) {
+            const u = p.username || generateUsernameFromPlayerName(p.name);
+            if (mergedAccounts[u]) {
+              p.claimed = true;
+              p.username = u;
+              p.email = mergedAccounts[u].email;
+            }
+          }
+          setParticipants(mergedParts);
+        }
       } else {
         // Cloud data is empty or invalid -> Seed cloud with complete initial tournament dataset
-        const fullData = getInitialTournamentData();
         cloudSync.pushState({
-          brackets: fullData.brackets,
-          participants: fullData.participants,
-          matches: fullData.matches,
-          playerAccounts: {},
+          brackets: defaultData.brackets,
+          participants: defaultData.participants,
+          matches: defaultData.matches,
+          playerAccounts: defaultData.playerAccounts || {},
         });
       }
     });
@@ -294,10 +313,28 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // 2. Subscribe to Real-time Cloud updates (WebSockets + Polling)
     const unsubscribeCloud = cloudSync.onUpdate((cloudData) => {
       if (isValidTournamentPayload(cloudData)) {
+        const defaultData = getInitialTournamentData();
         if (cloudData.brackets) setBrackets(cloudData.brackets);
-        if (cloudData.participants) setParticipants(cloudData.participants);
         if (cloudData.matches) setMatches(cloudData.matches);
-        if (cloudData.playerAccounts) setPlayerAccounts(cloudData.playerAccounts);
+
+        const mergedAccounts = {
+          ...(defaultData.playerAccounts || {}),
+          ...(cloudData.playerAccounts || {}),
+        };
+        setPlayerAccounts(mergedAccounts);
+
+        if (cloudData.participants) {
+          const mergedParts = { ...cloudData.participants };
+          for (const p of Object.values(mergedParts) as Participant[]) {
+            const u = p.username || generateUsernameFromPlayerName(p.name);
+            if (mergedAccounts[u]) {
+              p.claimed = true;
+              p.username = u;
+              p.email = mergedAccounts[u].email;
+            }
+          }
+          setParticipants(mergedParts);
+        }
 
         // Update local storage cache
         try {
