@@ -167,7 +167,7 @@ export function generateTournamentBracket(
         loserNextMatchId,
         scheduledTime: today.toISOString(),
         status,
-        bestOf: isFinalRound ? 5 : isSemiFinalRound ? 3 : 3,
+        bestOf: isFinalRound ? 3 : 1,
         refereeNote: status === 'bye' ? 'Đặc cách tiến thẳng vòng sau (Bye)' : undefined,
       };
 

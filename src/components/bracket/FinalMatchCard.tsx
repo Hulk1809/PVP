@@ -252,7 +252,7 @@ export const FinalMatchCard: React.FC<FinalMatchCardProps> = ({
 
             <div className="flex items-center space-x-1.5">
               <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-sm">
-                Bo5 • Đỉnh Phong
+                {match.bestOf === 1 ? 'Bo1 • Đỉnh Phong' : match.bestOf === 5 ? 'Bo5 • Đỉnh Phong' : 'Bo3 • Đỉnh Phong'}
               </span>
               <span className="px-2 py-0.5 rounded text-[9px] font-bold tracking-tight bg-red-950/85 text-red-300 border border-red-500/50">
                 Ban: Qlinh, Mạc, Hồ Ly

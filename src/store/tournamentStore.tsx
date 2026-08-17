@@ -143,14 +143,34 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
 
   const [matches, setMatches] = useState<Record<string, Match>>(() => {
+    let initialMatches: Record<string, Match>;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.matches) return parsed.matches;
-      } catch {}
+        if (parsed.matches) initialMatches = parsed.matches;
+        else initialMatches = getInitialTournamentData().matches;
+      } catch {
+        initialMatches = getInitialTournamentData().matches;
+      }
+    } else {
+      initialMatches = getInitialTournamentData().matches;
     }
-    return getInitialTournamentData().matches;
+
+    // Auto-migrate: All regular rounds -> Bo1, Finals & 3rd Place -> Bo3
+    const initialBrackets = getInitialTournamentData().brackets;
+    const migrated: Record<string, Match> = {};
+    for (const [id, m] of Object.entries(initialMatches)) {
+      const br = initialBrackets[m.bracketId];
+      const totalRounds = br ? br.totalRounds : 3;
+      const isFinal = m.round === totalRounds && !m.isThirdPlaceMatch;
+      const isThird = Boolean(m.isThirdPlaceMatch);
+      migrated[id] = {
+        ...m,
+        bestOf: isFinal || isThird ? 3 : 1,
+      };
+    }
+    return migrated;
   });
 
   const [playerAccounts, setPlayerAccounts] = useState<Record<string, PlayerAccount>>(() => {
