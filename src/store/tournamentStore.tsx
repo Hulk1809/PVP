@@ -109,6 +109,7 @@ interface TournamentContextType {
   handleUpdateParticipant: (participant: Participant) => void;
   handleDeleteParticipant: (id: string) => void;
   handleResetPlayerAccount: (participantId: string) => void;
+  handleAdminQuickCreateAccount: (participantId: string) => { success: boolean; username: string; password: string; message?: string };
   handleUpdateMatchDetails: (matchId: string, updates: Partial<Match>) => void;
   handleSimulateNextStep: (bracketId?: BracketId) => void;
   handleSimulateAll: (bracketId?: BracketId) => Promise<void>;
@@ -563,6 +564,55 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     persistState(brackets, updatedParticipants, matches, updatedAccounts);
   };
 
+  const handleAdminQuickCreateAccount = (
+    participantId: string
+  ): { success: boolean; username: string; password: string; message?: string } => {
+    soundEngine.playGong();
+    const targetPlayer = participants[participantId];
+    if (!targetPlayer) {
+      return { success: false, username: '', password: '', message: 'Không tìm thấy tuyển thủ' };
+    }
+
+    const cleanUsername = generateUsernameFromPlayerName(targetPlayer.name);
+    const password = generateRandomPasswordForUser(cleanUsername);
+    const assignedEmail = `${cleanUsername}@pvp.tournament`;
+
+    const newAccount: PlayerAccount = {
+      id: `acc-${targetPlayer.id}`,
+      participantId: targetPlayer.id,
+      playerName: targetPlayer.name,
+      username: cleanUsername,
+      password,
+      email: assignedEmail,
+      claimedAt: new Date().toISOString(),
+    };
+
+    const updatedAccounts = {
+      ...playerAccounts,
+      [cleanUsername]: newAccount,
+    };
+
+    const updatedParticipants = {
+      ...participants,
+      [participantId]: {
+        ...targetPlayer,
+        claimed: true,
+        email: assignedEmail,
+        username: cleanUsername,
+      },
+    };
+
+    setPlayerAccounts(updatedAccounts);
+    setParticipants(updatedParticipants);
+    persistState(brackets, updatedParticipants, matches, updatedAccounts);
+
+    return {
+      success: true,
+      username: cleanUsername,
+      password,
+    };
+  };
+
   const handleUpdateMatchDetails = (matchId: string, updates: Partial<Match>) => {
     soundEngine.playClick();
     const match = matches[matchId];
@@ -700,6 +750,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         handleUpdateParticipant,
         handleDeleteParticipant,
         handleResetPlayerAccount,
+        handleAdminQuickCreateAccount,
         handleUpdateMatchDetails,
         handleSimulateNextStep,
         handleSimulateAll,

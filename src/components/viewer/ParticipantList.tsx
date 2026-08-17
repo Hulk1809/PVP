@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Shield, Swords, Sparkles, Key, CheckCircle2, RotateCcw } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { Search, UserPlus, Trophy, Shield, Swords, Sparkles, Filter, Edit2, Trash2, Key, CheckCircle2, RotateCcw, Zap, Eye, Copy, Check, X } from 'lucide-react';
 import { useTournament, generateUsernameFromPlayerName } from '../../store/tournamentStore';
 import { Participant } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
+import { getDivisionTheme } from '../../utils/themeStyles';
 import { ClaimAccountModal } from './ClaimAccountModal';
 
 interface ParticipantListProps {
-  onOpenAddParticipant: () => void;
+  onOpenAddParticipant?: () => void;
   onOpenEditParticipant: (participant: Participant) => void;
 }
 
@@ -17,114 +19,188 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
   const {
     brackets,
     participants,
+    playerAccounts,
     selectedBracketId,
     userRole,
     loggedInPlayer,
-    searchQuery,
-    setSearchQuery,
     handleDeleteParticipant,
     handleResetPlayerAccount,
+    handleAdminQuickCreateAccount,
   } = useTournament();
 
+  const [search, setSearch] = useState('');
+  const [selectedSect, setSelectedSect] = useState('all');
   const [sortBy, setSortBy] = useState<'seed' | 'name' | 'level'>('seed');
   const [claimingPlayer, setClaimingPlayer] = useState<Participant | null>(null);
+
+  // Admin View/Copy Account Modal state
+  const [adminViewingAccount, setAdminViewingAccount] = useState<{
+    participant: Participant;
+    username: string;
+    password: string;
+    email?: string;
+  } | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
 
-  // Filter participants
-  let list = Object.values(participants).filter((p) => p.bracketId === selectedBracketId);
+  const themeConfig = getDivisionTheme(currentBracket.theme);
 
-  if (searchQuery.trim() !== '') {
-    const q = searchQuery.toLowerCase();
-    list = list.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.martialSoul.toLowerCase().includes(q) ||
-        p.sect.toLowerCase().includes(q)
-    );
-  }
+  // Get unique sects for filtering in this bracket
+  const currentParticipants = Object.values(participants).filter(
+    (p) => p.bracketId === selectedBracketId && !p.isGhost
+  );
 
-  // Sort
-  list.sort((a, b) => {
-    if (sortBy === 'seed') return (a.seedRank || 999) - (b.seedRank || 999);
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
-    if (sortBy === 'level') return (b.soulLevel || 0) - (a.soulLevel || 0);
-    return 0;
-  });
+  const availableSects = useMemo(() => {
+    const s = new Set<string>();
+    currentParticipants.forEach((p) => s.add(p.sect));
+    return Array.from(s);
+  }, [currentParticipants]);
+
+  // Filter and sort
+  const list = useMemo(() => {
+    return currentParticipants
+      .filter((p) => {
+        const matchesSearch =
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.martialSoul.toLowerCase().includes(search.toLowerCase());
+        const matchesSect = selectedSect === 'all' || p.sect === selectedSect;
+        return matchesSearch && matchesSect;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'seed') return (a.seedRank || 99) - (b.seedRank || 99);
+        if (sortBy === 'level') return b.soulLevel - a.soulLevel;
+        return a.name.localeCompare(b.name);
+      });
+  }, [currentParticipants, search, selectedSect, sortBy]);
+
+  const handleCopyText = (text: string, fieldKey: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldKey);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleAdminQuickCreate = (p: Participant) => {
+    const res = handleAdminQuickCreateAccount(p.id);
+    if (res.success) {
+      setAdminViewingAccount({
+        participant: p,
+        username: res.username,
+        password: res.password,
+        email: `${res.username}@pvp.tournament`,
+      });
+    }
+  };
+
+  const handleAdminViewExisting = (p: Participant) => {
+    const username = p.username || generateUsernameFromPlayerName(p.name);
+    const acc = playerAccounts[username];
+    setAdminViewingAccount({
+      participant: p,
+      username: username,
+      password: acc ? acc.password : '****** (Đã cấp qua email)',
+      email: acc ? acc.email : p.email,
+    });
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <div className="flex items-center space-x-2">
-            <h3
-              className="text-xl sm:text-2xl font-black tracking-wider"
+            <h2
+              className="text-2xl sm:text-3xl font-black font-heading tracking-wider"
               style={{
-                fontFamily: '"Playfair Display", "Cinzel", serif',
+                fontFamily: '"Playfair Display", "Cinzel Decorative", serif',
                 fontStyle: 'italic',
-                background: 'linear-gradient(110deg, #94a3b8 0%, #cbd5e1 20%, #ffffff 40%, #f8fafc 55%, #cbd5e1 75%, #64748b 100%)',
+                backgroundImage: themeConfig.titleGradient,
                 WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
             >
               Danh Sách Tuyển Thủ
-            </h3>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/20 backdrop-blur-md">
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-white/10 text-slate-300 border border-white/15">
               {list.length} tuyển thủ
             </span>
           </div>
-          <p className="text-xs text-slate-300 mt-1">
+          <p className="text-xs text-slate-400 mt-1 font-sans">
             {currentBracket.name} • {currentBracket.tierName}
           </p>
         </div>
 
-        {/* Add Player button for Admin */}
-        {userRole === 'admin' && (
+        {userRole === 'admin' && onOpenAddParticipant && (
           <button
             onClick={onOpenAddParticipant}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-slate-200 to-white text-zinc-950 hover:from-white hover:to-slate-100 shadow-md shadow-white/15 active:scale-95 transition-all border border-white/30"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-zinc-950 hover:bg-slate-200 transition-all shadow-md shadow-white/10 active:scale-95"
           >
-            <Plus className="w-4 h-4" />
+            <UserPlus className="w-4 h-4" />
             <span>Thêm Tuyển Thủ Mới</span>
           </button>
         )}
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-black/45 backdrop-blur-md border border-white/15">
+      {/* Filter & Search Toolbar */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-3 bg-black/45 backdrop-blur-md p-3 rounded-2xl border border-white/10 shadow-lg">
         
-        {/* Search */}
-        <div className="relative min-w-[240px] flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        {/* Search Box */}
+        <div className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm theo tên ING..."
-            className="w-full pl-9 pr-4 py-1.5 rounded-lg text-xs bg-black/60 border border-white/15 text-white placeholder-slate-400 focus:outline-none focus:border-white shadow-inner"
+            placeholder="Tìm theo tên ING, võ hồn..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-black/60 border border-white/15 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-white/40 transition-colors"
           />
         </div>
 
-        {/* Sort Pills */}
-        <div className="flex items-center space-x-1">
-          <span className="text-[11px] text-slate-400 mr-1.5">Sắp xếp:</span>
-          {(
-            [
-              { key: 'seed', label: 'Hạt Giống' },
-              { key: 'name', label: 'Tên A-Z' },
-              { key: 'level', label: 'Cấp Độ' },
-            ] as const
-          ).map((s) => (
+        {/* Sect Filter Pills */}
+        <div className="flex items-center space-x-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 no-scrollbar">
+          <button
+            onClick={() => setSelectedSect('all')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+              selectedSect === 'all'
+                ? 'bg-white/20 text-white border border-white/30 font-bold'
+                : 'text-slate-400 hover:text-white bg-black/40 border border-white/10'
+            }`}
+          >
+            Tất cả tông môn
+          </button>
+          {availableSects.map((sect) => (
             <button
-              key={s.key}
-              onClick={() => setSortBy(s.key)}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                sortBy === s.key
-                  ? 'bg-gradient-to-r from-slate-200 to-white text-zinc-950 font-bold shadow-sm'
-                  : 'bg-black/40 text-slate-300 hover:text-white border border-white/10'
+              key={sect}
+              onClick={() => setSelectedSect(sect)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                selectedSect === sect
+                  ? 'bg-white/20 text-white border border-white/30 font-bold'
+                  : 'text-slate-400 hover:text-white bg-black/40 border border-white/10'
+              }`}
+            >
+              {sect}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort Pills */}
+        <div className="flex items-center space-x-1 flex-shrink-0 text-xs text-slate-400">
+          <span className="mr-1">Sắp xếp:</span>
+          {[
+            { id: 'seed', label: 'Hạt Giống' },
+            { id: 'name', label: 'Tên A-Z' },
+            { id: 'level', label: 'Cấp Độ' },
+          ].map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setSortBy(s.id as any)}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                sortBy === s.id
+                  ? 'bg-white text-zinc-950 font-bold shadow-sm'
+                  : 'text-slate-400 hover:text-white bg-black/30'
               }`}
             >
               {s.label}
@@ -138,6 +214,8 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
         {list.map((p) => {
           const username = p.username || generateUsernameFromPlayerName(p.name);
+          const hasAccount = Boolean(p.claimed);
+
           return (
             <div
               key={p.id}
@@ -187,60 +265,117 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                   </div>
                 </div>
 
-                {/* Account Claim Status Section */}
-                <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between">
-                  {loggedInPlayer ? (
-                    p.id === loggedInPlayer.participantId ? (
-                      <div className="flex items-center space-x-1 text-[10px] text-cyan-300 font-bold bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-400/40 shadow-sm shadow-cyan-500/20">
-                        <CheckCircle2 className="w-3 h-3 text-cyan-300" />
-                        <span>Tài khoản của bạn</span>
+                {/* Account Claim Status & Actions Section */}
+                <div className="mt-3 pt-2.5 border-t border-white/10">
+                  
+                  {/* ADMIN VIEW */}
+                  {userRole === 'admin' ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="text-slate-400 font-mono">@{username}</span>
+                        {hasAccount ? (
+                          <span className="flex items-center space-x-1 text-emerald-400 font-bold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Đã kích hoạt</span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 italic">Chưa tạo tài khoản</span>
+                        )}
                       </div>
-                    ) : p.claimed ? (
-                      <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/30 px-2 py-0.5 rounded-md border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                        <span>Đã kích hoạt</span>
+
+                      {/* Admin Quick Action Buttons */}
+                      <div className="flex items-center justify-between gap-1.5 pt-1">
+                        {hasAccount ? (
+                          <>
+                            <button
+                              onClick={() => handleAdminViewExisting(p)}
+                              className="flex-1 flex items-center justify-center space-x-1 text-[10px] font-bold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 py-1.5 rounded-lg border border-cyan-500/40 transition-all shadow-sm active:scale-95"
+                              title="Xem tài khoản & mật khẩu của tuyển thủ"
+                            >
+                              <Eye className="w-3 h-3" />
+                              <span>Xem TK/MK</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                if (confirm(`Bạn có chắc muốn HỦY & CẤP LẠI tài khoản cho tuyển thủ "${p.name}" không?`)) {
+                                  handleResetPlayerAccount(p.id);
+                                }
+                              }}
+                              className="px-2 py-1.5 rounded-lg text-amber-300 hover:text-amber-200 bg-amber-950/50 hover:bg-amber-900/60 border border-amber-500/40 transition-colors text-[10px] flex items-center space-x-1 font-semibold"
+                              title="Hủy tài khoản cũ để tạo lại"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Cấp lại</span>
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleAdminQuickCreate(p)}
+                              className="flex-1 flex items-center justify-center space-x-1 text-[10px] font-bold text-amber-300 bg-amber-950/70 hover:bg-amber-900/90 py-1.5 rounded-lg border border-amber-500/50 hover:border-amber-400 transition-all shadow-sm active:scale-95 animate-pulse"
+                              title="Tạo nhanh TK/MK để copy gửi Zalo/Facebook"
+                            >
+                              <Zap className="w-3 h-3 text-amber-300" />
+                              <span>Tạo TK Nhanh</span>
+                            </button>
+
+                            <button
+                              onClick={() => setClaimingPlayer(p)}
+                              className="px-2.5 py-1.5 rounded-lg text-cyan-300 hover:text-cyan-200 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/40 transition-colors text-[10px] flex items-center space-x-1 font-semibold"
+                              title="Gửi tài khoản về Email của tuyển thủ"
+                            >
+                              <Key className="w-3 h-3" />
+                              <span>Gửi Mail</span>
+                            </button>
+                          </>
+                        )}
                       </div>
-                    ) : (
-                      <span className="text-[10px] text-slate-500 italic">Chưa kích hoạt</span>
-                    )
-                  ) : p.claimed ? (
-                    <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/30">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span>Đã có tài khoản</span>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setClaimingPlayer(p)}
-                      className="flex items-center space-x-1 text-[10px] font-bold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 px-2.5 py-1 rounded-lg border border-cyan-500/40 hover:border-cyan-400 transition-all shadow-sm active:scale-95"
-                    >
-                      <Key className="w-3 h-3 text-cyan-300" />
-                      <span>Nhận Tài Khoản</span>
-                    </button>
+                    /* PLAYER / VIEWER VIEW */
+                    <div className="flex items-center justify-between">
+                      {loggedInPlayer ? (
+                        p.id === loggedInPlayer.participantId ? (
+                          <div className="flex items-center space-x-1 text-[10px] text-cyan-300 font-bold bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-400/40 shadow-sm shadow-cyan-500/20">
+                            <CheckCircle2 className="w-3 h-3 text-cyan-300" />
+                            <span>Tài khoản của bạn</span>
+                          </div>
+                        ) : hasAccount ? (
+                          <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/30 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            <span>Đã kích hoạt</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-slate-500 italic">Chưa kích hoạt</span>
+                        )
+                      ) : hasAccount ? (
+                        <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span>Đã có tài khoản</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setClaimingPlayer(p)}
+                          className="flex items-center space-x-1 text-[10px] font-bold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 px-2.5 py-1 rounded-lg border border-cyan-500/40 hover:border-cyan-400 transition-all shadow-sm active:scale-95"
+                        >
+                          <Key className="w-3 h-3 text-cyan-300" />
+                          <span>Nhận Tài Khoản</span>
+                        </button>
+                      )}
+
+                      <span className="text-[10px] text-slate-500 font-mono" title="Tên đăng nhập">
+                        @{username}
+                      </span>
+                    </div>
                   )}
 
-                  <span className="text-[10px] text-slate-500 font-mono" title="Tên đăng nhập">
-                    @{username}
-                  </span>
                 </div>
               </div>
 
-              {/* Admin Actions */}
+              {/* Admin Edit/Delete Actions */}
               {userRole === 'admin' && (
-                <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-end space-x-2">
-                  {p.claimed && (
-                    <button
-                      onClick={() => {
-                        if (confirm(`Bạn có muốn HỦY và CẤP LẠI tài khoản cho tuyển thủ "${p.name}" (nếu họ nhập sai email) không?`)) {
-                          handleResetPlayerAccount(p.id);
-                        }
-                      }}
-                      title="Cấp lại tài khoản (Reset khi nhập sai email)"
-                      className="px-2 py-1 rounded-lg text-amber-300 hover:text-amber-200 bg-amber-950/50 hover:bg-amber-900/60 border border-amber-500/40 transition-colors text-[10px] flex items-center space-x-1 font-semibold"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Cấp lại TK</span>
-                    </button>
-                  )}
+                <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-end space-x-2">
                   <button
                     onClick={() => onOpenEditParticipant(p)}
                     title="Chỉnh sửa tuyển thủ"
@@ -272,13 +407,134 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
         </div>
       )}
 
-      {/* Claim Account Modal */}
+      {/* Claim Account Modal (Email Dispatch) */}
       {claimingPlayer && (
         <ClaimAccountModal
           participant={claimingPlayer}
           onClose={() => setClaimingPlayer(null)}
         />
       )}
+
+      {/* ADMIN VIEW / COPY ACCOUNT MODAL */}
+      {adminViewingAccount &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+            <div className="relative w-full max-w-md bg-gradient-to-b from-zinc-900 via-black to-zinc-950 border border-amber-500/50 rounded-2xl p-6 shadow-2xl shadow-amber-500/20">
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setAdminViewingAccount(null)}
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Header */}
+              <div className="flex items-center space-x-3 border-b border-white/10 pb-4 mb-4">
+                <PlayerAvatar name={adminViewingAccount.participant.name} size="md" />
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-base font-bold text-white">
+                      {adminViewingAccount.participant.name}
+                    </h3>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">
+                      Tài Khoản Tuyển Thủ
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    {adminViewingAccount.participant.sect} • Lv.{adminViewingAccount.participant.soulLevel}
+                  </p>
+                </div>
+              </div>
+
+              {/* Account Credentials Display */}
+              <div className="space-y-3 bg-black/60 p-4 rounded-xl border border-white/15">
+                
+                {/* Username Row */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Tên Đăng Nhập (Username)
+                  </label>
+                  <div className="flex items-center justify-between bg-zinc-950/90 px-3 py-2 rounded-lg border border-white/10">
+                    <span className="font-mono text-sm font-bold text-cyan-300 select-all">
+                      {adminViewingAccount.username}
+                    </span>
+                    <button
+                      onClick={() => handleCopyText(adminViewingAccount.username, 'username')}
+                      className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                      title="Sao chép tên đăng nhập"
+                    >
+                      {copiedField === 'username' ? (
+                        <Check className="w-4 h-4 text-emerald-400" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Password Row */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Mật Khẩu (Password)
+                  </label>
+                  <div className="flex items-center justify-between bg-zinc-950/90 px-3 py-2 rounded-lg border border-white/10">
+                    <span className="font-mono text-sm font-bold text-amber-300 select-all">
+                      {adminViewingAccount.password}
+                    </span>
+                    <button
+                      onClick={() => handleCopyText(adminViewingAccount.password, 'password')}
+                      className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                      title="Sao chép mật khẩu"
+                    >
+                      {copiedField === 'password' ? (
+                        <Check className="w-4 h-4 text-emerald-400" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {adminViewingAccount.email && (
+                  <div className="text-[11px] text-slate-400 flex items-center justify-between pt-1">
+                    <span>Email liên kết:</span>
+                    <span className="text-slate-300 font-mono truncate max-w-[200px]">
+                      {adminViewingAccount.email}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Copy Full Message Button for Zalo / FB */}
+              <button
+                onClick={() => {
+                  const message = `🏆 THÔNG TIN TÀI KHOẢN THI ĐẤU ĐẤU LA ĐẠI LỤC 🏆\n👤 Tuyển thủ: ${adminViewingAccount.participant.name}\n🔑 Tên đăng nhập: ${adminViewingAccount.username}\n🔒 Mật khẩu: ${adminViewingAccount.password}\n🌐 Link thi đấu: https://pvp-rho.vercel.app`;
+                  handleCopyText(message, 'all');
+                }}
+                className="w-full mt-4 flex items-center justify-center space-x-2 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-amber-500/25"
+              >
+                {copiedField === 'all' ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span>Đã sao chép toàn bộ thông tin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Sao Chép Toàn Bộ (Gửi Zalo / Messenger)</span>
+                  </>
+                )}
+              </button>
+
+              <p className="text-[10px] text-slate-400 text-center mt-2.5">
+                Bạn có thể gửi thông tin này cho tuyển thủ để họ đăng nhập và cấm tướng trực tiếp.
+              </p>
+
+            </div>
+          </div>,
+          document.body
+        )}
 
     </div>
   );
