@@ -35,10 +35,12 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
   const [confirmAction, setConfirmAction] = useState<ConfirmActionType | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Mouse Drag-To-Scroll states
+  // Mouse Drag-To-Scroll states (2D Pan X and Y)
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
   const [scrollLeftState, setScrollLeftState] = useState(0);
+  const [scrollTopState, setScrollTopState] = useState(0);
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
@@ -89,7 +91,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     }
   };
 
-  // Mouse Drag to Pan Handlers
+  // Mouse Drag to Pan Handlers (2D Pan: X & Y)
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     // Don't drag if clicking buttons, inputs, or interactive controls
@@ -99,7 +101,9 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     if (!containerRef.current) return;
     setIsDragging(true);
     setStartX(e.pageX - containerRef.current.offsetLeft);
+    setStartY(e.pageY - containerRef.current.offsetTop);
     setScrollLeftState(containerRef.current.scrollLeft);
+    setScrollTopState(containerRef.current.scrollTop);
   };
 
   const handleMouseLeave = () => {
@@ -114,8 +118,11 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
     if (!isDragging || !containerRef.current) return;
     e.preventDefault();
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag sensitivity
-    containerRef.current.scrollLeft = scrollLeftState - walk;
+    const y = e.pageY - containerRef.current.offsetTop;
+    const walkX = (x - startX) * 1.5; // Horizontal drag sensitivity
+    const walkY = (y - startY) * 1.5; // Vertical drag sensitivity
+    containerRef.current.scrollLeft = scrollLeftState - walkX;
+    containerRef.current.scrollTop = scrollTopState - walkY;
   };
 
   // Intercept advance with confirmation modal
@@ -250,14 +257,14 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
       </div>
 
-      {/* Main Bracket Interactive Scroll Area with Drag-To-Pan */}
+      {/* Main Bracket Interactive Scroll Area with 2D Drag-To-Pan */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        className={`w-full overflow-x-auto overflow-y-hidden py-2 sm:py-6 px-2 sm:px-8 transition-colors ${
+        className={`w-full overflow-auto max-h-[calc(100vh-140px)] py-2 sm:py-6 px-2 sm:px-8 transition-colors ${
           isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
         }`}
       >
