@@ -1,21 +1,40 @@
 import React, { createContext, useContext, useEffect, useState, useOptimistic, useTransition, useCallback } from 'react';
 import confetti from 'canvas-confetti';
-import { Bracket, BracketId, Match, Participant, UserRole } from '../types/tournament';
+import { Bracket, BracketId, Match, Participant, UserRole, PlayerAccount } from '../types/tournament';
 import { getInitialTournamentData } from '../engine/defaultData';
 import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutcome } from '../engine/bracketEngine';
 import { soundEngine } from '../engine/soundEngine';
 
 const STORAGE_KEY = 'soul_land_pvp_tournament_v8';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
+const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
+const PLAYER_SESSION_KEY = 'soul_land_player_session_v1';
+
+export function generateUsernameFromPlayerName(name: string): string {
+  let clean = name
+    .replace(/^GOD[乄乂\.\s\-_]*/i, '') // Remove GOD乄 or GOD. prefix
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove Vietnamese diacritics
+    .replace(/[^a-zA-Z0-9]/g, '') // Keep alphanumerics only
+    .toLowerCase()
+    .trim();
+  
+  if (!clean || clean.length < 2) {
+    clean = name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'tuyenthu';
+  }
+  return clean;
+}
 
 interface TournamentContextType {
   brackets: Record<BracketId, Bracket>;
   participants: Record<string, Participant>;
   matches: Record<string, Match>;
+  playerAccounts: Record<string, PlayerAccount>;
   selectedBracketId: BracketId;
   userRole: UserRole;
   isLoggedIn: boolean;
   adminUser: { name: string; username: string } | null;
+  loggedInPlayer: PlayerAccount | null;
   soundEnabled: boolean;
   searchQuery: string;
   selectedSectFilter: string;
@@ -27,6 +46,17 @@ interface TournamentContextType {
   setUserRole: (role: UserRole) => void;
   loginAdmin: (username: string, pass: string) => { success: boolean; message?: string };
   logoutAdmin: () => void;
+  loginPlayer: (username: string, pass: string) => { success: boolean; message?: string };
+  logoutPlayer: () => void;
+  claimPlayerAccount: (
+    participantId: string,
+    email: string
+  ) => Promise<{ success: boolean; username: string; password: string; message?: string }>;
+  submitPlayerBan: (
+    matchId: string,
+    playerId: string,
+    banHero: string
+  ) => { success: boolean; message?: string };
   toggleSound: () => void;
   setSearchQuery: (query: string) => void;
   setSelectedSectFilter: (sect: string) => void;
@@ -47,8 +77,6 @@ interface TournamentContextType {
 }
 
 const TournamentContext = createContext<TournamentContextType | null>(null);
-
-const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
 
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [brackets, setBrackets] = useState<Record<BracketId, Bracket>>(() => {
@@ -84,9 +112,20 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return getInitialTournamentData().matches;
   });
 
+  const [playerAccounts, setPlayerAccounts] = useState<Record<string, PlayerAccount>>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.playerAccounts) return parsed.playerAccounts;
+      } catch {}
+    }
+    return {};
+  });
+
   const [selectedBracketId, setSelectedBracketIdState] = useState<BracketId>('bracket-a');
   
-  // Admin auth state (session persisted in localStorage)
+  // Admin auth state
   const [adminUser, setAdminUser] = useState<{ name: string; username: string } | null>(() => {
     const saved = localStorage.getItem(ADMIN_SESSION_KEY);
     if (saved) {
@@ -97,13 +136,70 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return null;
   });
 
+  // Player auth state
+  const [loggedInPlayer, setLoggedInPlayer] = useState<PlayerAccount | null>(() => {
+    const saved = localStorage.getItem(PLAYER_SESSION_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return null;
+  });
+
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    return Boolean(localStorage.getItem(ADMIN_SESSION_KEY));
+    return Boolean(localStorage.getItem(ADMIN_SESSION_KEY) || localStorage.getItem(PLAYER_SESSION_KEY));
   });
 
   const [userRole, setUserRole] = useState<UserRole>(() => {
-    return localStorage.getItem(ADMIN_SESSION_KEY) ? 'admin' : 'viewer';
+    if (localStorage.getItem(ADMIN_SESSION_KEY)) return 'admin';
+    if (localStorage.getItem(PLAYER_SESSION_KEY)) return 'player';
+    return 'viewer';
   });
+
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedSectFilter, setSelectedSectFilter] = useState<string>('all');
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+
+  // Sync state to LocalStorage
+  const persistState = useCallback((
+    b: typeof brackets,
+    p: typeof participants,
+    m: typeof matches,
+    accs: typeof playerAccounts = playerAccounts
+  ) => {
+    try {
+      const data = { brackets: b, participants: p, matches: m, playerAccounts: accs };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+      // Broadcast to other tabs
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+        channel.postMessage({ type: 'STATE_UPDATE', payload: data });
+        channel.close();
+      }
+    } catch {}
+  }, [playerAccounts]);
+
+  // Listen to BroadcastChannel for real-time cross-tab updates
+  useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') return;
+    const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+    channel.onmessage = (event) => {
+      if (event.data?.type === 'STATE_UPDATE') {
+        const { brackets: b, participants: p, matches: m, playerAccounts: accs } = event.data.payload;
+        if (b) setBrackets(b);
+        if (p) setParticipants(p);
+        if (m) setMatches(m);
+        if (accs) setPlayerAccounts(accs);
+      }
+    };
+    return () => {
+      channel.close();
+    };
+  }, []);
 
   const loginAdmin = (username: string, pass: string): { success: boolean; message?: string } => {
     const cleanUser = username.trim().toLowerCase();
@@ -121,6 +217,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         username: cleanUser,
       };
       setAdminUser(user);
+      setLoggedInPlayer(null);
+      localStorage.removeItem(PLAYER_SESSION_KEY);
       setIsLoggedIn(true);
       setUserRole('admin');
       localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(user));
@@ -130,7 +228,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     return {
       success: false,
-      message: 'Tài khoản hoặc mật khẩu không chính xác!',
+      message: 'Tài khoản hoặc mật khẩu Ban Quản Trị không chính xác!',
     };
   };
 
@@ -141,43 +239,159 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setUserRole('viewer');
     localStorage.removeItem(ADMIN_SESSION_KEY);
   };
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedSectFilter, setSelectedSectFilter] = useState<string>('all');
-  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
-  // Sync state to LocalStorage
-  const persistState = useCallback((b: typeof brackets, p: typeof participants, m: typeof matches) => {
+  const loginPlayer = (username: string, pass: string): { success: boolean; message?: string } => {
+    const cleanUser = username.trim().toLowerCase();
+    const cleanPass = pass.trim();
+
+    const account = playerAccounts[cleanUser];
+    if (account && account.password === cleanPass) {
+      setLoggedInPlayer(account);
+      setAdminUser(null);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      setIsLoggedIn(true);
+      setUserRole('player');
+      localStorage.setItem(PLAYER_SESSION_KEY, JSON.stringify(account));
+      soundEngine.playGong();
+      return { success: true };
+    }
+
+    return {
+      success: false,
+      message: 'Tài khoản hoặc mật khẩu tuyển thủ không chính xác! Vui lòng kiểm tra lại email.',
+    };
+  };
+
+  const logoutPlayer = () => {
+    soundEngine.playClick();
+    setLoggedInPlayer(null);
+    setIsLoggedIn(false);
+    setUserRole('viewer');
+    localStorage.removeItem(PLAYER_SESSION_KEY);
+  };
+
+  // Claim account for a participant
+  const claimPlayerAccount = async (
+    participantId: string,
+    email: string
+  ): Promise<{ success: boolean; username: string; password: string; message?: string }> => {
+    const targetPlayer = participants[participantId];
+    if (!targetPlayer) {
+      return { success: false, username: '', password: '', message: 'Không tìm thấy tuyển thủ' };
+    }
+
+    const cleanUsername = generateUsernameFromPlayerName(targetPlayer.name);
+    
+    // Check if account already created for this username
+    let password = playerAccounts[cleanUsername]?.password;
+    if (!password) {
+      // Generate password, e.g. "teadeptrai"
+      password = `${cleanUsername}deptrai`;
+    }
+
+    const newAccount: PlayerAccount = {
+      id: `acc-${participantId}`,
+      participantId,
+      playerName: targetPlayer.name,
+      username: cleanUsername,
+      password,
+      email: email.trim(),
+      claimedAt: new Date().toISOString(),
+    };
+
+    // Update state
+    const updatedAccounts = {
+      ...playerAccounts,
+      [cleanUsername]: newAccount,
+    };
+
+    const updatedParticipants = {
+      ...participants,
+      [participantId]: {
+        ...targetPlayer,
+        claimed: true,
+        email: email.trim(),
+        username: cleanUsername,
+      },
+    };
+
+    setPlayerAccounts(updatedAccounts);
+    setParticipants(updatedParticipants);
+    persistState(brackets, updatedParticipants, matches, updatedAccounts);
+
+    // Send email via Serverless API (voquocthang1809@gmail.com)
     try {
-      const data = { brackets: b, participants: p, matches: m };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const response = await fetch('/api/send-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          playerName: targetPlayer.name,
+          username: cleanUsername,
+          password,
+          bracketName: brackets[targetPlayer.bracketId]?.name || 'Tông Môn Tranh Bá',
+        }),
+      });
 
-      // Broadcast to other tabs
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
-        channel.postMessage({ type: 'STATE_UPDATE', payload: data });
-        channel.close();
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        console.warn('API send-account warning:', data.error);
       }
-    } catch {}
-  }, []);
+    } catch (err) {
+      console.error('Không thể gọi API gửi email:', err);
+    }
 
-  // Listen to BroadcastChannel for real-time cross-tab updates (Supabase Realtime mimic)
-  useEffect(() => {
-    if (typeof BroadcastChannel === 'undefined') return;
-    const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
-    channel.onmessage = (event) => {
-      if (event.data?.type === 'STATE_UPDATE') {
-        const { brackets: b, participants: p, matches: m } = event.data.payload;
-        if (b) setBrackets(b);
-        if (p) setParticipants(p);
-        if (m) setMatches(m);
+    soundEngine.playVictoryFanfare();
+    return {
+      success: true,
+      username: cleanUsername,
+      password,
+      message: `Đã cấp tài khoản thành công và gửi thông tin về email ${email}!`,
+    };
+  };
+
+  // Submit 1-time player ban for a match
+  const submitPlayerBan = (
+    matchId: string,
+    playerId: string,
+    banHero: string
+  ): { success: boolean; message?: string } => {
+    const match = matches[matchId];
+    if (!match) {
+      return { success: false, message: 'Không tìm thấy trận đấu' };
+    }
+
+    const cleanBan = banHero.trim();
+    if (!cleanBan) {
+      return { success: false, message: 'Vui lòng nhập tên tướng muốn cấm' };
+    }
+
+    const updated = { ...matches };
+    const targetMatch = { ...match };
+
+    if (targetMatch.player1Id === playerId) {
+      if (targetMatch.player1Ban) {
+        return { success: false, message: 'Bạn đã cấm tướng cho trận này rồi, không thể chỉnh sửa!' };
       }
-    };
-    return () => {
-      channel.close();
-    };
-  }, []);
+      targetMatch.player1Ban = cleanBan;
+      targetMatch.player1BanTime = new Date().toISOString();
+    } else if (targetMatch.player2Id === playerId) {
+      if (targetMatch.player2Ban) {
+        return { success: false, message: 'Bạn đã cấm tướng cho trận này rồi, không thể chỉnh sửa!' };
+      }
+      targetMatch.player2Ban = cleanBan;
+      targetMatch.player2BanTime = new Date().toISOString();
+    } else {
+      return { success: false, message: 'Bạn không thuộc danh sách thi đấu của trận này!' };
+    }
+
+    updated[matchId] = targetMatch;
+    setMatches(updated);
+    persistState(brackets, participants, updated);
+    soundEngine.playAdvanceStrike();
+
+    return { success: true, message: `Đã cấm tướng "${cleanBan}" thành công!` };
+  };
 
   const toggleSound = () => {
     const next = !soundEnabled;
@@ -240,64 +454,29 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const handleShuffleBracket = (bId: BracketId) => {
-    soundEngine.playGong();
-    const bParticipants = Object.values(participants).filter(p => p.bracketId === bId);
-    // Randomize bracket pairings
-    const newBracketMatches = generateTournamentBracket(bId, bParticipants, true);
-
-    const updatedMatches = { ...matches };
-    Object.keys(updatedMatches).forEach(k => {
-      if (updatedMatches[k].bracketId === bId) {
-        delete updatedMatches[k];
-      }
-    });
-
-    Object.assign(updatedMatches, newBracketMatches);
-    setMatches(updatedMatches);
-    persistState(brackets, participants, updatedMatches);
+    handleRegenerateBracket(bId);
   };
 
   const handleAddParticipant = (p: Participant) => {
-    soundEngine.playGong();
-    const nextP = { ...participants, [p.id]: p };
-    setParticipants(nextP);
-    // Regenerate and randomly shuffle affected bracket automatically
-    const bParticipants = Object.values(nextP).filter(x => x.bracketId === p.bracketId);
-    const newMatches = generateTournamentBracket(p.bracketId, bParticipants, true);
-    const nextMatches = { ...matches };
-    Object.keys(nextMatches).forEach(k => {
-      if (nextMatches[k].bracketId === p.bracketId) delete nextMatches[k];
-    });
-    Object.assign(nextMatches, newMatches);
-    setMatches(nextMatches);
-    persistState(brackets, nextP, nextMatches);
+    soundEngine.playClick();
+    const updated = { ...participants, [p.id]: p };
+    setParticipants(updated);
+    persistState(brackets, updated, matches);
   };
 
   const handleUpdateParticipant = (p: Participant) => {
     soundEngine.playClick();
-    const nextP = { ...participants, [p.id]: p };
-    setParticipants(nextP);
-    persistState(brackets, nextP, matches);
+    const updated = { ...participants, [p.id]: p };
+    setParticipants(updated);
+    persistState(brackets, updated, matches);
   };
 
   const handleDeleteParticipant = (id: string) => {
     soundEngine.playClick();
-    const target = participants[id];
-    if (!target) return;
-    const bId = target.bracketId;
-    const nextP = { ...participants };
-    delete nextP[id];
-    setParticipants(nextP);
-
-    const bParticipants = Object.values(nextP).filter(x => x.bracketId === bId);
-    const newMatches = generateTournamentBracket(bId, bParticipants, true);
-    const nextMatches = { ...matches };
-    Object.keys(nextMatches).forEach(k => {
-      if (nextMatches[k].bracketId === bId) delete nextMatches[k];
-    });
-    Object.assign(nextMatches, newMatches);
-    setMatches(nextMatches);
-    persistState(brackets, nextP, nextMatches);
+    const updated = { ...participants };
+    delete updated[id];
+    setParticipants(updated);
+    persistState(brackets, updated, matches);
   };
 
   const handleUpdateMatchDetails = (matchId: string, updates: Partial<Match>) => {
@@ -305,48 +484,42 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const match = matches[matchId];
     if (!match) return;
     const updatedMatch = { ...match, ...updates };
-    const nextMatches = { ...matches, [matchId]: updatedMatch };
-    setMatches(nextMatches);
-    persistState(brackets, participants, nextMatches);
+    const updated = { ...matches, [matchId]: updatedMatch };
+    setMatches(updated);
+    persistState(brackets, participants, updated);
   };
 
-  // Simulate next pending match with both participants ready
-  const handleSimulateNextStep = (targetBracketId: BracketId = selectedBracketId) => {
-    const readyMatches = Object.values(matches).filter(
-      m => m.bracketId === targetBracketId &&
-           m.status === 'scheduled' &&
-           m.player1Id &&
-           m.player2Id
-    );
+  const handleSimulateNextStep = (bId?: BracketId) => {
+    const targetBracketId = bId || selectedBracketId;
+    soundEngine.playClick();
+    const bMatches = Object.values(matches)
+      .filter(m => m.bracketId === targetBracketId && m.status === 'scheduled')
+      .sort((a, b) => a.round - b.round || a.matchIndex - b.matchIndex);
 
-    if (readyMatches.length === 0) return;
+    if (bMatches.length === 0) return;
 
-    // Pick first match by round
-    readyMatches.sort((a, b) => a.round - b.round || a.matchIndex - b.matchIndex);
-    const target = readyMatches[0];
+    const nextMatch = bMatches[0];
+    const outcome = simulateMatchOutcome(nextMatch, participants);
+    if (!outcome) return;
 
-    const outcome = simulateMatchOutcome(target, participants);
-    if (outcome) {
-      handleAdvanceWinner(target.id, outcome.winnerId, {
-        p1Score: outcome.p1Score,
-        p2Score: outcome.p2Score,
-      });
-    }
+    handleAdvanceWinner(nextMatch.id, outcome.winnerId, {
+      p1Score: outcome.p1Score,
+      p2Score: outcome.p2Score,
+    });
   };
 
-  // Auto simulate entire tournament
-  const handleSimulateAll = async (targetBracketId: BracketId = selectedBracketId) => {
+  const handleSimulateAll = async (bId?: BracketId) => {
+    const targetBracketId = bId || selectedBracketId;
     setIsSimulating(true);
+    soundEngine.playGong();
+
     let current = { ...matches };
+    const totalRounds = brackets[targetBracketId]?.totalRounds || 4;
 
-    for (let round = 1; round <= 6; round++) {
+    for (let r = 1; r <= totalRounds; r++) {
       const pending = Object.values(current).filter(
-        m => m.bracketId === targetBracketId &&
-             m.status === 'scheduled' &&
-             m.player1Id &&
-             m.player2Id
+        m => m.bracketId === targetBracketId && m.round === r && m.status === 'scheduled'
       );
-
       if (pending.length === 0) break;
 
       for (const m of pending) {
@@ -370,15 +543,22 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const handleResetAllData = () => {
     soundEngine.playGong();
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(PLAYER_SESSION_KEY);
+    localStorage.removeItem(ADMIN_SESSION_KEY);
     const initial = getInitialTournamentData();
     setBrackets(initial.brackets);
     setParticipants(initial.participants);
     setMatches(initial.matches);
-    persistState(initial.brackets, initial.participants, initial.matches);
+    setPlayerAccounts({});
+    setAdminUser(null);
+    setLoggedInPlayer(null);
+    setUserRole('viewer');
+    setIsLoggedIn(false);
+    persistState(initial.brackets, initial.participants, initial.matches, {});
   };
 
   const exportDataJSON = (): string => {
-    return JSON.stringify({ brackets, participants, matches }, null, 2);
+    return JSON.stringify({ brackets, participants, matches, playerAccounts }, null, 2);
   };
 
   const importDataJSON = (jsonStr: string): boolean => {
@@ -388,7 +568,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setBrackets(data.brackets);
         setParticipants(data.participants);
         setMatches(data.matches);
-        persistState(data.brackets, data.participants, data.matches);
+        if (data.playerAccounts) setPlayerAccounts(data.playerAccounts);
+        persistState(data.brackets, data.participants, data.matches, data.playerAccounts || {});
         soundEngine.playGong();
         return true;
       }
@@ -404,10 +585,12 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         brackets,
         participants,
         matches,
+        playerAccounts,
         selectedBracketId,
         userRole,
         isLoggedIn,
         adminUser,
+        loggedInPlayer,
         soundEnabled,
         searchQuery,
         selectedSectFilter,
@@ -417,6 +600,10 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setUserRole,
         loginAdmin,
         logoutAdmin,
+        loginPlayer,
+        logoutPlayer,
+        claimPlayerAccount,
+        submitPlayerBan,
         toggleSound,
         setSearchQuery,
         setSelectedSectFilter,

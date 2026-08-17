@@ -12,6 +12,7 @@ interface ThirdPlaceMatchProps {
   onResetMatch: (matchId: string) => void;
   onOpenScheduler: (match: Match) => void;
   onOpenMatchDetails: (matchId: string) => void;
+  onOpenPlayerBan?: (match: Match, playerId: string, playerName: string) => void;
 }
 
 export const ThirdPlaceMatch: React.FC<ThirdPlaceMatchProps> = ({
@@ -23,6 +24,7 @@ export const ThirdPlaceMatch: React.FC<ThirdPlaceMatchProps> = ({
   onResetMatch,
   onOpenScheduler,
   onOpenMatchDetails,
+  onOpenPlayerBan,
 }) => {
   if (!match) return null;
 
@@ -51,6 +53,7 @@ export const ThirdPlaceMatch: React.FC<ThirdPlaceMatchProps> = ({
           onResetMatch={onResetMatch}
           onOpenScheduler={onOpenScheduler}
           onOpenMatchDetails={onOpenMatchDetails}
+          onOpenPlayerBan={onOpenPlayerBan}
         />
       </div>
     </div>

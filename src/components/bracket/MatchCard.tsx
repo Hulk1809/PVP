@@ -1,8 +1,9 @@
 import React from 'react';
-import { Clock, Trophy, Edit3, Crown, RotateCcw, Swords, Sparkles } from 'lucide-react';
+import { Clock, Trophy, Edit3, Crown, RotateCcw, Swords, Sparkles, ShieldX } from 'lucide-react';
 import { Match, Participant, UserRole, DivisionTheme } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
 import { getDivisionTheme } from '../../utils/themeStyles';
+import { useTournament } from '../../store/tournamentStore';
 
 interface MatchCardProps {
   match: Match;
@@ -14,6 +15,7 @@ interface MatchCardProps {
   onResetMatch: (matchId: string) => void;
   onOpenScheduler: (match: Match) => void;
   onOpenMatchDetails: (matchId: string) => void;
+  onOpenPlayerBan?: (match: Match, playerId: string, playerName: string) => void;
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
@@ -26,7 +28,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   onResetMatch,
   onOpenScheduler,
   onOpenMatchDetails,
+  onOpenPlayerBan,
 }) => {
+  const { loggedInPlayer } = useTournament();
   const themeConfig = getDivisionTheme(theme);
   const isCompleted = match.status === 'completed';
   const isBye = match.status === 'bye';
@@ -39,6 +43,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({
 
   const isP1Winner = match.winnerId === player1?.id && player1 !== null;
   const isP2Winner = match.winnerId === player2?.id && player2 !== null;
+
+  const isMeP1 = Boolean(loggedInPlayer && player1 && loggedInPlayer.participantId === player1.id);
+  const isMeP2 = Boolean(loggedInPlayer && player2 && loggedInPlayer.participantId === player2.id);
 
   return (
     <div
@@ -108,20 +115,35 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           isP1Winner ? `${themeConfig.winnerRowBg} font-bold` : isCompleted && !isP1Winner ? 'opacity-40' : ''
         }`}
       >
-        <div className="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
+        <div className="flex items-center space-x-2 min-w-0 flex-1 pr-1.5">
           {player1 ? (
             <>
               <PlayerAvatar name={player1.name} size="sm" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center space-x-1">
-                  <span className="text-xs text-white truncate font-medium">
+                  <span className={`text-xs truncate font-medium ${isMeP1 ? 'text-cyan-300 font-bold' : 'text-white'}`}>
                     {player1.name}
                   </span>
+                  {isMeP1 && (
+                    <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                      Bạn
+                    </span>
+                  )}
                   {isP1Winner && <Crown className="w-3.5 h-3.5 text-white flex-shrink-0 drop-shadow" />}
                 </div>
-                <p className="text-[10px] text-slate-400 truncate font-mono">
-                  #{player1.seedRank} • Lv.{player1.soulLevel}
-                </p>
+
+                <div className="flex items-center space-x-1.5 mt-0.5">
+                  <p className="text-[10px] text-slate-400 truncate font-mono">
+                    #{player1.seedRank} • Lv.{player1.soulLevel}
+                  </p>
+
+                  {/* Player 1 Ban Badge */}
+                  {match.player1Ban && (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-red-950/80 text-red-300 border border-red-500/40 truncate max-w-[100px]" title={`Cấm: ${match.player1Ban}`}>
+                      🚫 {match.player1Ban}
+                    </span>
+                  )}
+                </div>
               </div>
             </>
           ) : (
@@ -130,6 +152,20 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         </div>
 
         <div className="flex items-center space-x-1.5 flex-shrink-0">
+          {/* Player 1 Ban Action Button */}
+          {isMeP1 && player1 && !match.player1Ban && !isCompleted && onOpenPlayerBan && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenPlayerBan(match, player1.id, player1.name);
+              }}
+              title="Cấm tướng cho trận này (1 lần duy nhất)"
+              className="px-2 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-red-600 to-rose-600 text-white hover:from-red-500 hover:to-rose-500 active:scale-95 transition-all shadow-md shadow-red-600/30 animate-pulse border border-red-400"
+            >
+              Cấm
+            </button>
+          )}
+
           {/* Admin 1-Click Winner Button */}
           {userRole === 'admin' && player1 && player2 && !isCompleted && (
             <button
@@ -163,20 +199,35 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           isP2Winner ? `${themeConfig.winnerRowBg} font-bold` : isCompleted && !isP2Winner ? 'opacity-40' : ''
         }`}
       >
-        <div className="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
+        <div className="flex items-center space-x-2 min-w-0 flex-1 pr-1.5">
           {player2 ? (
             <>
               <PlayerAvatar name={player2.name} size="sm" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center space-x-1">
-                  <span className="text-xs text-white truncate font-medium">
+                  <span className={`text-xs truncate font-medium ${isMeP2 ? 'text-cyan-300 font-bold' : 'text-white'}`}>
                     {player2.name}
                   </span>
+                  {isMeP2 && (
+                    <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                      Bạn
+                    </span>
+                  )}
                   {isP2Winner && <Crown className="w-3.5 h-3.5 text-white flex-shrink-0 drop-shadow" />}
                 </div>
-                <p className="text-[10px] text-slate-400 truncate font-mono">
-                  #{player2.seedRank} • Lv.{player2.soulLevel}
-                </p>
+
+                <div className="flex items-center space-x-1.5 mt-0.5">
+                  <p className="text-[10px] text-slate-400 truncate font-mono">
+                    #{player2.seedRank} • Lv.{player2.soulLevel}
+                  </p>
+
+                  {/* Player 2 Ban Badge */}
+                  {match.player2Ban && (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-red-950/80 text-red-300 border border-red-500/40 truncate max-w-[100px]" title={`Cấm: ${match.player2Ban}`}>
+                      🚫 {match.player2Ban}
+                    </span>
+                  )}
+                </div>
               </div>
             </>
           ) : isBye ? (
@@ -187,6 +238,20 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         </div>
 
         <div className="flex items-center space-x-1.5 flex-shrink-0">
+          {/* Player 2 Ban Action Button */}
+          {isMeP2 && player2 && !match.player2Ban && !isCompleted && onOpenPlayerBan && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenPlayerBan(match, player2.id, player2.name);
+              }}
+              title="Cấm tướng cho trận này (1 lần duy nhất)"
+              className="px-2 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-red-600 to-rose-600 text-white hover:from-red-500 hover:to-rose-500 active:scale-95 transition-all shadow-md shadow-red-600/30 animate-pulse border border-red-400"
+            >
+              Cấm
+            </button>
+          )}
+
           {/* Admin 1-Click Winner Button */}
           {userRole === 'admin' && player1 && player2 && !isCompleted && (
             <button
@@ -214,18 +279,20 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         </div>
       </div>
 
-      {/* Admin Reset Button if completed */}
+      {/* Admin Reset Match Option */}
       {userRole === 'admin' && isCompleted && !isBye && (
-        <div className="px-3 py-1 bg-black/80 border-t border-white/10 flex justify-end">
+        <div className="px-3 py-1 bg-black/70 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
+          <span>Kết quả đã ghi nhận</span>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onResetMatch(match.id);
             }}
-            className="flex items-center space-x-1 text-[10px] text-slate-400 hover:text-rose-400 transition-colors"
+            title="Hủy kết quả & đấu lại"
+            className="flex items-center space-x-1 text-slate-400 hover:text-rose-400 transition-colors"
           >
             <RotateCcw className="w-3 h-3" />
-            <span>Hủy kết quả</span>
+            <span>Hủy</span>
           </button>
         </div>
       )}

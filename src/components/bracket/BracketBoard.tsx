@@ -4,6 +4,7 @@ import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
 import { BlueSilverVineConnector } from './BlueSilverVineConnector';
+import { PlayerBanModal } from './PlayerBanModal';
 import { Match } from '../../types/tournament';
 import { ConfirmWinnerModal, ConfirmActionType } from '../common/ConfirmWinnerModal';
 import { getDivisionTheme } from '../../utils/themeStyles';
@@ -33,7 +34,12 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [confirmAction, setConfirmAction] = useState<ConfirmActionType | null>(null);
+  const [banningModalData, setBanningModalData] = useState<{ match: Match; playerId: string; playerName: string } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleOpenPlayerBan = (m: Match, pId: string, pName: string) => {
+    setBanningModalData({ match: m, playerId: pId, playerName: pName });
+  };
 
   // Mouse Drag-To-Scroll states (2D Pan X and Y)
   const [isDragging, setIsDragging] = useState(false);
@@ -333,6 +339,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                 onResetMatch={handleRequestReset}
                                 onOpenScheduler={onOpenScheduler}
                                 onOpenMatchDetails={onOpenMatchDetails}
+                                onOpenPlayerBan={handleOpenPlayerBan}
                               />
                             </div>
                           </div>
@@ -384,6 +391,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                   onResetMatch={handleRequestReset}
                                   onOpenScheduler={onOpenScheduler}
                                   onOpenMatchDetails={onOpenMatchDetails}
+                                  onOpenPlayerBan={handleOpenPlayerBan}
                                 />
                               </div>
 
@@ -404,6 +412,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                     onResetMatch={handleRequestReset}
                                     onOpenScheduler={onOpenScheduler}
                                     onOpenMatchDetails={onOpenMatchDetails}
+                                    onOpenPlayerBan={handleOpenPlayerBan}
                                   />
                                 </div>
                               )}
@@ -477,6 +486,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                   onResetMatch={handleRequestReset}
                                   onOpenScheduler={onOpenScheduler}
                                   onOpenMatchDetails={onOpenMatchDetails}
+                                  onOpenPlayerBan={handleOpenPlayerBan}
                                 />
                               </div>
                             </div>
@@ -502,6 +512,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                     onResetMatch={handleRequestReset}
                                     onOpenScheduler={onOpenScheduler}
                                     onOpenMatchDetails={onOpenMatchDetails}
+                                    onOpenPlayerBan={handleOpenPlayerBan}
                                   />
                                 </div>
                               </div>
@@ -539,6 +550,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
               onResetMatch={handleRequestReset}
               onOpenScheduler={onOpenScheduler}
               onOpenMatchDetails={onOpenMatchDetails}
+              onOpenPlayerBan={handleOpenPlayerBan}
             />
           )}
 
@@ -551,6 +563,16 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
         onClose={() => setConfirmAction(null)}
         onConfirm={handleExecuteConfirmedAction}
       />
+
+      {/* Player Ban Hero Modal */}
+      {banningModalData && (
+        <PlayerBanModal
+          match={banningModalData.match}
+          playerId={banningModalData.playerId}
+          playerName={banningModalData.playerName}
+          onClose={() => setBanningModalData(null)}
+        />
+      )}
 
     </div>
   );

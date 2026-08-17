@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Shield, Swords, Sparkles } from 'lucide-react';
-import { useTournament } from '../../store/tournamentStore';
+import { Search, Plus, Edit2, Trash2, Shield, Swords, Sparkles, Key, CheckCircle2 } from 'lucide-react';
+import { useTournament, generateUsernameFromPlayerName } from '../../store/tournamentStore';
 import { Participant } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
+import { ClaimAccountModal } from './ClaimAccountModal';
 
 interface ParticipantListProps {
   onOpenAddParticipant: () => void;
@@ -24,6 +25,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
   } = useTournament();
 
   const [sortBy, setSortBy] = useState<'seed' | 'name' | 'level'>('seed');
+  const [claimingPlayer, setClaimingPlayer] = useState<Participant | null>(null);
 
   const currentBracket = brackets[selectedBracketId];
   if (!currentBracket) return null;
@@ -133,6 +135,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
       {/* Grid of Players */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
         {list.map((p) => {
+          const username = p.username || generateUsernameFromPlayerName(p.name);
           return (
             <div
               key={p.id}
@@ -175,11 +178,33 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                     </span>
                   </div>
                 </div>
+
+                {/* Account Claim Status Section */}
+                <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between">
+                  {p.claimed ? (
+                    <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span>Đã có tài khoản</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setClaimingPlayer(p)}
+                      className="flex items-center space-x-1 text-[10px] font-bold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 px-2.5 py-1 rounded-lg border border-cyan-500/40 hover:border-cyan-400 transition-all shadow-sm active:scale-95"
+                    >
+                      <Key className="w-3 h-3 text-cyan-300" />
+                      <span>Nhận Tài Khoản</span>
+                    </button>
+                  )}
+
+                  <span className="text-[10px] text-slate-500 font-mono" title="Tên đăng nhập">
+                    @{username}
+                  </span>
+                </div>
               </div>
 
               {/* Admin Actions */}
               {userRole === 'admin' && (
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-end space-x-2">
+                <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-end space-x-2">
                   <button
                     onClick={() => onOpenEditParticipant(p)}
                     title="Chỉnh sửa tuyển thủ"
@@ -209,6 +234,14 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
         <div className="text-center py-16 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10">
           <p className="text-sm text-slate-400">Không tìm thấy tuyển thủ nào phù hợp</p>
         </div>
+      )}
+
+      {/* Claim Account Modal */}
+      {claimingPlayer && (
+        <ClaimAccountModal
+          participant={claimingPlayer}
+          onClose={() => setClaimingPlayer(null)}
+        />
       )}
 
     </div>

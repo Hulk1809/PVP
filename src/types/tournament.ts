@@ -4,7 +4,17 @@ export type DivisionTheme = 'ocean' | 'forest' | 'village';
 
 export type MatchStatus = 'scheduled' | 'live' | 'completed' | 'bye';
 
-export type UserRole = 'viewer' | 'admin';
+export type UserRole = 'viewer' | 'admin' | 'player';
+
+export interface PlayerAccount {
+  id: string; // e.g. 'acc-p-tea'
+  participantId: string;
+  playerName: string;
+  username: string; // e.g. 'tea'
+  password: string; // e.g. 'teadeptrai'
+  email: string;
+  claimedAt: string;
+}
 
 export interface Bracket {
   id: BracketId;
@@ -35,6 +45,9 @@ export interface Participant {
   winRate: number;
   bio?: string;
   isGhost?: boolean; // For Byes representation
+  claimed?: boolean; // Has claimed email/account
+  email?: string;
+  username?: string;
 }
 
 export interface Match {
@@ -55,6 +68,11 @@ export interface Match {
   status: MatchStatus;
   bestOf: number; // 1, 3, or 5
   refereeNote?: string;
+  // Banned heroes selected by player 1 and player 2
+  player1Ban?: string;
+  player2Ban?: string;
+  player1BanTime?: string;
+  player2BanTime?: string;
 }
 
 export interface SectInfo {
@@ -75,6 +93,7 @@ export interface TournamentStoreState {
   brackets: Record<BracketId, Bracket>;
   participants: Record<string, Participant>;
   matches: Record<string, Match>;
+  playerAccounts: Record<string, PlayerAccount>;
   selectedBracketId: BracketId;
   userRole: UserRole;
   soundEnabled: boolean;

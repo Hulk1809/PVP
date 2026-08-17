@@ -17,6 +17,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
     isLoggedIn,
     adminUser,
     logoutAdmin,
+    loggedInPlayer,
+    logoutPlayer,
     soundEnabled,
     toggleSound,
   } = useTournament();
@@ -127,20 +129,39 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
               {soundEnabled ? <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </button>
 
-            {/* Admin Session or Login Button */}
+            {/* Session (Admin or Player) or Login Button */}
             {isLoggedIn && adminUser ? (
-              <div className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-1.5 pr-2 sm:pr-2.5 rounded-lg sm:rounded-xl bg-black/40 backdrop-blur-md border border-white/20 shadow-sm">
-                <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-white/10 border border-white/30 flex items-center justify-center text-slate-200">
+              <div className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-1.5 pr-2 sm:pr-2.5 rounded-lg sm:rounded-xl bg-black/40 backdrop-blur-md border border-amber-500/30 shadow-sm">
+                <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
                   <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4" />
                 </div>
                 <div className="text-left hidden md:block">
                   <p className="text-[11px] font-bold text-white leading-tight font-heading">
                     {adminUser.name}
                   </p>
-                  <p className="text-[9px] text-slate-300 font-mono">Quản Trị Viên</p>
+                  <p className="text-[9px] text-amber-300 font-mono">Ban Tổ Chức</p>
                 </div>
                 <button
                   onClick={logoutAdmin}
+                  title="Đăng xuất"
+                  className="p-1 rounded-md sm:rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors ml-0.5 sm:ml-1"
+                >
+                  <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                </button>
+              </div>
+            ) : isLoggedIn && loggedInPlayer ? (
+              <div className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-1.5 pr-2 sm:pr-2.5 rounded-lg sm:rounded-xl bg-black/40 backdrop-blur-md border border-cyan-500/40 shadow-sm shadow-cyan-500/20">
+                <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300">
+                  <Swords className="w-3 h-3 sm:w-4 sm:h-4" />
+                </div>
+                <div className="text-left hidden md:block">
+                  <p className="text-[11px] font-bold text-white leading-tight font-heading">
+                    {loggedInPlayer.playerName}
+                  </p>
+                  <p className="text-[9px] text-cyan-300 font-mono">Tuyển Thủ (@{loggedInPlayer.username})</p>
+                </div>
+                <button
+                  onClick={logoutPlayer}
                   title="Đăng xuất"
                   className="p-1 rounded-md sm:rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors ml-0.5 sm:ml-1"
                 >
