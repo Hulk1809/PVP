@@ -6,10 +6,23 @@ import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutc
 import { soundEngine } from '../engine/soundEngine';
 import { cloudSync } from '../engine/cloudSyncEngine';
 
-const STORAGE_KEY = 'soul_land_pvp_tournament_v8';
+const STORAGE_KEY = 'soul_land_pvp_tournament_v11';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
 const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
 const PLAYER_SESSION_KEY = 'soul_land_player_session_v1';
+
+function isValidTournamentPayload(data: any): data is {
+  brackets: Record<BracketId, Bracket>;
+  participants: Record<string, Participant>;
+  matches: Record<string, Match>;
+  playerAccounts: Record<string, PlayerAccount>;
+} {
+  if (!data) return false;
+  const matchCount = Object.keys(data.matches || {}).length;
+  const participantCount = Object.keys(data.participants || {}).length;
+  const bracketCount = Object.keys(data.brackets || {}).length;
+  return matchCount >= 15 && participantCount >= 20 && bracketCount >= 3;
+}
 
 export function generateUsernameFromPlayerName(name: string): string {
   let clean = name
@@ -267,19 +280,28 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Listen to BroadcastChannel and CloudSync for real-time cross-device updates
   useEffect(() => {
-    // 1. Initial Cloud Fetch
+    // 1. Initial Cloud Fetch & Auto-Seed
     cloudSync.fetchLatestState().then((cloudData) => {
-      if (cloudData) {
+      if (isValidTournamentPayload(cloudData)) {
         if (cloudData.brackets) setBrackets(cloudData.brackets);
         if (cloudData.participants) setParticipants(cloudData.participants);
         if (cloudData.matches) setMatches(cloudData.matches);
         if (cloudData.playerAccounts) setPlayerAccounts(cloudData.playerAccounts);
+      } else {
+        // Cloud data is empty or invalid -> Seed cloud with complete initial tournament dataset
+        const fullData = getInitialTournamentData();
+        cloudSync.pushState({
+          brackets: fullData.brackets,
+          participants: fullData.participants,
+          matches: fullData.matches,
+          playerAccounts: {},
+        });
       }
     });
 
     // 2. Subscribe to Real-time Cloud updates (WebSockets + Polling)
     const unsubscribeCloud = cloudSync.onUpdate((cloudData) => {
-      if (cloudData) {
+      if (isValidTournamentPayload(cloudData)) {
         if (cloudData.brackets) setBrackets(cloudData.brackets);
         if (cloudData.participants) setParticipants(cloudData.participants);
         if (cloudData.matches) setMatches(cloudData.matches);
