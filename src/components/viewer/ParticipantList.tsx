@@ -141,8 +141,14 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
           return (
             <div
               key={p.id}
-              className="group relative rounded-xl bg-black/55 backdrop-blur-md border border-white/15 hover:border-white/40 p-4 transition-all duration-200 flex flex-col justify-between shadow-lg"
+              className="group relative rounded-2xl bg-gradient-to-b from-zinc-900/80 via-black/70 to-zinc-950/90 backdrop-blur-xl border border-white/15 hover:border-cyan-400/50 p-4 transition-all duration-300 flex flex-col justify-between shadow-xl hover:shadow-cyan-500/20 hover:scale-[1.02] overflow-hidden"
             >
+              {/* Corner Metallic Highlights */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/40 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/40 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/40 pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/40 pointer-events-none" />
+
               <div>
                 {/* Header: Avatar + Name + Seed */}
                 <div className="flex items-start space-x-3">

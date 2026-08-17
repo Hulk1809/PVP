@@ -182,14 +182,14 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
           strokeWidth="3"
           strokeLinecap="round"
         />
-        {/* Inner Light Core Pulse */}
+        {/* Inner Light Core Pulse with Continuous Flow Animation */}
         {hasTopWinner && (
           <path
             d={`M 0,${yTop} C 28,${yTop} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.coreGlow}
-            strokeWidth="1.5"
+            strokeWidth="1.8"
             strokeLinecap="round"
-            strokeDasharray="6 5"
+            className="vine-pulse-anim"
           />
         )}
 
@@ -211,14 +211,14 @@ export const BlueSilverVineConnector: React.FC<BlueSilverVineConnectorProps> = (
           strokeWidth="3"
           strokeLinecap="round"
         />
-        {/* Inner Light Core Pulse */}
+        {/* Inner Light Core Pulse with Continuous Flow Animation */}
         {hasBottomWinner && (
           <path
             d={`M 0,${yBottom} C 28,${yBottom} 36,${yMid} 64,${yMid}`}
             stroke={vinePalette.coreGlow}
-            strokeWidth="1.5"
+            strokeWidth="1.8"
             strokeLinecap="round"
-            strokeDasharray="6 5"
+            className="vine-pulse-anim"
           />
         )}
 

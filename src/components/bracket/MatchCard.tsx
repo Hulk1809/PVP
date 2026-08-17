@@ -50,16 +50,21 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   return (
     <div
       onClick={() => onOpenMatchDetails(match.id)}
-      className={`group relative w-64 sm:w-72 rounded-xl transition-all duration-200 cursor-pointer overflow-hidden border backdrop-blur-md shadow-lg ${
+      className={`group relative w-64 sm:w-72 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden border backdrop-blur-xl shadow-lg hover:scale-[1.02] active:scale-[0.99] ${
         isCompleted
           ? `${themeConfig.cardBg} border-white/20 shadow-md`
           : isLive
-          ? `${themeConfig.cardBg} border-white/80 ${themeConfig.tabActiveGlow} ring-1 ring-white/50`
+          ? `${themeConfig.cardBg} border-white/80 ${themeConfig.tabActiveGlow} ring-1 ring-white/50 animate-pulse`
           : isBye
           ? 'bg-black/45 border-white/10 opacity-80'
           : `${themeConfig.cardBg} ${themeConfig.cardBorder} ${themeConfig.cardHoverBorder} hover:bg-black/80`
       }`}
     >
+      {/* Corner Metallic Highlights */}
+      <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/50 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-white/50 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-white/50 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/50 pointer-events-none" />
       {/* Top Meta Bar */}
       <div className={`flex items-center justify-between px-2.5 sm:px-3 py-1.5 ${themeConfig.cardTopBarBg} border-b ${themeConfig.cardTopBarBorder} text-[10px] text-zinc-400 gap-1`}>
         <div className="flex items-center space-x-1 sm:space-x-1.5 flex-wrap min-w-0">
