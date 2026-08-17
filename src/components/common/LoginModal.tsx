@@ -131,7 +131,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <input
                 type="text"
                 required
-                placeholder={loginType === 'admin' ? 'parker / nguyen / hieu' : 'ví dụ: tea, ttt, theanh...'}
+                placeholder={loginType === 'admin' ? 'Nhập tài khoản quản trị...' : 'Nhập tên đăng nhập tuyển thủ...'}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-zinc-900/90 border border-white/20 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-mono"
