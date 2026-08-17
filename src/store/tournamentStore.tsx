@@ -68,6 +68,7 @@ interface TournamentContextType {
   handleAddParticipant: (participant: Participant) => void;
   handleUpdateParticipant: (participant: Participant) => void;
   handleDeleteParticipant: (id: string) => void;
+  handleResetPlayerAccount: (participantId: string) => void;
   handleUpdateMatchDetails: (matchId: string, updates: Partial<Match>) => void;
   handleSimulateNextStep: (bracketId?: BracketId) => void;
   handleSimulateAll: (bracketId?: BracketId) => Promise<void>;
@@ -479,6 +480,30 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     persistState(brackets, updated, matches);
   };
 
+  const handleResetPlayerAccount = (participantId: string) => {
+    soundEngine.playClick();
+    const targetPlayer = participants[participantId];
+    if (!targetPlayer) return;
+    const cleanUsername = generateUsernameFromPlayerName(targetPlayer.name);
+
+    const updatedAccounts = { ...playerAccounts };
+    delete updatedAccounts[cleanUsername];
+
+    const updatedParticipants = {
+      ...participants,
+      [participantId]: {
+        ...targetPlayer,
+        claimed: false,
+        email: undefined,
+        username: undefined,
+      },
+    };
+
+    setPlayerAccounts(updatedAccounts);
+    setParticipants(updatedParticipants);
+    persistState(brackets, updatedParticipants, matches, updatedAccounts);
+  };
+
   const handleUpdateMatchDetails = (matchId: string, updates: Partial<Match>) => {
     soundEngine.playClick();
     const match = matches[matchId];
@@ -615,6 +640,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         handleAddParticipant,
         handleUpdateParticipant,
         handleDeleteParticipant,
+        handleResetPlayerAccount,
         handleUpdateMatchDetails,
         handleSimulateNextStep,
         handleSimulateAll,

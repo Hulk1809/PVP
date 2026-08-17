@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Shield, Swords, Sparkles, Key, CheckCircle2 } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Shield, Swords, Sparkles, Key, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useTournament, generateUsernameFromPlayerName } from '../../store/tournamentStore';
 import { Participant } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
@@ -23,6 +23,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     searchQuery,
     setSearchQuery,
     handleDeleteParticipant,
+    handleResetPlayerAccount,
   } = useTournament();
 
   const [sortBy, setSortBy] = useState<'seed' | 'name' | 'level'>('seed');
@@ -220,6 +221,20 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
               {/* Admin Actions */}
               {userRole === 'admin' && (
                 <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-end space-x-2">
+                  {p.claimed && (
+                    <button
+                      onClick={() => {
+                        if (confirm(`Bạn có muốn HỦY và CẤP LẠI tài khoản cho tuyển thủ "${p.name}" (nếu họ nhập sai email) không?`)) {
+                          handleResetPlayerAccount(p.id);
+                        }
+                      }}
+                      title="Cấp lại tài khoản (Reset khi nhập sai email)"
+                      className="px-2 py-1 rounded-lg text-amber-300 hover:text-amber-200 bg-amber-950/50 hover:bg-amber-900/60 border border-amber-500/40 transition-colors text-[10px] flex items-center space-x-1 font-semibold"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Cấp lại TK</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => onOpenEditParticipant(p)}
                     title="Chỉnh sửa tuyển thủ"

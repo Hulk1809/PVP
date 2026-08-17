@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Mail, Key, ShieldCheck, CheckCircle2, AlertCircle, Loader2, Sparkles, Send } from 'lucide-react';
+import { X, Mail, Key, ShieldCheck, CheckCircle2, AlertCircle, Loader2, Sparkles, Send, Copy, Check, LogIn } from 'lucide-react';
 import { Participant } from '../../types/tournament';
 import { useTournament, generateUsernameFromPlayerName } from '../../store/tournamentStore';
 import { PlayerAvatar } from '../common/PlayerAvatar';
@@ -11,9 +11,10 @@ interface ClaimAccountModalProps {
 }
 
 export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participant, onClose }) => {
-  const { claimPlayerAccount } = useTournament();
+  const { claimPlayerAccount, loginPlayer } = useTournament();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [result, setResult] = useState<{
     success: boolean;
     username: string;
@@ -28,8 +29,9 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) {
-      setError('Vui lòng nhập địa chỉ email hợp lệ (ví dụ: yourname@gmail.com)!');
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+      setError('Vui lòng nhập đúng định dạng email (ví dụ: yourname@gmail.com)!');
       return;
     }
 
@@ -37,13 +39,27 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
     setLoading(true);
 
     try {
-      const res = await claimPlayerAccount(participant.id, email);
+      const res = await claimPlayerAccount(participant.id, cleanEmail);
       setResult(res);
     } catch (err: any) {
       setError(err?.message || 'Có lỗi xảy ra khi tạo tài khoản.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopy = () => {
+    if (!result) return;
+    const text = `Tài khoản: ${result.username}\nMật khẩu: ${result.password}\nTrang web: https://pvp-rho.vercel.app`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleAutoLogin = () => {
+    if (!result) return;
+    loginPlayer(result.username, result.password);
+    onClose();
   };
 
   const modalContent = (
@@ -108,7 +124,7 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
                   <input
                     type="email"
                     required
-                    placeholder="ví dụ: honsu@gmail.com"
+                    placeholder="ví dụ: yourname@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
@@ -116,7 +132,7 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
                   />
                 </div>
                 <p className="text-[10px] text-slate-400">
-                  Hệ thống sẽ tự động gửi tên đăng nhập và mật khẩu về email này.
+                  Hệ thống sẽ gửi tài khoản và mật khẩu về email này, đồng thời hiển thị trực tiếp trên màn hình để bạn sao chép.
                 </p>
               </div>
 
@@ -130,10 +146,10 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
               <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 space-y-1">
                 <div className="flex items-center space-x-1.5 text-cyan-300 font-bold">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Quyền lợi sau khi nhận tài khoản:</span>
+                  <span>Quy định & Quyền lợi:</span>
                 </div>
-                <p>• Đăng nhập để trực tiếp thực hiện <strong>Cấm Tướng (Ban Hero)</strong> ở các trận đấu của bạn.</p>
-                <p>• Tự động lưu mật khẩu cho các vòng đấu tiếp theo.</p>
+                <p>• Nhận tài khoản để thực hiện <strong>Cấm Tướng (Ban Hero)</strong> ở các trận đấu của bạn.</p>
+                <p>• Nếu lỡ nhập nhầm email, bạn vẫn có thể <strong>Sao Chép</strong> hoặc <strong>Đăng Nhập Ngay</strong> trên màn hình.</p>
               </div>
 
               <div className="flex items-center justify-end space-x-3 pt-2">
@@ -166,28 +182,59 @@ export const ClaimAccountModal: React.FC<ClaimAccountModalProps> = ({ participan
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-200 text-xs space-y-2">
+              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-200 text-xs space-y-3">
                 <div className="flex items-center space-x-2 font-bold text-sm text-emerald-300">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   <span>Đã Cấp Tài Khoản Thành Công!</span>
                 </div>
                 <p className="text-[11px] text-slate-300">
-                  Thông tin đăng nhập đã được gửi tới <strong>{email}</strong>. Bạn cũng có thể đăng nhập ngay bằng thông tin dưới đây:
+                  Thông tin đăng nhập đã được gửi tới <strong>{email}</strong>. Bạn hãy lưu lại hoặc đăng nhập ngay:
                 </p>
 
-                <div className="p-3 rounded-lg bg-black/60 border border-white/10 space-y-1 font-mono text-xs text-white">
-                  <p>Tên Đăng Nhập: <strong className="text-cyan-300">{result.username}</strong></p>
-                  <p>Mật Khẩu: <strong className="text-yellow-300">{result.password}</strong></p>
+                {/* Credentials Display Box */}
+                <div className="p-3 rounded-lg bg-black/70 border border-white/15 space-y-1.5 font-mono text-xs text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400">Tên Đăng Nhập:</span>
+                    <strong className="text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30">{result.username}</strong>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400">Mật Khẩu:</span>
+                    <strong className="text-yellow-300 bg-yellow-950/60 px-2 py-0.5 rounded border border-yellow-500/30">{result.password}</strong>
+                  </div>
+                </div>
+
+                <div className="pt-1 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex-1 py-2 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors border border-white/20"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copied ? 'Đã Sao Chép!' : 'Sao Chép Thông Tin'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleAutoLogin}
+                    className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-400 to-sky-400 text-zinc-950 text-xs font-bold flex items-center justify-center space-x-1.5 shadow-md hover:opacity-95 transition-all"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Đăng Nhập Ngay</span>
+                  </button>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="p-2.5 rounded-lg bg-black/40 border border-white/10 text-[10px] text-slate-400">
+                💡 <strong>Mẹo:</strong> Nếu nhập sai email hoặc không nhận được thư, hãy nhấn <em>"Sao Chép Thông Tin"</em> ở trên để lưu lại mật khẩu hoặc nhờ Ban Quản Trị hỗ trợ cấp lại tài khoản.
+              </div>
+
+              <div className="flex justify-end pt-1">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-slate-200 to-white text-zinc-950 shadow-md hover:bg-white active:scale-95 transition-all"
+                  className="px-5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all"
                 >
-                  Đã Hiểu & Đóng
+                  Đóng Cửa Sổ
                 </button>
               </div>
             </div>
