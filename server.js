@@ -92,6 +92,27 @@ app.post('/api/send-account', async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
+
+    // Save account directly into data/tournament_accounts.json on EC2 disk
+    try {
+      const ACCOUNTS_FILE = path.join(DATA_DIR, 'tournament_accounts.json');
+      let accs = {};
+      if (fs.existsSync(ACCOUNTS_FILE)) {
+        accs = JSON.parse(fs.readFileSync(ACCOUNTS_FILE, 'utf-8'));
+      }
+      accs[username] = {
+        playerName: playerName || username,
+        username,
+        password,
+        email,
+        bracketName: bracketName || 'Giải Đấu Chính',
+        claimedAt: new Date().toISOString(),
+      };
+      fs.writeFileSync(ACCOUNTS_FILE, JSON.stringify(accs, null, 2), 'utf-8');
+    } catch (saveErr) {
+      console.error('Error saving account to disk:', saveErr);
+    }
+
     return res.status(200).json({ success: true, message: 'Đã gửi tài khoản về email thành công' });
   } catch (error) {
     console.error('Lỗi khi gửi email:', error);
