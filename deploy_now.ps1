@@ -12,7 +12,7 @@ Write-Host "2. Đang tải lên máy chủ EC2 (3.1.210.184)..." -ForegroundColo
 scp -i $key -o StrictHostKeyChecking=no "d:\PVP\deploy_payload.tar.gz" $remoteDest
 
 Write-Host "3. Đang cài đặt và khởi chạy trên EC2..." -ForegroundColor Cyan
-$cmd = 'sudo mkdir -p /var/www/soul-land-pvp && sudo chown -R ec2-user:ec2-user /var/www/soul-land-pvp && cd /var/www/soul-land-pvp && tar -xzf /home/ec2-user/deploy_payload.tar.gz && rm -f /home/ec2-user/deploy_payload.tar.gz && npm install --omit=dev && sudo setcap cap_net_bind_service=+ep $(which node) && (pm2 delete soul-land-pvp || true) && PORT=80 pm2 start server.js --name soul-land-pvp && pm2 save && pm2 status'
+$cmd = 'sudo mkdir -p /var/www/soul-land-pvp && sudo chown -R ec2-user:ec2-user /var/www/soul-land-pvp && cd /var/www/soul-land-pvp && tar -xzf /home/ec2-user/deploy_payload.tar.gz && rm -f /home/ec2-user/deploy_payload.tar.gz && npm install --omit=dev && sudo pm2 restart soul-land-pvp && sudo pm2 status'
 
 ssh -i $key -o StrictHostKeyChecking=no $remoteHost $cmd
 
