@@ -1,10 +1,7 @@
 // Real-time Cloud Sync Engine for Soul Land PVP Tournament
-// Backed by persistent cloud database for seamless cross-device synchronization
+// Backed by persistent AWS EC2 database for seamless cross-device synchronization
 
-const CLOUD_OBJECT_ID = 'ff8081819ff5b11001a0100711433810';
-const DIRECT_CLOUD_URL = `https://api.restful-api.dev/objects/${CLOUD_OBJECT_ID}`;
-
-interface CloudSyncPayload {
+export interface CloudSyncPayload {
   brackets: any;
   participants: any;
   matches: any;
@@ -32,7 +29,7 @@ class CloudSyncEngine {
     return () => this.listeners.delete(callback);
   }
 
-  // Push state update to cloud
+  // Push state update to AWS EC2 backend
   public async pushState(payload: Omit<CloudSyncPayload, 'updatedAt'>) {
     if (this.isPushing) return;
     this.isPushing = true;
@@ -45,44 +42,23 @@ class CloudSyncEngine {
     this.lastKnownTimestamp = data.updatedAt;
 
     try {
-      // 1. Try Vercel Serverless Function
-      const res = await fetch('/api/sync', {
+      await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: data }),
       });
-
-      if (!res.ok) {
-        throw new Error('Serverless sync failed, trying direct fallback');
-      }
     } catch (err) {
-      // 2. Direct Cloud Fallback
-      try {
-        await fetch(DIRECT_CLOUD_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          },
-          body: JSON.stringify({
-            name: 'soul_land_pvp_state',
-            data,
-          }),
-        });
-      } catch (e) {
-        console.warn('[CloudSync] Fallback push error:', e);
-      }
+      console.warn('[CloudSync] Push sync error:', err);
     } finally {
       this.isPushing = false;
     }
   }
 
-  // Fetch latest state from cloud
+  // Fetch latest state from AWS EC2 backend
   public async fetchLatestState(): Promise<CloudSyncPayload | null> {
     let cloudData: CloudSyncPayload | null = null;
 
     try {
-      // 1. Try Vercel Serverless Function
       const res = await fetch('/api/sync', { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
@@ -90,24 +66,8 @@ class CloudSyncEngine {
           cloudData = json.state;
         }
       }
-    } catch (err) {}
-
-    // 2. Direct Cloud Fallback if needed
-    if (!cloudData) {
-      try {
-        const res = await fetch(DIRECT_CLOUD_URL, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            Accept: 'application/json',
-          },
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data) {
-            cloudData = json.data;
-          }
-        }
-      } catch (err) {}
+    } catch (err) {
+      console.warn('[CloudSync] Fetch sync error:', err);
     }
 
     if (cloudData && cloudData.updatedAt && cloudData.updatedAt > this.lastKnownTimestamp) {
