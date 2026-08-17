@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal, Medal } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
 import { FinalMatchCard } from './FinalMatchCard';
@@ -320,12 +320,21 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
 
                         const slotHeight = BASE_SLOT * Math.pow(2, Math.max(0, rIdx - 1));
 
+                        const p1Bronze = thirdPlaceMatch?.player1Id ? participants[thirdPlaceMatch.player1Id] : null;
+                        const p2Bronze = thirdPlaceMatch?.player2Id ? participants[thirdPlaceMatch.player2Id] : null;
+                        const isBronzeHighlighted =
+                          Boolean(thirdPlaceMatch) &&
+                          searchQuery.trim() !== '' &&
+                          ((p1Bronze && p1Bronze.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                            (p2Bronze && p2Bronze.name.toLowerCase().includes(searchQuery.toLowerCase())));
+
                         return (
                           <div
                             key={m.id}
                             style={{ height: `${slotHeight}px` }}
-                            className="flex items-center justify-center"
+                            className="flex flex-col items-center justify-center space-y-6"
                           >
+                            {/* Grand Final Card */}
                             <div
                               className={`relative transition-all duration-300 ${
                                 isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
@@ -344,6 +353,32 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                 onOpenPlayerBan={handleOpenPlayerBan}
                               />
                             </div>
+
+                            {/* Trận Tranh Hạng Ba (Huy Chương Đồng) */}
+                            {thirdPlaceMatch && (
+                              <div
+                                className={`flex flex-col items-center p-2 rounded-2xl bg-black/60 border border-amber-500/40 shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+                                  isBronzeHighlighted ? 'scale-105 ring-2 ring-amber-400 rounded-xl' : ''
+                                }`}
+                              >
+                                <div className="inline-flex items-center space-x-1.5 px-3 py-0.5 mb-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm">
+                                  <Medal className="w-3.5 h-3.5 text-amber-400" />
+                                  <span>Tranh Hạng Ba • Bo3</span>
+                                </div>
+                                <MatchCard
+                                  match={thirdPlaceMatch}
+                                  player1={p1Bronze}
+                                  player2={p2Bronze}
+                                  userRole={userRole}
+                                  theme={currentBracket.theme}
+                                  onAdvanceWinner={handleRequestAdvance}
+                                  onResetMatch={handleRequestReset}
+                                  onOpenScheduler={onOpenScheduler}
+                                  onOpenMatchDetails={onOpenMatchDetails}
+                                  onOpenPlayerBan={handleOpenPlayerBan}
+                                />
+                              </div>
+                            )}
                           </div>
                         );
                       }
@@ -540,21 +575,6 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
               );
             })}
           </div>
-
-          {/* 3rd Place Match at the Bottom */}
-          {thirdPlaceMatch && (
-            <ThirdPlaceMatch
-              match={thirdPlaceMatch}
-              player1={thirdPlaceMatch.player1Id ? participants[thirdPlaceMatch.player1Id] : null}
-              player2={thirdPlaceMatch.player2Id ? participants[thirdPlaceMatch.player2Id] : null}
-              userRole={userRole}
-              onAdvanceWinner={handleRequestAdvance}
-              onResetMatch={handleRequestReset}
-              onOpenScheduler={onOpenScheduler}
-              onOpenMatchDetails={onOpenMatchDetails}
-              onOpenPlayerBan={handleOpenPlayerBan}
-            />
-          )}
 
         </div>
       </div>

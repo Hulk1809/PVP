@@ -32,10 +32,17 @@ export const FinalMatchCard: React.FC<FinalMatchCardProps> = ({
   const { loggedInPlayer } = useTournament();
   const isCompleted = match.status === 'completed';
 
-  const timeString = new Date(match.scheduledTime).toLocaleTimeString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  let timeString = '18:00';
+  if (match.scheduledTime) {
+    if (typeof match.scheduledTime === 'string' && match.scheduledTime.includes(':') && !match.scheduledTime.includes('T')) {
+      timeString = match.scheduledTime;
+    } else {
+      const d = new Date(match.scheduledTime);
+      if (!isNaN(d.getTime())) {
+        timeString = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+  }
 
   const isP1Winner = match.winnerId === player1?.id && player1 !== null;
   const isP2Winner = match.winnerId === player2?.id && player2 !== null;

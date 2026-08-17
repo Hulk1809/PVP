@@ -42,6 +42,7 @@ def generate_tournament_bracket(bracket_id, participants):
 
     matches = {}
     r1_match_ids = []
+    third_place_match_id = f"{bracket_id}-third-place"
 
     # Round 1
     for m in range(total_first_round_matches):
@@ -53,7 +54,9 @@ def generate_tournament_bracket(bracket_id, participants):
         winner_id = p1['id'] if (is_bye and p1) else None
 
         round_name = "Vòng 1 (Vòng 1/32)" if total_rounds >= 6 else ("Vòng 1 (Vòng 1/16)" if total_rounds == 5 else "Vòng 1 (Tứ Kết)")
-        
+        time_hour = 14 + (m * 30) // 60
+        time_min = (m * 30) % 60
+
         matches[m_id] = {
             "id": m_id,
             "bracketId": bracket_id,
@@ -64,9 +67,10 @@ def generate_tournament_bracket(bracket_id, participants):
             "winnerId": winner_id,
             "status": "bye" if is_bye else "scheduled",
             "score": {"player1": 0, "player2": 0},
-            "scheduledTime": f"14:{30 + m * 30:02d}",
+            "scheduledTime": f"2026-08-18T{time_hour:02d}:{time_min:02d}:00.000Z",
             "roundName": round_name,
             "boType": "Bo1",
+            "bestOf": 1,
             "bans": {}
         }
 
@@ -75,7 +79,9 @@ def generate_tournament_bracket(bracket_id, participants):
     for r in range(2, total_rounds + 1):
         curr_match_ids = []
         num_matches = len(prev_match_ids) // 2
-        round_name = "Vòng Chung Kết" if r == total_rounds else ("Vòng Bán Kết" if r == total_rounds - 1 else f"Vòng {r}")
+        is_final = (r == total_rounds)
+        is_semi = (r == total_rounds - 1 and total_rounds > 1)
+        round_name = "Vòng Chung Kết" if is_final else ("Vòng Bán Kết" if is_semi else f"Vòng {r}")
         
         for m in range(num_matches):
             m_id = f"{bracket_id}-r{r}-m{m}"
@@ -87,6 +93,9 @@ def generate_tournament_bracket(bracket_id, participants):
             p1_id = matches[p1_source].get('winnerId')
             p2_id = matches[p2_source].get('winnerId')
             
+            time_hour = 14 + (r - 1) * 2
+            time_min = (m * 30) % 60
+            
             matches[m_id] = {
                 "id": m_id,
                 "bracketId": bracket_id,
@@ -97,9 +106,11 @@ def generate_tournament_bracket(bracket_id, participants):
                 "winnerId": None,
                 "status": "scheduled",
                 "score": {"player1": 0, "player2": 0},
-                "scheduledTime": f"{14 + r}:{m * 30:02d}",
+                "scheduledTime": f"2026-08-18T{time_hour:02d}:{time_min:02d}:00.000Z",
                 "roundName": round_name,
-                "boType": "Bo3" if r == total_rounds else "Bo1",
+                "boType": "Bo3" if is_final else "Bo1",
+                "bestOf": 3 if is_final else 1,
+                "loserNextMatchId": third_place_match_id if is_semi else None,
                 "bans": {}
             }
             
@@ -108,31 +119,32 @@ def generate_tournament_bracket(bracket_id, participants):
             
         prev_match_ids = curr_match_ids
 
-    # Bronze match
+    # 3rd Place Match (Huy Chương Đồng)
     if total_rounds >= 2:
-        bronze_id = f"{bracket_id}-bronze-final"
-        matches[bronze_id] = {
-            "id": bronze_id,
+        matches[third_place_match_id] = {
+            "id": third_place_match_id,
             "bracketId": bracket_id,
             "round": total_rounds,
+            "roundName": "Trận Tranh Hạng Ba",
             "matchIndex": 99,
             "player1Id": None,
             "player2Id": None,
             "winnerId": None,
             "status": "scheduled",
             "score": {"player1": 0, "player2": 0},
-            "scheduledTime": f"{14 + total_rounds}:00",
-            "roundName": "Tranh Hạng Ba",
+            "scheduledTime": f"2026-08-18T{14 + total_rounds * 2:02d}:00:00.000Z",
             "boType": "Bo3",
+            "bestOf": 3,
+            "isThirdPlaceMatch": True,
+            "refereeNote": "Tranh giải Ba giữa 2 đấu thủ dừng bước tại Bán Kết",
             "bans": {}
         }
 
     return matches
 
 def main():
-    print("Building full deterministic tournament state...")
+    print("Building full deterministic tournament state with 3rd place match...")
     
-    # 1. Fetch live EC2 to keep existing accounts & lotusWheelWinners
     req = urllib.request.Request('http://3.1.210.184/api/sync')
     with urllib.request.urlopen(req, timeout=6) as res:
         live_state = json.loads(res.read().decode('utf-8'))['state']
@@ -170,7 +182,7 @@ def main():
         'matches': matches_map,
         'playerAccounts': accounts,
         'lotusWheelWinners': lotus_winners,
-        'updatedAt': int(time.time() * 1000) + 1000000
+        'updatedAt': int(time.time() * 1000) + 2000000
     }
     
     # Push to EC2
@@ -180,7 +192,7 @@ def main():
         headers={'Content-Type': 'application/json'}
     )
     with urllib.request.urlopen(push_req, timeout=6) as res:
-        print(f"Successfully pushed deterministic state to EC2 (Status: {res.status})")
+        print(f"Successfully pushed state with 3rd Place Match to EC2 (Status: {res.status})")
 
 if __name__ == '__main__':
     main()
