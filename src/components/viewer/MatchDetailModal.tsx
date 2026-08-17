@@ -90,9 +90,14 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
             
             {/* Match Info Bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-black/60 border border-white/15 text-xs">
-              <div className="flex items-center space-x-2 text-slate-300">
-                <Clock className="w-4 h-4 text-slate-300" />
-                <span>Thời gian: {formattedTime}</span>
+              <div className="flex items-center space-x-2 text-slate-300 flex-wrap gap-2">
+                <div className="flex items-center space-x-1.5">
+                  <Clock className="w-4 h-4 text-slate-300" />
+                  <span>Thời gian: {formattedTime}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-950/70 text-red-300 border border-red-500/40">
+                  Cấm tướng (Ban): Qlinh, Mạc, Hồ Ly
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="px-2.5 py-0.5 rounded bg-white/10 text-slate-200 font-mono border border-white/10">

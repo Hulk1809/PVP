@@ -54,17 +54,23 @@ export const MatchCard: React.FC<MatchCardProps> = ({
       }`}
     >
       {/* Top Meta Bar */}
-      <div className={`flex items-center justify-between px-3 py-1.5 ${themeConfig.cardTopBarBg} border-b ${themeConfig.cardTopBarBorder} text-[10px] text-zinc-400`}>
-        <div className="flex items-center space-x-1.5">
-          <Clock className="w-3 h-3 text-slate-400" />
-          <span className="font-mono text-slate-300">{timeString}</span>
+      <div className={`flex items-center justify-between px-2.5 sm:px-3 py-1.5 ${themeConfig.cardTopBarBg} border-b ${themeConfig.cardTopBarBorder} text-[10px] text-zinc-400 gap-1`}>
+        <div className="flex items-center space-x-1 sm:space-x-1.5 flex-wrap min-w-0">
+          <div className="flex items-center space-x-1">
+            <Clock className="w-3 h-3 text-slate-400" />
+            <span className="font-mono text-slate-300">{timeString}</span>
+          </div>
           <span className="text-slate-500">•</span>
           <span className="font-semibold text-slate-300">
             {match.bestOf === 1 ? 'Bo1' : match.bestOf === 3 ? 'Bo3' : 'Bo5'}
           </span>
+          <span className="text-slate-500">•</span>
+          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold tracking-tight bg-red-950/70 text-red-300 border border-red-500/40 whitespace-nowrap shadow-sm">
+            Ban: Qlinh, Mạc, Hồ Ly
+          </span>
         </div>
 
-        <div className="flex items-center space-x-1.5">
+        <div className="flex items-center space-x-1.5 flex-shrink-0">
           {isCompleted && (
             <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-white/15 text-slate-200 border border-white/30">
               FT
