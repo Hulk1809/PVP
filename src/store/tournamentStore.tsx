@@ -136,14 +136,17 @@ const TournamentContext = createContext<TournamentContextType | null>(null);
 
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [brackets, setBrackets] = useState<Record<BracketId, Bracket>>(() => {
+    const defaultBrackets = getInitialTournamentData().brackets;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.brackets) return parsed.brackets;
+        if (parsed.brackets && Object.keys(parsed.brackets).length >= 3) {
+          return { ...defaultBrackets, ...parsed.brackets };
+        }
       } catch {}
     }
-    return getInitialTournamentData().brackets;
+    return defaultBrackets;
   });
 
   const [participants, setParticipants] = useState<Record<string, Participant>>(() => {
@@ -152,7 +155,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.participants) {
+        if (parsed.participants && Object.keys(parsed.participants).length >= 30) {
           return { ...defaultParts, ...parsed.participants };
         }
       } catch {}
@@ -161,31 +164,17 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
 
   const [matches, setMatches] = useState<Record<string, Match>>(() => {
-    let initialMatches: Record<string, Match>;
     const defaultData = getInitialTournamentData();
+    let initialMatches: Record<string, Match> = { ...defaultData.matches };
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.matches) {
-          initialMatches = parsed.matches;
-          // Check if bracket-c needs updating for new participants
-          const hasDarkGirl = Object.values(initialMatches).some(
-            m => m.player1Id === 'p-c34' || m.player2Id === 'p-c34'
-          );
-          if (!hasDarkGirl) {
-            const bCParts = Object.values(defaultData.participants).filter(p => p.bracketId === 'bracket-c');
-            const newBracketCMatches = generateTournamentBracket('bracket-c', bCParts, false);
-            initialMatches = { ...initialMatches, ...newBracketCMatches };
-          }
-        } else {
-          initialMatches = defaultData.matches;
+        if (parsed.matches && Object.keys(parsed.matches).length >= 30) {
+          initialMatches = { ...defaultData.matches, ...parsed.matches };
         }
-      } catch {
-        initialMatches = defaultData.matches;
-      }
-    } else {
-      initialMatches = defaultData.matches;
+      } catch {}
     }
 
     // Auto-migrate: All regular rounds -> Bo1, Finals & 3rd Place -> Bo3
