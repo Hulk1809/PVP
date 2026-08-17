@@ -6,8 +6,7 @@ $remoteDest = "${user}@${ip}:/home/${user}/deploy_payload.tar.gz"
 $remoteHost = "${user}@${ip}"
 
 Write-Host "1. Đang đóng gói dữ liệu deploy..." -ForegroundColor Cyan
-Set-Location "d:\PVP"
-tar -czf "d:\PVP\deploy_payload.tar.gz" dist server.js package.json package-lock.json backup_tournament_data_aws.json danh_sach_tai_khoan_tuyen_thu.json
+tar -czf "d:\PVP\deploy_payload.tar.gz" dist server.js package.json package-lock.json
 
 Write-Host "2. Đang tải lên máy chủ EC2 (3.1.210.184)..." -ForegroundColor Cyan
 scp -i $key -o StrictHostKeyChecking=no "d:\PVP\deploy_payload.tar.gz" $remoteDest

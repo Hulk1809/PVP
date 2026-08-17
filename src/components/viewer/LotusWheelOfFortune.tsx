@@ -402,9 +402,6 @@ export const LotusWheelOfFortune: React.FC = () => {
             >
               VÒNG QUAY TÔN HOA SEN
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
-              Vòng quay may mắn dành cho các bậc Hồn Sư kiên cường sau giải đấu. Tuyển thủ bị loại sẽ tự động góp mặt vào vòng quay may mắn (Trừ Top 1, 2, 3 của mỗi bảng).
-            </p>
           </div>
 
           {/* Live Status Indicators */}
@@ -517,13 +514,6 @@ export const LotusWheelOfFortune: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* Under Wheel Status Hint */}
-          <p className="mt-3 text-[11px] text-slate-400 font-mono text-center">
-            {eligibleCandidates.length > 0
-              ? `* Cơ chế ngẫu nhiên tuyệt đối • ${eligibleCandidates.length} ứng viên đang chờ may mắn.`
-              : '* Toàn bộ danh sách ứng viên đã được quay thưởng hoàn tất.'}
-          </p>
 
         </div>
 
