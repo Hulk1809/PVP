@@ -143,7 +143,7 @@ def generate_tournament_bracket(bracket_id, participants):
     return matches
 
 def main():
-    print("Building full deterministic tournament state with 3rd place match...")
+    print("Building full deterministic tournament state with Parker and 3rd place match...")
     
     req = urllib.request.Request('http://3.1.210.184/api/sync')
     with urllib.request.urlopen(req, timeout=6) as res:
@@ -154,8 +154,27 @@ def main():
     accounts = live_state.get('playerAccounts', {})
     lotus_winners = live_state.get('lotusWheelWinners', [])
     
+    # Ensure Parker is present in participants
+    if 'p-a10' not in participants:
+        participants['p-a10'] = {
+            'id': 'p-a10',
+            'bracketId': 'bracket-a',
+            'name': 'GOD乄Parker',
+            'sect': 'Tông Môn GOD',
+            'martialSoul': 'Lam Điện Bá Vương Long',
+            'soulRank': 'Tối thượng > 50',
+            'soulLevel': 95,
+            'avatar': 'https://api.dicebear.com/7.x/bottts/svg?seed=GOD_Parker&backgroundColor=4f46e5',
+            'seedRank': 10,
+            'wins': 16,
+            'losses': 8,
+            'winRate': 66.7,
+            'bio': 'Đại cao thủ Bảng A - Rank Tối thượng > 50.'
+        }
+        print("Added Parker p-a10 into participants dict")
+    
     # Extract participants per bracket in the EXACT locked deterministic order
-    a_ids = ['p-a3', 'p-a8', 'p-a1', 'p-a4', 'p-a9', 'p-a7', 'p-a2', 'p-a11', 'p-a6', 'p-a5']
+    a_ids = ['p-a3', 'p-a8', 'p-a1', 'p-a4', 'p-a9', 'p-a7', 'p-a10', 'p-a2', 'p-a11', 'p-a6', 'p-a5']
     bracket_a_parts = [participants[aid] for aid in a_ids if aid in participants]
     
     b_ids = ['p-b9', 'p-b6', 'p-b8', 'p-b4', 'p-b5', 'p-b7', 'p-b10', 'p-b11', 'p-b2', 'p-b3', 'p-b1']
@@ -170,6 +189,10 @@ def main():
     ]
     bracket_c_parts = [participants[cid] for cid in c_ids if cid in participants]
     
+    print(f"Bracket A Count: {len(bracket_a_parts)} (expect 11)")
+    print(f"Bracket B Count: {len(bracket_b_parts)} (expect 11)")
+    print(f"Bracket C Count: {len(bracket_c_parts)} (expect 34)")
+    
     # Generate deterministic matches map
     matches_map = {}
     matches_map.update(generate_tournament_bracket('bracket-a', bracket_a_parts))
@@ -182,7 +205,7 @@ def main():
         'matches': matches_map,
         'playerAccounts': accounts,
         'lotusWheelWinners': lotus_winners,
-        'updatedAt': int(time.time() * 1000) + 2000000
+        'updatedAt': int(time.time() * 1000) + 3000000
     }
     
     # Push to EC2
@@ -192,7 +215,7 @@ def main():
         headers={'Content-Type': 'application/json'}
     )
     with urllib.request.urlopen(push_req, timeout=6) as res:
-        print(f"Successfully pushed state with 3rd Place Match to EC2 (Status: {res.status})")
+        print(f"Successfully pushed state with Parker to EC2 (Status: {res.status})")
 
 if __name__ == '__main__':
     main()
