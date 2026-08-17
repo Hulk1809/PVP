@@ -176,6 +176,57 @@ export const SchedulerModal: React.FC<SchedulerModalProps> = ({
             </div>
           </div>
 
+          {/* Hero Bans Management (Admin Undo/Reset) */}
+          {(match.player1Ban || match.player2Ban) && (
+            <div className="p-3.5 rounded-xl bg-red-950/30 border border-red-500/30 space-y-2">
+              <span className="block text-xs font-bold text-red-300 uppercase tracking-wider">
+                Quản Lý Cấm Tướng (Ban Hero)
+              </span>
+
+              <div className="space-y-2 text-xs">
+                {match.player1Ban && (
+                  <div className="flex items-center justify-between bg-black/40 px-3 py-1.5 rounded-lg border border-red-500/20">
+                    <span className="text-slate-300">
+                      <strong>{p1?.name || 'T1'}:</strong> cấm <span className="text-red-400 font-bold">{match.player1Ban}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleUpdateMatchDetails(match.id, {
+                          player1Ban: undefined,
+                          player1BanTime: undefined,
+                        });
+                      }}
+                      className="px-2 py-0.5 rounded text-[10px] font-semibold text-rose-300 hover:bg-rose-900/50 border border-rose-500/30 transition-colors"
+                    >
+                      Hủy cấm T1
+                    </button>
+                  </div>
+                )}
+
+                {match.player2Ban && (
+                  <div className="flex items-center justify-between bg-black/40 px-3 py-1.5 rounded-lg border border-red-500/20">
+                    <span className="text-slate-300">
+                      <strong>{p2?.name || 'T2'}:</strong> cấm <span className="text-red-400 font-bold">{match.player2Ban}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleUpdateMatchDetails(match.id, {
+                          player2Ban: undefined,
+                          player2BanTime: undefined,
+                        });
+                      }}
+                      className="px-2 py-0.5 rounded text-[10px] font-semibold text-rose-300 hover:bg-rose-900/50 border border-rose-500/30 transition-colors"
+                    >
+                      Hủy cấm T2
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Referee Notes */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">

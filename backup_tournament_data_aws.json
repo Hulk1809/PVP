@@ -262,7 +262,9 @@
       "losses": 4,
       "winRate": 82.6,
       "bio": "Chiến tướng Bảng B - Rank Tối thượng < 10.",
-      "claimed": false
+      "claimed": true,
+      "email": "voquocthang18092005@gmail.com",
+      "username": "hulk"
     },
     "p-b1": {
       "id": "p-b1",
@@ -1331,13 +1333,13 @@
       "matchIndex": 5,
       "player1Id": "p-b6",
       "player2Id": "p-b11",
-      "player1Score": 1,
+      "player1Score": 0,
       "player2Score": 0,
-      "winnerId": "p-b6",
+      "winnerId": null,
       "nextMatchId": "bracket-b-r2-m2",
       "loserNextMatchId": null,
       "scheduledTime": "2026-08-17T09:30:00.000Z",
-      "status": "completed",
+      "status": "scheduled",
       "bestOf": 1
     },
     "bracket-b-r1-m6": {
@@ -1417,7 +1419,7 @@
       "roundName": "Vòng Tứ Kết",
       "matchIndex": 2,
       "player1Id": "p-b5",
-      "player2Id": "p-b6",
+      "player2Id": null,
       "player1Score": 0,
       "player2Score": 0,
       "winnerId": null,
@@ -2819,7 +2821,16 @@
       "bracketName": "Bảng A (Tối Thượng > 50)",
       "email": "tranminhhieu11a3ntt@gmail.com",
       "claimedAt": "Mon, 17 Aug 2026 13:08:09 +0000"
+    },
+    "hulk": {
+      "id": "acc-p-b2",
+      "participantId": "p-b2",
+      "playerName": "GOD乄HULK",
+      "username": "hulk",
+      "password": "hulkkiemtien",
+      "email": "voquocthang18092005@gmail.com",
+      "claimedAt": "2026-08-17T16:46:54.542Z"
     }
   },
-  "updatedAt": 1786990000000
+  "updatedAt": 1786993000000
 }
