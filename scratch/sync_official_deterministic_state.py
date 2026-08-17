@@ -9,6 +9,12 @@ def calculate_bracket_dimensions(count):
     byes_count = bracket_size - count
     return total_rounds, bracket_size, byes_count
 
+def format_iso_time(start_hour, match_idx):
+    total_mins = start_hour * 60 + match_idx * 15
+    h = (total_mins // 60) % 24
+    m = total_mins % 60
+    return f"2026-08-18T{h:02d}:{m:02d}:00.000Z"
+
 def generate_tournament_bracket(bracket_id, participants):
     count = len(participants)
     total_rounds, bracket_size, byes_count = calculate_bracket_dimensions(count)
@@ -54,8 +60,6 @@ def generate_tournament_bracket(bracket_id, participants):
         winner_id = p1['id'] if (is_bye and p1) else None
 
         round_name = "Vòng 1 (Vòng 1/32)" if total_rounds >= 6 else ("Vòng 1 (Vòng 1/16)" if total_rounds == 5 else "Vòng 1 (Tứ Kết)")
-        time_hour = 14 + (m * 30) // 60
-        time_min = (m * 30) % 60
 
         matches[m_id] = {
             "id": m_id,
@@ -67,7 +71,7 @@ def generate_tournament_bracket(bracket_id, participants):
             "winnerId": winner_id,
             "status": "bye" if is_bye else "scheduled",
             "score": {"player1": 0, "player2": 0},
-            "scheduledTime": f"2026-08-18T{time_hour:02d}:{time_min:02d}:00.000Z",
+            "scheduledTime": format_iso_time(14, m),
             "roundName": round_name,
             "boType": "Bo1",
             "bestOf": 1,
@@ -93,9 +97,6 @@ def generate_tournament_bracket(bracket_id, participants):
             p1_id = matches[p1_source].get('winnerId')
             p2_id = matches[p2_source].get('winnerId')
             
-            time_hour = 14 + (r - 1) * 2
-            time_min = (m * 30) % 60
-            
             matches[m_id] = {
                 "id": m_id,
                 "bracketId": bracket_id,
@@ -106,7 +107,7 @@ def generate_tournament_bracket(bracket_id, participants):
                 "winnerId": None,
                 "status": "scheduled",
                 "score": {"player1": 0, "player2": 0},
-                "scheduledTime": f"2026-08-18T{time_hour:02d}:{time_min:02d}:00.000Z",
+                "scheduledTime": format_iso_time(14 + (r - 1) * 2, m),
                 "roundName": round_name,
                 "boType": "Bo3" if is_final else "Bo1",
                 "bestOf": 3 if is_final else 1,
@@ -132,7 +133,7 @@ def generate_tournament_bracket(bracket_id, participants):
             "winnerId": None,
             "status": "scheduled",
             "score": {"player1": 0, "player2": 0},
-            "scheduledTime": f"2026-08-18T{14 + total_rounds * 2:02d}:00:00.000Z",
+            "scheduledTime": "2026-08-18T20:00:00.000Z",
             "boType": "Bo3",
             "bestOf": 3,
             "isThirdPlaceMatch": True,
@@ -205,7 +206,7 @@ def main():
         'matches': matches_map,
         'playerAccounts': accounts,
         'lotusWheelWinners': lotus_winners,
-        'updatedAt': int(time.time() * 1000) + 3000000
+        'updatedAt': int(time.time() * 1000) + 4000000
     }
     
     # Push to EC2
