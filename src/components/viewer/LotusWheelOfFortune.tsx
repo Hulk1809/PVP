@@ -507,12 +507,7 @@ export const LotusWheelOfFortune: React.FC = () => {
                   </button>
                 )}
               </>
-            ) : (
-              <div className="px-6 py-3 rounded-xl bg-black/60 border border-white/20 text-xs text-slate-300 flex items-center space-x-2 text-center">
-                <Shield className="w-4 h-4 text-amber-400" />
-                <span>Chế độ Khán Giả: Vòng quay do <strong>Ban Quản Trị</strong> điều khiển trực tiếp.</span>
-              </div>
-            )}
+            ) : null}
           </div>
 
         </div>
