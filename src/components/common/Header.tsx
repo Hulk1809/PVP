@@ -1,12 +1,12 @@
 import React from 'react';
-import { Swords, Volume2, VolumeX, Trophy, Users, LogIn, LogOut, ShieldCheck, Flame } from 'lucide-react';
+import { Swords, Volume2, VolumeX, Trophy, Users, LogIn, LogOut, ShieldCheck, Flame, Sparkles } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { BracketId, DivisionTheme } from '../../types/tournament';
 import { getDivisionTheme } from '../../utils/themeStyles';
 
 interface HeaderProps {
-  activeTab: 'bracket' | 'roster' | 'podium';
-  setActiveTab: (tab: 'bracket' | 'roster' | 'podium') => void;
+  activeTab: 'bracket' | 'roster' | 'podium' | 'lotusWheel';
+  setActiveTab: (tab: 'bracket' | 'roster' | 'podium' | 'lotusWheel') => void;
   onOpenLoginModal: () => void;
 }
 
@@ -207,10 +207,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
           </div>
 
           {/* View Tabs (Transparent Floating Glass) */}
-          <div className="flex items-center space-x-1.5 ml-auto sm:ml-0 bg-black/35 backdrop-blur-md p-1 rounded-xl border border-white/15 shadow-lg">
+          <div className="flex flex-wrap items-center gap-1.5 ml-auto sm:ml-0 bg-black/35 backdrop-blur-md p-1 rounded-xl border border-white/15 shadow-lg">
             <button
               onClick={() => setActiveTab('bracket')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'bracket'
                   ? 'bg-white/20 text-white font-bold border border-white/40 shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
@@ -222,7 +222,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
 
             <button
               onClick={() => setActiveTab('podium')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'podium'
                   ? 'bg-white/20 text-white font-bold border border-white/40 shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
@@ -234,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
 
             <button
               onClick={() => setActiveTab('roster')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'roster'
                   ? 'bg-white/20 text-white font-bold border border-white/40 shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
@@ -242,6 +242,19 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
             >
               <Users className="w-3.5 h-3.5 text-slate-200" />
               <span>Danh Sách Tuyển Thủ</span>
+            </button>
+
+            {/* Vòng Quay Tôn Hoa Sen Tab */}
+            <button
+              onClick={() => setActiveTab('lotusWheel')}
+              className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                activeTab === 'lotusWheel'
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-md shadow-amber-500/30 border border-amber-300 font-black'
+                  : 'text-amber-300 hover:text-white hover:bg-amber-500/10 border border-amber-500/30'
+              }`}
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${activeTab === 'lotusWheel' ? 'text-zinc-950 animate-spin' : 'text-amber-400'}`} style={{ animationDuration: '4s' }} />
+              <span>Vòng Quay Tôn Hoa Sen</span>
             </button>
           </div>
 
@@ -251,3 +264,4 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
     </header>
   );
 };
+

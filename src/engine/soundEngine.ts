@@ -156,6 +156,28 @@ class SoundEngine {
       // Silent catch
     }
   }
+
+  // Lucky Wheel Rotation Tick Sound
+  public playWheelTick() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1100, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(550, ctx.currentTime + 0.025);
+
+      gain.gain.setValueAtTime(0.07, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.025);
+    } catch {}
+  }
 }
 
 export const soundEngine = new SoundEngine();

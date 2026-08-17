@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useState, useOptimistic, useTransition, useCallback } from 'react';
 import confetti from 'canvas-confetti';
-import { Bracket, BracketId, Match, Participant, UserRole, PlayerAccount } from '../types/tournament';
+import { Bracket, BracketId, Match, Participant, UserRole, PlayerAccount, LotusWheelWinner } from '../types/tournament';
 import { getInitialTournamentData } from '../engine/defaultData';
 import { advanceWinner, generateTournamentBracket, resetMatch, simulateMatchOutcome } from '../engine/bracketEngine';
 import { soundEngine } from '../engine/soundEngine';
 import { cloudSync } from '../engine/cloudSyncEngine';
 
-const STORAGE_KEY = 'soul_land_pvp_tournament_v19';
+const STORAGE_KEY = 'soul_land_pvp_tournament_v20';
 const BROADCAST_CHANNEL_NAME = 'soul_land_pvp_sync_channel';
 const ADMIN_SESSION_KEY = 'soul_land_admin_session_v1';
 const PLAYER_SESSION_KEY = 'soul_land_player_session_v1';
@@ -16,6 +16,7 @@ function isValidTournamentPayload(data: any): data is {
   participants: Record<string, Participant>;
   matches: Record<string, Match>;
   playerAccounts: Record<string, PlayerAccount>;
+  lotusWheelWinners?: LotusWheelWinner[];
 } {
   if (!data) return false;
   const matchCount = Object.keys(data.matches || {}).length;
@@ -26,10 +27,10 @@ function isValidTournamentPayload(data: any): data is {
 
 export function generateUsernameFromPlayerName(name: string): string {
   let clean = name
-    .replace(/^GOD[乄乂\.\s\-_]*/i, '') // Remove GOD乄 or GOD. prefix
+    .replace(/^GOD[乄乂\.\s\-_]*/i, '')
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove Vietnamese diacritics
-    .replace(/[^a-zA-Z0-9]/g, '') // Keep alphanumerics only
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]/g, '')
     .toLowerCase()
     .trim();
   
@@ -38,45 +39,102 @@ export function generateUsernameFromPlayerName(name: string): string {
   }
   return clean;
 }
+
+export function getLotusWheelCandidates(
+  brackets: Record<BracketId, Bracket>,
+  participants: Record<string, Participant>,
+  matches: Record<string, Match>,
+  lotusWheelWinners: LotusWheelWinner[]
+): {
+  eligibleCandidates: Participant[];
+  top3Winners: Participant[];
+  alreadyDrawnWinners: Participant[];
+  allBracketsCompleted: boolean;
+  divisionStatus: Record<BracketId, { isCompleted: boolean; top3: Participant[] }>;
+} {
+  const top3Ids = new Set<string>();
+  const top3Winners: Participant[] = [];
+  const divisionStatus: Record<string, { isCompleted: boolean; top3: Participant[] }> = {};
+
+  const bracketIds: BracketId[] = ['bracket-a', 'bracket-b', 'bracket-c'];
+  let allBracketsCompleted = true;
+
+  for (const bId of bracketIds) {
+    const br = brackets[bId];
+    const totalRounds = br ? br.totalRounds : 3;
+
+    const finalMatch = Object.values(matches).find(
+      (m) => m.bracketId === bId && m.round === totalRounds && !m.isThirdPlaceMatch
+    );
+
+    const thirdMatch = Object.values(matches).find(
+      (m) => m.bracketId === bId && m.isThirdPlaceMatch
+    );
+
+    const bTop3: Participant[] = [];
+    const isFinalDone = finalMatch?.status === 'completed' && Boolean(finalMatch.winnerId);
+    const isThirdDone = thirdMatch?.status === 'completed' && Boolean(thirdMatch.winnerId);
+
+    if (isFinalDone && finalMatch && finalMatch.winnerId) {
+      const p1st = participants[finalMatch.winnerId];
+      if (p1st) {
+        top3Ids.add(p1st.id);
+        bTop3.push(p1st);
+        if (!top3Winners.some((x) => x.id === p1st.id)) top3Winners.push(p1st);
+      }
+
+      const p2ndId = finalMatch.player1Id === finalMatch.winnerId ? finalMatch.player2Id : finalMatch.player1Id;
+      if (p2ndId && participants[p2ndId]) {
+        const p2nd = participants[p2ndId];
+        top3Ids.add(p2nd.id);
+        bTop3.push(p2nd);
+        if (!top3Winners.some((x) => x.id === p2nd.id)) top3Winners.push(p2nd);
+      }
+    }
+
+    if (isThirdDone && thirdMatch && thirdMatch.winnerId) {
+      const p3rd = participants[thirdMatch.winnerId];
+      if (p3rd) {
+        top3Ids.add(p3rd.id);
+        bTop3.push(p3rd);
+        if (!top3Winners.some((x) => x.id === p3rd.id)) top3Winners.push(p3rd);
+      }
+    }
+
+    const isBracketDone = Boolean(isFinalDone && isThirdDone);
+    divisionStatus[bId] = { isCompleted: isBracketDone, top3: bTop3 };
+    if (!isBracketDone) {
+      allBracketsCompleted = false;
+    }
+  }
+
+  const drawnIds = new Set(lotusWheelWinners.map((w) => w.participantId));
+  const alreadyDrawnWinners = Object.values(participants).filter((p) => drawnIds.has(p.id));
+
+  const allRealParticipants = Object.values(participants).filter((p) => !p.isGhost);
+  const eligibleCandidates = allRealParticipants.filter(
+    (p) => !top3Ids.has(p.id) && !drawnIds.has(p.id)
+  );
+
+  return {
+    eligibleCandidates,
+    top3Winners,
+    alreadyDrawnWinners,
+    allBracketsCompleted,
+    divisionStatus: divisionStatus as any,
+  };
+}
+
 export const PASSWORD_SUFFIXES = [
-  'mayman',
-  'top1',
-  'top2',
-  'top3',
-  'vodich',
-  'venhi',
-  'veque',
-  'deptrai',
-  'badao',
-  'batbai',
-  'votri',
-  'quangthan',
-  'haithan',
-  'tulamakiem',
-  'longthan',
-  'chienthan',
-  'kiemtien',
-  'tuthandao',
-  'tuyettrieu',
-  'tranhba',
-  'honsu99',
-  'phongthan',
-  'sieucap',
-  'thanma',
-  'phuonghoang',
-  'bachtieu',
-  'tamxoa',
-  'hoathu',
-  'mahoang',
-  'chiensi',
-  'docco',
-  'bachthieu',
+  'mayman', 'top1', 'top2', 'top3', 'vodich', 'venhi', 'veque', 'deptrai', 'badao',
+  'sieucap', 'batbai', 'kiemtien', 'tranhba', 'votri', 'thanthoai', 'quangthan',
+  'longthan', 'thanma', 'docco', 'tuyettrieu', 'tuthandao', 'bachthieu', 'chiensi',
 ];
 
 export function generateRandomPasswordForUser(username: string): string {
-  const randomIndex = Math.floor(Math.random() * PASSWORD_SUFFIXES.length);
-  const suffix = PASSWORD_SUFFIXES[randomIndex];
-  return `${username}${suffix}`;
+  const clean = username.toLowerCase().replace(/[^a-z0-9]/g, '') || 'tuyenthu';
+  const randSuffix = PASSWORD_SUFFIXES[Math.floor(Math.random() * PASSWORD_SUFFIXES.length)];
+  return `${clean}${randSuffix}`;
 }
 
 interface TournamentContextType {
@@ -84,6 +142,7 @@ interface TournamentContextType {
   participants: Record<string, Participant>;
   matches: Record<string, Match>;
   playerAccounts: Record<string, PlayerAccount>;
+  lotusWheelWinners: LotusWheelWinner[];
   selectedBracketId: BracketId;
   userRole: UserRole;
   isLoggedIn: boolean;
@@ -95,22 +154,16 @@ interface TournamentContextType {
   selectedMatchId: string | null;
   isSimulating: boolean;
 
-  // Actions
   setSelectedBracketId: (id: BracketId) => void;
   setUserRole: (role: UserRole) => void;
   loginAdmin: (username: string, pass: string) => { success: boolean; message?: string };
   logoutAdmin: () => void;
   loginPlayer: (username: string, pass: string) => { success: boolean; message?: string };
   logoutPlayer: () => void;
-  claimPlayerAccount: (
-    participantId: string,
-    email: string
-  ) => Promise<{ success: boolean; username: string; password: string; message?: string }>;
-  submitPlayerBan: (
-    matchId: string,
-    playerId: string,
-    banHero: string
-  ) => { success: boolean; message?: string };
+  claimPlayerAccount: (participantId: string, email: string) => Promise<{ success: boolean; username: string; password: string; message?: string }>;
+  submitPlayerBan: (matchId: string, playerId: string, banHero: string) => { success: boolean; message?: string };
+  recordLotusWheelWinner: (winner: LotusWheelWinner) => void;
+  resetLotusWheelWinners: () => void;
   toggleSound: () => void;
   setSearchQuery: (query: string) => void;
   setSelectedSectFilter: (sect: string) => void;
@@ -207,6 +260,19 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return defaultAccounts;
   });
 
+  const [lotusWheelWinners, setLotusWheelWinners] = useState<LotusWheelWinner[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed.lotusWheelWinners)) {
+          return parsed.lotusWheelWinners;
+        }
+      } catch {}
+    }
+    return [];
+  });
+
   const [selectedBracketId, setSelectedBracketIdState] = useState<BracketId>('bracket-a');
   
   // Admin auth state
@@ -252,10 +318,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     b: typeof brackets,
     p: typeof participants,
     m: typeof matches,
-    accs: typeof playerAccounts = playerAccounts
+    accs: typeof playerAccounts = playerAccounts,
+    wheelWinners: typeof lotusWheelWinners = lotusWheelWinners
   ) => {
     try {
-      const data = { brackets: b, participants: p, matches: m, playerAccounts: accs };
+      const data = { brackets: b, participants: p, matches: m, playerAccounts: accs, lotusWheelWinners: wheelWinners };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
       // 1. Broadcast to other tabs on same device
@@ -268,7 +335,20 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // 2. Push to Cloud Backend & WebSockets for cross-device realtime sync
       cloudSync.pushState(data);
     } catch {}
-  }, [playerAccounts]);
+  }, [playerAccounts, lotusWheelWinners]);
+
+  const recordLotusWheelWinner = useCallback((winner: LotusWheelWinner) => {
+    setLotusWheelWinners((prev) => {
+      const next = [...prev, winner];
+      persistState(brackets, participants, matches, playerAccounts, next);
+      return next;
+    });
+  }, [brackets, participants, matches, playerAccounts, persistState]);
+
+  const resetLotusWheelWinners = useCallback(() => {
+    setLotusWheelWinners([]);
+    persistState(brackets, participants, matches, playerAccounts, []);
+  }, [brackets, participants, matches, playerAccounts, persistState]);
 
   // Listen to BroadcastChannel and CloudSync for real-time cross-device updates
   useEffect(() => {
@@ -278,6 +358,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (isValidTournamentPayload(cloudData)) {
         if (cloudData.brackets) setBrackets(cloudData.brackets);
         if (cloudData.matches) setMatches(cloudData.matches);
+        if (Array.isArray(cloudData.lotusWheelWinners)) setLotusWheelWinners(cloudData.lotusWheelWinners);
 
         // Merge accounts so default 24 accounts are ALWAYS preserved and merged with any new cloud accounts
         const mergedAccounts = {
@@ -306,6 +387,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           participants: defaultData.participants,
           matches: defaultData.matches,
           playerAccounts: defaultData.playerAccounts || {},
+          lotusWheelWinners: [],
         });
       }
     });
@@ -316,6 +398,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const defaultData = getInitialTournamentData();
         if (cloudData.brackets) setBrackets(cloudData.brackets);
         if (cloudData.matches) setMatches(cloudData.matches);
+        if (Array.isArray(cloudData.lotusWheelWinners)) setLotusWheelWinners(cloudData.lotusWheelWinners);
 
         const mergedAccounts = {
           ...(defaultData.playerAccounts || {}),
@@ -349,11 +432,12 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
       channel.onmessage = (event) => {
         if (event.data?.type === 'STATE_UPDATE') {
-          const { brackets: b, participants: p, matches: m, playerAccounts: accs } = event.data.payload;
+          const { brackets: b, participants: p, matches: m, playerAccounts: accs, lotusWheelWinners: lww } = event.data.payload;
           if (b) setBrackets(b);
           if (p) setParticipants(p);
           if (m) setMatches(m);
           if (accs) setPlayerAccounts(accs);
+          if (Array.isArray(lww)) setLotusWheelWinners(lww);
         }
       };
     }
@@ -854,6 +938,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         participants,
         matches,
         playerAccounts,
+        lotusWheelWinners,
         selectedBracketId,
         userRole,
         isLoggedIn,
@@ -872,6 +957,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         logoutPlayer,
         claimPlayerAccount,
         submitPlayerBan,
+        recordLotusWheelWinner,
+        resetLotusWheelWinners,
         toggleSound,
         setSearchQuery,
         setSelectedSectFilter,

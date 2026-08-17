@@ -90,11 +90,24 @@ export interface RoundInfo {
   matches: Match[];
 }
 
+export interface LotusWheelWinner {
+  id: string;
+  participantId: string;
+  playerName: string;
+  sect: string;
+  bracketId: BracketId;
+  bracketName: string;
+  drawnAt: string;
+  drawnByAdmin: string;
+  giftTitle?: string;
+}
+
 export interface TournamentStoreState {
   brackets: Record<BracketId, Bracket>;
   participants: Record<string, Participant>;
   matches: Record<string, Match>;
   playerAccounts: Record<string, PlayerAccount>;
+  lotusWheelWinners?: LotusWheelWinner[];
   selectedBracketId: BracketId;
   userRole: UserRole;
   soundEnabled: boolean;

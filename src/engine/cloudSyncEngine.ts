@@ -9,6 +9,7 @@ interface CloudSyncPayload {
   participants: any;
   matches: any;
   playerAccounts: any;
+  lotusWheelWinners?: any;
   updatedAt: number;
 }
 

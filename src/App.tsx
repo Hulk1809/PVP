@@ -6,6 +6,7 @@ import { HeroBanner } from './components/common/HeroBanner';
 import { BracketBoard } from './components/bracket/BracketBoard';
 import { ChampionPodium } from './components/viewer/ChampionPodium';
 import { ParticipantList } from './components/viewer/ParticipantList';
+import { LotusWheelOfFortune } from './components/viewer/LotusWheelOfFortune';
 import { MatchDetailModal } from './components/viewer/MatchDetailModal';
 import { SchedulerModal } from './components/admin/SchedulerModal';
 import { ParticipantManager } from './components/admin/ParticipantManager';
@@ -20,7 +21,7 @@ const MainApp: React.FC = () => {
   const [isEntering, setIsEntering] = useState(false);
   const currentBracket = brackets[selectedBracketId];
 
-  const [activeTab, setActiveTab] = useState<'bracket' | 'roster' | 'podium'>('bracket');
+  const [activeTab, setActiveTab] = useState<'bracket' | 'roster' | 'podium' | 'lotusWheel'>('bracket');
 
   // Modals state
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -242,6 +243,8 @@ const MainApp: React.FC = () => {
             onOpenEditParticipant={handleOpenEditParticipant}
           />
         )}
+
+        {activeTab === 'lotusWheel' && <LotusWheelOfFortune />}
       </main>
 
       {/* Modals */}
