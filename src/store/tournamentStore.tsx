@@ -407,14 +407,33 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const cleanUser = username.trim().toLowerCase();
     const cleanPass = pass.trim();
 
-    const account = playerAccounts[cleanUser];
+    let account = playerAccounts[cleanUser];
+    if (!account) {
+      const defAcc = getInitialTournamentData().playerAccounts?.[cleanUser];
+      if (defAcc) account = defAcc;
+    }
+
     if (account && account.password === cleanPass) {
-      setLoggedInPlayer(account);
+      // Resolve participantId if missing
+      let resolvedId = account.participantId;
+      if (!resolvedId) {
+        const found = Object.values(participants).find(
+          (p) => p.username === cleanUser || generateUsernameFromPlayerName(p.name) === cleanUser
+        );
+        if (found) resolvedId = found.id;
+      }
+
+      const activeAccount: PlayerAccount = {
+        ...account,
+        participantId: resolvedId,
+      };
+
+      setLoggedInPlayer(activeAccount);
       setAdminUser(null);
       localStorage.removeItem(ADMIN_SESSION_KEY);
       setIsLoggedIn(true);
       setUserRole('player');
-      localStorage.setItem(PLAYER_SESSION_KEY, JSON.stringify(account));
+      localStorage.setItem(PLAYER_SESSION_KEY, JSON.stringify(activeAccount));
       soundEngine.playGong();
       return { success: true };
     }

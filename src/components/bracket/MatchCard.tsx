@@ -3,7 +3,7 @@ import { Clock, Trophy, Edit3, Crown, RotateCcw, Swords, Sparkles, ShieldX } fro
 import { Match, Participant, UserRole, DivisionTheme } from '../../types/tournament';
 import { PlayerAvatar } from '../common/PlayerAvatar';
 import { getDivisionTheme } from '../../utils/themeStyles';
-import { useTournament } from '../../store/tournamentStore';
+import { useTournament, generateUsernameFromPlayerName } from '../../store/tournamentStore';
 
 interface MatchCardProps {
   match: Match;
@@ -44,8 +44,21 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   const isP1Winner = match.winnerId === player1?.id && player1 !== null;
   const isP2Winner = match.winnerId === player2?.id && player2 !== null;
 
-  const isMeP1 = Boolean(loggedInPlayer && player1 && loggedInPlayer.participantId === player1.id);
-  const isMeP2 = Boolean(loggedInPlayer && player2 && loggedInPlayer.participantId === player2.id);
+  const isMeP1 = Boolean(
+    loggedInPlayer &&
+    player1 &&
+    (loggedInPlayer.participantId === player1.id ||
+      loggedInPlayer.username === (player1.username || generateUsernameFromPlayerName(player1.name)) ||
+      generateUsernameFromPlayerName(loggedInPlayer.playerName) === generateUsernameFromPlayerName(player1.name))
+  );
+
+  const isMeP2 = Boolean(
+    loggedInPlayer &&
+    player2 &&
+    (loggedInPlayer.participantId === player2.id ||
+      loggedInPlayer.username === (player2.username || generateUsernameFromPlayerName(player2.name)) ||
+      generateUsernameFromPlayerName(loggedInPlayer.playerName) === generateUsernameFromPlayerName(player2.name))
+  );
 
   return (
     <div
