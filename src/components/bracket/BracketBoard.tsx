@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { ZoomIn, ZoomOut, Maximize2, Search, Swords, UserPlus, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { MatchCard } from './MatchCard';
+import { FinalMatchCard } from './FinalMatchCard';
 import { ThirdPlaceMatch } from './ThirdPlaceMatch';
 import { BlueSilverVineConnector } from './BlueSilverVineConnector';
 import { PlayerBanModal } from './PlayerBanModal';
@@ -329,7 +330,7 @@ export const BracketBoard: React.FC<BracketBoardProps> = ({
                                 isHighlighted ? 'scale-105 ring-2 ring-white/80 rounded-xl' : ''
                               }`}
                             >
-                              <MatchCard
+                              <FinalMatchCard
                                 match={m}
                                 player1={p1}
                                 player2={p2}
