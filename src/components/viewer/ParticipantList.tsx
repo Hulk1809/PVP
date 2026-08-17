@@ -133,14 +133,58 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
           </p>
         </div>
 
-        {userRole === 'admin' && onOpenAddParticipant && (
-          <button
-            onClick={onOpenAddParticipant}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-zinc-950 hover:bg-slate-200 transition-all shadow-md shadow-white/10 active:scale-95"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Thêm Tuyển Thủ Mới</span>
-          </button>
+        {userRole === 'admin' && (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                // Generate Markdown table with real passwords
+                let md = '# 🏆 DANH SÁCH TÀI KHOẢN TUYỂN THỦ THỰC TẾ (KHỚP 100% EMAIL ĐÃ GỬI)\n\n';
+                md += '## 👑 TÀI KHOẢN ADMIN\n';
+                md += '| Tài Khoản | Mật Khẩu | Vai Trò |\n| :--- | :--- | :--- |\n| `parker` | `parker123` | Parker (Ban Tổ Chức) |\n| `nguyen` | `nguyen123` | Nguyễn (Trọng Tài) |\n| `hieu` | `hieu123` | Hiếu (Kỹ Thuật) |\n\n---\n\n';
+
+                (['bracket-a', 'bracket-b', 'bracket-c'] as const).forEach((bId) => {
+                  const br = brackets[bId];
+                  if (!br) return;
+                  const bParts = Object.values(participants).filter((p) => p.bracketId === bId && !p.isGhost);
+                  md += `## 🔱 ${br.name.toUpperCase()} (${bParts.length} Tuyển Thủ)\n\n`;
+                  md += '| STT | Hạt Giống | Tên Tuyển Thủ | Tông Môn | Võ Hồn | Cấp | Tên Đăng Nhập | Mật Khẩu Đã Gửi |\n';
+                  md += '| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n';
+                  bParts
+                    .sort((a, b) => (a.seedRank || 99) - (b.seedRank || 99))
+                    .forEach((p, idx) => {
+                      const u = p.username || generateUsernameFromPlayerName(p.name);
+                      const acc = playerAccounts[u];
+                      const pass = acc ? acc.password : '(Chưa nhận email)';
+                      md += `| ${idx + 1} | #${p.seedRank} | **${p.name}** | ${p.sect} | ${p.martialSoul} | Lv.${p.soulLevel} | \`${u}\` | \`${pass}\` |\n`;
+                    });
+                  md += '\n---\n\n';
+                });
+
+                const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `DANH_SACH_TAI_KHOAN_THUC_TE_${Date.now()}.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40 transition-all shadow-sm active:scale-95"
+              title="Xuất danh sách tài khoản & mật khẩu thực tế đã gửi qua email"
+            >
+              <Copy className="w-4 h-4" />
+              <span>Xuất File TK/MK Gửi Mail (.md)</span>
+            </button>
+
+            {onOpenAddParticipant && (
+              <button
+                onClick={onOpenAddParticipant}
+                className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-zinc-950 hover:bg-slate-200 transition-all shadow-md shadow-white/10 active:scale-95"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>Thêm Tuyển Thủ Mới</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
 
