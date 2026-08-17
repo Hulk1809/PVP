@@ -117,7 +117,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ matchId, onC
             </div>
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-0.5 rounded bg-white/10 text-slate-200 font-mono border border-white/10">
-                {match.bestOf === 1 ? 'Bo1' : match.bestOf === 3 ? 'Bo3' : 'Bo5'}
+                {match.bestOf === 3 || match.isThirdPlaceMatch ? 'Bo3' : match.bestOf === 5 ? 'Bo5' : 'Bo1'}
               </span>
               <span
                 className={`px-2.5 py-0.5 rounded font-semibold ${

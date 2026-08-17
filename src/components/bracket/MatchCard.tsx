@@ -87,7 +87,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           </div>
           <span className="text-slate-500">•</span>
           <span className="font-semibold text-slate-300">
-            {match.bestOf === 1 ? 'Bo1' : match.bestOf === 3 ? 'Bo3' : 'Bo5'}
+            {match.bestOf === 3 || match.isThirdPlaceMatch ? 'Bo3' : match.bestOf === 5 ? 'Bo5' : 'Bo1'}
           </span>
           <span className="text-slate-500">•</span>
           <span className="px-1.5 py-0.2 rounded text-[9px] font-bold tracking-tight bg-red-950/70 text-red-300 border border-red-500/40 whitespace-nowrap shadow-sm">
