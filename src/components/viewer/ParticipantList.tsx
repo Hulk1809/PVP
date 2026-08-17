@@ -19,6 +19,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     participants,
     selectedBracketId,
     userRole,
+    loggedInPlayer,
     searchQuery,
     setSearchQuery,
     handleDeleteParticipant,
@@ -181,7 +182,21 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
 
                 {/* Account Claim Status Section */}
                 <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between">
-                  {p.claimed ? (
+                  {loggedInPlayer ? (
+                    p.id === loggedInPlayer.participantId ? (
+                      <div className="flex items-center space-x-1 text-[10px] text-cyan-300 font-bold bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-400/40 shadow-sm shadow-cyan-500/20">
+                        <CheckCircle2 className="w-3 h-3 text-cyan-300" />
+                        <span>Tài khoản của bạn</span>
+                      </div>
+                    ) : p.claimed ? (
+                      <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/30 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <span>Đã kích hoạt</span>
+                      </div>
+                    ) : (
+                      <span className="text-[10px] text-slate-500 italic">Chưa kích hoạt</span>
+                    )
+                  ) : p.claimed ? (
                     <div className="flex items-center space-x-1 text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/30">
                       <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                       <span>Đã có tài khoản</span>
