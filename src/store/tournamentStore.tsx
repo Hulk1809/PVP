@@ -24,6 +24,46 @@ export function generateUsernameFromPlayerName(name: string): string {
   }
   return clean;
 }
+export const PASSWORD_SUFFIXES = [
+  'mayman',
+  'top1',
+  'top2',
+  'top3',
+  'vodich',
+  'venhi',
+  'veque',
+  'deptrai',
+  'badao',
+  'batbai',
+  'votri',
+  'quangthan',
+  'haithan',
+  'tulamakiem',
+  'longthan',
+  'chienthan',
+  'kiemtien',
+  'tuthandao',
+  'tuyettrieu',
+  'tranhba',
+  'honsu99',
+  'phongthan',
+  'sieucap',
+  'thanma',
+  'phuonghoang',
+  'bachtieu',
+  'tamxoa',
+  'hoathu',
+  'mahoang',
+  'chiensi',
+  'docco',
+  'bachthieu',
+];
+
+export function generateRandomPasswordForUser(username: string): string {
+  const randomIndex = Math.floor(Math.random() * PASSWORD_SUFFIXES.length);
+  const suffix = PASSWORD_SUFFIXES[randomIndex];
+  return `${username}${suffix}`;
+}
 
 interface TournamentContextType {
   brackets: Record<BracketId, Bracket>;
@@ -286,8 +326,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Check if account already created for this username
     let password = playerAccounts[cleanUsername]?.password;
     if (!password) {
-      // Generate password, e.g. "teadeptrai"
-      password = `${cleanUsername}deptrai`;
+      password = generateRandomPasswordForUser(cleanUsername);
     }
 
     const newAccount: PlayerAccount = {
