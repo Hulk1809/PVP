@@ -367,15 +367,19 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         };
         setPlayerAccounts(mergedAccounts);
 
-        // Merge participants and mark claimed
+        // Merge participants: only mark claimed = true if contestant has actually claimed / entered email
         if (cloudData.participants) {
           const mergedParts = { ...cloudData.participants };
           for (const p of Object.values(mergedParts) as Participant[]) {
             const u = p.username || generateUsernameFromPlayerName(p.name);
-            if (mergedAccounts[u]) {
+            const acc = mergedAccounts[u];
+            p.username = u;
+            if (acc && acc.email) {
               p.claimed = true;
-              p.username = u;
-              p.email = mergedAccounts[u].email;
+              p.email = acc.email;
+            } else {
+              p.claimed = false;
+              p.email = undefined;
             }
           }
           setParticipants(mergedParts);
@@ -410,10 +414,14 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const mergedParts = { ...cloudData.participants };
           for (const p of Object.values(mergedParts) as Participant[]) {
             const u = p.username || generateUsernameFromPlayerName(p.name);
-            if (mergedAccounts[u]) {
+            const acc = mergedAccounts[u];
+            p.username = u;
+            if (acc && acc.email) {
               p.claimed = true;
-              p.username = u;
-              p.email = mergedAccounts[u].email;
+              p.email = acc.email;
+            } else {
+              p.claimed = false;
+              p.email = undefined;
             }
           }
           setParticipants(mergedParts);
