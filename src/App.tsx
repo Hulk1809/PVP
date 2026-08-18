@@ -13,6 +13,7 @@ import { ParticipantManager } from './components/admin/ParticipantManager';
 import { LoginModal } from './components/common/LoginModal';
 import { SplashScreen } from './components/common/SplashScreen';
 import { RotatePrompt } from './components/common/RotatePrompt';
+import { TournamentAnnouncementModal } from './components/common/TournamentAnnouncementModal';
 import { Match, Participant } from './types/tournament';
 
 const MainApp: React.FC = () => {
@@ -24,6 +25,7 @@ const MainApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'bracket' | 'roster' | 'podium' | 'lotusWheel'>('bracket');
 
   // Modals state
+  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedMatchForDetail, setSelectedMatchForDetail] = useState<string | null>(null);
   const [matchToSchedule, setMatchToSchedule] = useState<Match | null>(null);
@@ -213,6 +215,7 @@ const MainApp: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
+          onOpenAnnouncement={() => setIsAnnouncementOpen(true)}
         />
       </div>
 
@@ -248,6 +251,11 @@ const MainApp: React.FC = () => {
       </main>
 
       {/* Modals */}
+      <TournamentAnnouncementModal
+        isOpen={isAnnouncementOpen}
+        onClose={() => setIsAnnouncementOpen(false)}
+      />
+
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}

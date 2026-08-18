@@ -1,5 +1,5 @@
 import React from 'react';
-import { Swords, Volume2, VolumeX, Trophy, Users, LogIn, LogOut, ShieldCheck, Flame, Sparkles } from 'lucide-react';
+import { Swords, Volume2, VolumeX, Trophy, Users, LogIn, LogOut, ShieldCheck, Flame, Sparkles, Bell } from 'lucide-react';
 import { useTournament } from '../../store/tournamentStore';
 import { BracketId, DivisionTheme } from '../../types/tournament';
 import { getDivisionTheme } from '../../utils/themeStyles';
@@ -8,9 +8,10 @@ interface HeaderProps {
   activeTab: 'bracket' | 'roster' | 'podium' | 'lotusWheel';
   setActiveTab: (tab: 'bracket' | 'roster' | 'podium' | 'lotusWheel') => void;
   onOpenLoginModal: () => void;
+  onOpenAnnouncement?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenLoginModal }) => {
+export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenLoginModal, onOpenAnnouncement }) => {
   const {
     selectedBracketId,
     setSelectedBracketId,
@@ -116,6 +117,19 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenL
           {/* 3. Right: Sound & Admin Auth */}
           <div className="flex items-center space-x-1.5 sm:space-x-3">
             
+            {/* Announcement Bell Button */}
+            {onOpenAnnouncement && (
+              <button
+                onClick={onOpenAnnouncement}
+                title="Thông Báo Mùa Giải"
+                className="relative p-1 sm:p-2 rounded-lg sm:rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 backdrop-blur-md transition-all shadow-sm"
+              >
+                <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full animate-ping" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full" />
+              </button>
+            )}
+
             {/* Sound Toggle */}
             <button
               onClick={toggleSound}
