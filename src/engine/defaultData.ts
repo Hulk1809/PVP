@@ -470,7 +470,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "solomonkiemtien",
     "bracketName": "Bảng A",
     "email": "minhtrian0706@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "langda": {
     "id": "acc-p-a8",
@@ -488,7 +488,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "tttlongthan",
     "bracketName": "Bảng A",
     "email": "thaithien010104@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "qlng": {
     "id": "acc-p-a4",
@@ -498,7 +498,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "qlngkiemtien",
     "bracketName": "Bảng A",
     "email": "minhhuy7001@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "men": {
     "id": "acc-p-a9",
@@ -508,7 +508,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "mentranhba",
     "bracketName": "Bảng A",
     "email": "phuctkdpro@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "lucky": {
     "id": "acc-p-a7",
@@ -518,7 +518,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "luckysieucap",
     "bracketName": "Bảng A",
     "email": "hoanghai2909@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "parker": {
     "id": "acc-p-a10",
@@ -544,7 +544,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "gaudocco",
     "bracketName": "Bảng A",
     "email": "Sygau1995@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "tea": {
     "id": "acc-p-a6",
@@ -554,7 +554,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "teadeptrai",
     "bracketName": "Bảng A",
     "email": "test.tea@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "darkness": {
     "id": "acc-p-a5",
@@ -564,7 +564,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "darknessbachthieu",
     "bracketName": "Bảng A",
     "email": "tranminhhieu11a3ntt@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "mia": {
     "id": "acc-p-b9",
@@ -582,7 +582,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "painthanthoai",
     "bracketName": "Bảng B",
     "email": "voquocthang18092005@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "goodluck": {
     "id": "acc-p-b8",
@@ -592,7 +592,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "goodlucktuyettrieu",
     "bracketName": "Bảng B",
     "email": "bqhuy0846446@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "giangne": {
     "id": "acc-p-b4",
@@ -602,7 +602,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "giangnetop2",
     "bracketName": "Bảng B",
     "email": "gh5766420@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "ryuki": {
     "id": "acc-p-b5",
@@ -644,7 +644,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "hulkveque",
     "bracketName": "Bảng B",
     "email": "voquocthang18092005@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "tungka": {
     "id": "acc-p-b3",
@@ -662,7 +662,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "heothanma",
     "bracketName": "Bảng B",
     "email": "dotronghieu140620053@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "haoca": {
     "id": "acc-p-c4",
@@ -680,7 +680,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "gintuthandao",
     "bracketName": "Bảng C",
     "email": "vietanh2644@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "xyunol": {
     "id": "acc-p-c8",
@@ -690,13 +690,15 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "xyunollongthan",
     "bracketName": "Bảng C"
   },
-  "de": {
+  "god": {
     "id": "acc-p-c9",
     "participantId": "p-c9",
     "playerName": "GOD乄ĐẾ",
-    "username": "de",
-    "password": "dehonsu99",
-    "bracketName": "Bảng C"
+    "username": "god",
+    "password": "godhonsu99",
+    "bracketName": "Bảng C",
+    "email": "kientq888@gmail.com",
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "huy12": {
     "id": "acc-p-c6",
@@ -714,7 +716,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "hadestop1",
     "bracketName": "Bảng C",
     "email": "luulinhfacebookads@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "namaka06": {
     "id": "acc-p-c20",
@@ -748,7 +750,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "jetjetquangthan",
     "bracketName": "Bảng C",
     "email": "boycunli@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "daim": {
     "id": "acc-p-c21",
@@ -758,7 +760,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "daimvotri",
     "bracketName": "Bảng C",
     "email": "hoanglong.147@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "doinobac": {
     "id": "acc-p-c27",
@@ -784,7 +786,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "vyxkiemtien",
     "bracketName": "Bảng C",
     "email": "trinhgiavy21@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "ncdec": {
     "id": "acc-p-c1",
@@ -834,7 +836,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "diemdeptrai",
     "bracketName": "Bảng C",
     "email": "tantai.21082005@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "ta": {
     "id": "acc-p-c14",
@@ -844,7 +846,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "tadocco",
     "bracketName": "Bảng C",
     "email": "dongtam9555@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "kiemlai": {
     "id": "acc-p-c13",
@@ -862,7 +864,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "hungchiensi",
     "bracketName": "Bảng C",
     "email": "iamhung1706@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "mahoang": {
     "id": "acc-p-c30",
@@ -872,7 +874,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "mahoangbachthieu",
     "bracketName": "Bảng C",
     "email": "wlink1611@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "panther": {
     "id": "acc-p-c3",
@@ -906,7 +908,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "yulynbatbai",
     "bracketName": "Bảng C",
     "email": "yulyn2205@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "vulan": {
     "id": "acc-p-c19",
@@ -916,7 +918,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "vulanmahoang",
     "bracketName": "Bảng C",
     "email": "Quatlam2024@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "thatgird": {
     "id": "acc-p-c22",
@@ -934,7 +936,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "tittuthandao",
     "bracketName": "Bảng C",
     "email": "ducthuan2002nd@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "huynh": {
     "id": "acc-p-c25",
@@ -944,7 +946,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "huynhbachthieu",
     "bracketName": "Bảng C",
     "email": "huynhvipboy5@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "death": {
     "id": "acc-p-c28",
@@ -954,7 +956,7 @@ export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
     "password": "deaththanma",
     "bracketName": "Bảng C",
     "email": "duythanh.dhsanh15a@gmail.com",
-    "claimedAt": "2026-08-18T15:18:37Z"
+    "claimedAt": "2026-08-18T15:23:06Z"
   },
   "darkgirl": {
     "id": "acc-p-c34",

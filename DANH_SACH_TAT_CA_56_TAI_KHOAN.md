@@ -27,7 +27,7 @@
 | 23 | Bảng C | `p-c4` | **GOD乄Hạo ca** | `haoca` | `haocadeptrai` | ⏳ Chưa nhập mail |
 | 24 | Bảng C | `p-c33` | **GOD乄Gin** | `gin` | `gintuthandao` | ✅ Đã kích hoạt (vietanh2644@gmail.com) |
 | 25 | Bảng C | `p-c8` | **GOD乄xYunol** | `xyunol` | `xyunollongthan` | ⏳ Chưa nhập mail |
-| 26 | Bảng C | `p-c9` | **GOD乄ĐẾ** | `de` | `dehonsu99` | ⏳ Chưa nhập mail |
+| 26 | Bảng C | `p-c9` | **GOD乄ĐẾ** | `god` | `godhonsu99` | ✅ Đã kích hoạt (kientq888@gmail.com) |
 | 27 | Bảng C | `p-c6` | **GOD乄Huy12** | `huy12` | `huy12tuthandao` | ⏳ Chưa nhập mail |
 | 28 | Bảng C | `p-c31` | **GOD乄Hades** | `hades` | `hadestop1` | ✅ Đã kích hoạt (luulinhfacebookads@gmail.com) |
 | 29 | Bảng C | `p-c20` | **GOD乄Namaka06** | `namaka06` | `namaka06mahoang` | ⏳ Chưa nhập mail |
