@@ -792,8 +792,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
 
     const cleanUsername = generateUsernameFromPlayerName(targetPlayer.name);
-    const password = generateRandomPasswordForUser(cleanUsername);
-    const assignedEmail = `${cleanUsername}@pvp.tournament`;
+    const password = playerAccounts[cleanUsername]?.password || generateRandomPasswordForUser(cleanUsername);
+    const assignedEmail = targetPlayer.email || `${cleanUsername}@pvp.tournament`;
 
     const newAccount: PlayerAccount = {
       id: `acc-${targetPlayer.id}`,

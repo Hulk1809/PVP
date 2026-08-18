@@ -462,189 +462,507 @@ export const BRACKET_C_PARTICIPANTS: Participant[] = [
 ];
 
 export const INITIAL_PLAYER_ACCOUNTS: Record<string, PlayerAccount> = {
-  "ta": {
-    "playerName": "GOD乄Tà",
-    "username": "ta",
-    "password": "tadocco",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "dongtam9555@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 15:16:25 +0000"
-  },
   "solomon": {
+    "id": "acc-p-a3",
+    "participantId": "p-a3",
     "playerName": "GOD乄Solomon",
     "username": "solomon",
     "password": "solomonkiemtien",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
+    "bracketName": "Bảng A",
     "email": "minhtrian0706@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 14:17:28 +0000"
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
-  "vulan": {
-    "playerName": "GOD乄Vũ Lân",
-    "username": "vulan",
-    "password": "vulanmahoang",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "Quatlam2024@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:56:12 +0000"
-  },
-  "gau": {
-    "playerName": "GOD乄Gấu",
-    "username": "gau",
-    "password": "gaudocco",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
-    "email": "Sygau1995@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:47:37 +0000"
-  },
-  "hades": {
-    "playerName": "GOD乄Hades",
-    "username": "hades",
-    "password": "hadestop1",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "luulinhfacebookads@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:45:22 +0000"
-  },
-  "tit": {
-    "playerName": "GOD乄Tít",
-    "username": "tit",
-    "password": "tittuthandao",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "ducthuan2002nd@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:37:38 +0000"
-  },
-  "tea": {
-    "playerName": "GOD乄Tea",
-    "username": "tea",
-    "password": "teadeptrai",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
-    "email": "test.tea@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 11:14:03 +0000"
-  },
-  "huynh": {
-    "playerName": "GOD乄Huynh",
-    "username": "huynh",
-    "password": "huynhbachthieu",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "huynhvipboy5@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:35:19 +0000"
-  },
-  "mahoang": {
-    "playerName": "GOD乄MaHoàng",
-    "username": "mahoang",
-    "password": "mahoangbachthieu",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "wlink1611@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:31:51 +0000"
-  },
-  "giangne": {
-    "playerName": "GOD乄Giangnè",
-    "username": "giangne",
-    "password": "giangnetop2",
-    "bracketName": "Bảng B (Tối Thượng < 10)",
-    "email": "gh5766420@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:31:27 +0000"
-  },
-  "heo": {
-    "playerName": "GOD乄Héo",
-    "username": "heo",
-    "password": "heothanma",
-    "bracketName": "Bảng B (Tối Thượng < 10)",
-    "email": "dotronghieu140620053@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:28:01 +0000"
-  },
-  "men": {
-    "playerName": "GOD乄Mèn",
-    "username": "men",
-    "password": "mentranhba",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
-    "email": "phuctkdpro@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:23:10 +0000"
-  },
-  "qlng": {
-    "playerName": "GOD乄QLng",
-    "username": "qlng",
-    "password": "qlngkiemtien",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
-    "email": "minhhuy7001@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:21:28 +0000"
-  },
-  "goodluck": {
-    "playerName": "GOD乄GoodLuck",
-    "username": "goodluck",
-    "password": "goodlucktuyettrieu",
-    "bracketName": "Bảng B (Tối Thượng < 10)",
-    "email": "bqhuy0846446@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:20:37 +0000"
-  },
-  "yulyn": {
-    "playerName": "GOD乄YuLyn",
-    "username": "yulyn",
-    "password": "yulynbatbai",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "yulyn2205@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:20:17 +0000"
-  },
-  "hung": {
-    "playerName": "GOD乄Hung",
-    "username": "hung",
-    "password": "hungchiensi",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "iamhung1706@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:18:40 +0000"
-  },
-  "lucky": {
-    "playerName": "GOD乄Lucky",
-    "username": "lucky",
-    "password": "luckysieucap",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
-    "email": "hoanghai2909@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:17:03 +0000"
+  "langda": {
+    "id": "acc-p-a8",
+    "participantId": "p-a8",
+    "playerName": "GOD乄LÃNGDẠ",
+    "username": "langda",
+    "password": "langdabachthieu",
+    "bracketName": "Bảng A"
   },
   "ttt": {
+    "id": "acc-p-a1",
+    "participantId": "p-a1",
     "playerName": "GOD乄TTT",
     "username": "ttt",
     "password": "tttlongthan",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
+    "bracketName": "Bảng A",
     "email": "thaithien010104@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:14:38 +0000"
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
-  "jetjet": {
-    "playerName": "GOD乄JetJet",
-    "username": "jetjet",
-    "password": "jetjetquangthan",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "boycunli@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:12:36 +0000"
+  "qlng": {
+    "id": "acc-p-a4",
+    "participantId": "p-a4",
+    "playerName": "GOD乄QLng",
+    "username": "qlng",
+    "password": "qlngkiemtien",
+    "bracketName": "Bảng A",
+    "email": "minhhuy7001@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
-  "god": {
-    "playerName": "GOD乄ĐẾ",
-    "username": "god",
-    "password": "godhonsu99",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "kientq888@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:11:25 +0000"
+  "men": {
+    "id": "acc-p-a9",
+    "participantId": "p-a9",
+    "playerName": "GOD乄Mèn",
+    "username": "men",
+    "password": "mentranhba",
+    "bracketName": "Bảng A",
+    "email": "phuctkdpro@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
-  "daim": {
-    "playerName": "GOD乄Daim",
-    "username": "daim",
-    "password": "daimvotri",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "hoanglong.147@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:10:33 +0000"
+  "lucky": {
+    "id": "acc-p-a7",
+    "participantId": "p-a7",
+    "playerName": "GOD乄Lucky",
+    "username": "lucky",
+    "password": "luckysieucap",
+    "bracketName": "Bảng A",
+    "email": "hoanghai2909@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
-  "diem": {
-    "playerName": "GOD乄Diệm",
-    "username": "diem",
-    "password": "diemdeptrai",
-    "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
-    "email": "tantai.21082005@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:08:41 +0000"
+  "parker": {
+    "id": "acc-p-a10",
+    "participantId": "p-a10",
+    "playerName": "GOD乄Parker",
+    "username": "parker",
+    "password": "parkerdocco",
+    "bracketName": "Bảng A"
+  },
+  "theanh": {
+    "id": "acc-p-a2",
+    "participantId": "p-a2",
+    "playerName": "GOD乄TheAnh",
+    "username": "theanh",
+    "password": "theanhsieucap",
+    "bracketName": "Bảng A"
+  },
+  "gau": {
+    "id": "acc-p-a11",
+    "participantId": "p-a11",
+    "playerName": "GOD乄Gấu",
+    "username": "gau",
+    "password": "gaudocco",
+    "bracketName": "Bảng A",
+    "email": "Sygau1995@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "tea": {
+    "id": "acc-p-a6",
+    "participantId": "p-a6",
+    "playerName": "GOD乄Tea",
+    "username": "tea",
+    "password": "teadeptrai",
+    "bracketName": "Bảng A",
+    "email": "test.tea@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
   },
   "darkness": {
+    "id": "acc-p-a5",
+    "participantId": "p-a5",
     "playerName": "GOD乄Darkness",
     "username": "darkness",
     "password": "darknessbachthieu",
-    "bracketName": "Bảng A (Tối Thượng > 50)",
+    "bracketName": "Bảng A",
     "email": "tranminhhieu11a3ntt@gmail.com",
-    "claimedAt": "Mon, 17 Aug 2026 13:08:09 +0000"
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "mia": {
+    "id": "acc-p-b9",
+    "participantId": "p-b9",
+    "playerName": "GOD乄Mía",
+    "username": "mia",
+    "password": "miahonsu99",
+    "bracketName": "Bảng B"
+  },
+  "pain": {
+    "id": "acc-p-b6",
+    "participantId": "p-b6",
+    "playerName": "GOD乄Pain",
+    "username": "pain",
+    "password": "painthanthoai",
+    "bracketName": "Bảng B",
+    "email": "voquocthang18092005@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "goodluck": {
+    "id": "acc-p-b8",
+    "participantId": "p-b8",
+    "playerName": "GOD乄GoodLuck",
+    "username": "goodluck",
+    "password": "goodlucktuyettrieu",
+    "bracketName": "Bảng B",
+    "email": "bqhuy0846446@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "giangne": {
+    "id": "acc-p-b4",
+    "participantId": "p-b4",
+    "playerName": "GOD乄Giangnè",
+    "username": "giangne",
+    "password": "giangnetop2",
+    "bracketName": "Bảng B",
+    "email": "gh5766420@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "ryuki": {
+    "id": "acc-p-b5",
+    "participantId": "p-b5",
+    "playerName": "GOD乄Ryuki",
+    "username": "ryuki",
+    "password": "ryukibachthieu",
+    "bracketName": "Bảng B"
+  },
+  "ngocyeu": {
+    "id": "acc-p-b7",
+    "participantId": "p-b7",
+    "playerName": "GOD乄Ngốc Yêu",
+    "username": "ngocyeu",
+    "password": "ngocyeuthanma",
+    "bracketName": "Bảng B"
+  },
+  "mino": {
+    "id": "acc-p-b10",
+    "participantId": "p-b10",
+    "playerName": "GOD乄Mino",
+    "username": "mino",
+    "password": "minotranhba",
+    "bracketName": "Bảng B"
+  },
+  "shadow": {
+    "id": "acc-p-b11",
+    "participantId": "p-b11",
+    "playerName": "GOD乄Shadow",
+    "username": "shadow",
+    "password": "shadowtop1",
+    "bracketName": "Bảng B"
+  },
+  "hulk": {
+    "id": "acc-p-b2",
+    "participantId": "p-b2",
+    "playerName": "GOD乄HULK",
+    "username": "hulk",
+    "password": "hulkveque",
+    "bracketName": "Bảng B",
+    "email": "voquocthang18092005@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "tungka": {
+    "id": "acc-p-b3",
+    "participantId": "p-b3",
+    "playerName": "GOD乄TungKa",
+    "username": "tungka",
+    "password": "tungkadocco",
+    "bracketName": "Bảng B"
+  },
+  "heo": {
+    "id": "acc-p-b1",
+    "participantId": "p-b1",
+    "playerName": "GOD乄Héo",
+    "username": "heo",
+    "password": "heothanma",
+    "bracketName": "Bảng B",
+    "email": "dotronghieu140620053@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "haoca": {
+    "id": "acc-p-c4",
+    "participantId": "p-c4",
+    "playerName": "GOD乄Hạo ca",
+    "username": "haoca",
+    "password": "haocadeptrai",
+    "bracketName": "Bảng C"
+  },
+  "gin": {
+    "id": "acc-p-c33",
+    "participantId": "p-c33",
+    "playerName": "GOD乄Gin",
+    "username": "gin",
+    "password": "gintuthandao",
+    "bracketName": "Bảng C",
+    "email": "vietanh2644@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "xyunol": {
+    "id": "acc-p-c8",
+    "participantId": "p-c8",
+    "playerName": "GOD乄xYunol",
+    "username": "xyunol",
+    "password": "xyunollongthan",
+    "bracketName": "Bảng C"
+  },
+  "de": {
+    "id": "acc-p-c9",
+    "participantId": "p-c9",
+    "playerName": "GOD乄ĐẾ",
+    "username": "de",
+    "password": "dehonsu99",
+    "bracketName": "Bảng C"
+  },
+  "huy12": {
+    "id": "acc-p-c6",
+    "participantId": "p-c6",
+    "playerName": "GOD乄Huy12",
+    "username": "huy12",
+    "password": "huy12tuthandao",
+    "bracketName": "Bảng C"
+  },
+  "hades": {
+    "id": "acc-p-c31",
+    "participantId": "p-c31",
+    "playerName": "GOD乄Hades",
+    "username": "hades",
+    "password": "hadestop1",
+    "bracketName": "Bảng C",
+    "email": "luulinhfacebookads@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "namaka06": {
+    "id": "acc-p-c20",
+    "participantId": "p-c20",
+    "playerName": "GOD乄Namaka06",
+    "username": "namaka06",
+    "password": "namaka06mahoang",
+    "bracketName": "Bảng C"
+  },
+  "gacon": {
+    "id": "acc-p-c17",
+    "participantId": "p-c17",
+    "playerName": "GOD乄gà con",
+    "username": "gacon",
+    "password": "gaconbachthieu",
+    "bracketName": "Bảng C"
+  },
+  "tieuly": {
+    "id": "acc-p-c2",
+    "participantId": "p-c2",
+    "playerName": "GOD乄TiểuLy",
+    "username": "tieuly",
+    "password": "tieulythanma",
+    "bracketName": "Bảng C"
+  },
+  "jetjet": {
+    "id": "acc-p-c29",
+    "participantId": "p-c29",
+    "playerName": "GOD乄JetJet",
+    "username": "jetjet",
+    "password": "jetjetquangthan",
+    "bracketName": "Bảng C",
+    "email": "boycunli@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "daim": {
+    "id": "acc-p-c21",
+    "participantId": "p-c21",
+    "playerName": "GOD乄Daim",
+    "username": "daim",
+    "password": "daimvotri",
+    "bracketName": "Bảng C",
+    "email": "hoanglong.147@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "doinobac": {
+    "id": "acc-p-c27",
+    "participantId": "p-c27",
+    "playerName": "GOD乄Đời nó bạc",
+    "username": "doinobac",
+    "password": "doinobacbatbai",
+    "bracketName": "Bảng C"
+  },
+  "unreal": {
+    "id": "acc-p-c15",
+    "participantId": "p-c15",
+    "playerName": "GOD乄unreal",
+    "username": "unreal",
+    "password": "unrealdocco",
+    "bracketName": "Bảng C"
+  },
+  "vyx": {
+    "id": "acc-p-c18",
+    "participantId": "p-c18",
+    "playerName": "GOD乄VYX",
+    "username": "vyx",
+    "password": "vyxkiemtien",
+    "bracketName": "Bảng C",
+    "email": "trinhgiavy21@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "ncdec": {
+    "id": "acc-p-c1",
+    "participantId": "p-c1",
+    "playerName": "GOD乄NCDEC",
+    "username": "ncdec",
+    "password": "ncdecdeptrai",
+    "bracketName": "Bảng C"
+  },
+  "longca": {
+    "id": "acc-p-c24",
+    "participantId": "p-c24",
+    "playerName": "GOD乄longca",
+    "username": "longca",
+    "password": "longcaquangthan",
+    "bracketName": "Bảng C"
+  },
+  "tieuly2": {
+    "id": "acc-p-c32",
+    "participantId": "p-c32",
+    "playerName": "GOD乄TiểuLy 2",
+    "username": "tieuly2",
+    "password": "tieuly2longthan",
+    "bracketName": "Bảng C"
+  },
+  "sailam": {
+    "id": "acc-p-c16",
+    "participantId": "p-c16",
+    "playerName": "GOD乄sailầm",
+    "username": "sailam",
+    "password": "sailamhonsu99",
+    "bracketName": "Bảng C"
+  },
+  "iloveu": {
+    "id": "acc-p-c5",
+    "participantId": "p-c5",
+    "playerName": "GOD乄ILoveU",
+    "username": "iloveu",
+    "password": "iloveututhandao",
+    "bracketName": "Bảng C"
+  },
+  "diem": {
+    "id": "acc-p-c26",
+    "participantId": "p-c26",
+    "playerName": "GOD乄Diệm",
+    "username": "diem",
+    "password": "diemdeptrai",
+    "bracketName": "Bảng C",
+    "email": "tantai.21082005@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "ta": {
+    "id": "acc-p-c14",
+    "participantId": "p-c14",
+    "playerName": "GOD乄Tà",
+    "username": "ta",
+    "password": "tadocco",
+    "bracketName": "Bảng C",
+    "email": "dongtam9555@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "kiemlai": {
+    "id": "acc-p-c13",
+    "participantId": "p-c13",
+    "playerName": "GOD乄kiemlai",
+    "username": "kiemlai",
+    "password": "kiemlaibachthieu",
+    "bracketName": "Bảng C"
+  },
+  "hung": {
+    "id": "acc-p-c7",
+    "participantId": "p-c7",
+    "playerName": "GOD乄Hung",
+    "username": "hung",
+    "password": "hungchiensi",
+    "bracketName": "Bảng C",
+    "email": "iamhung1706@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "mahoang": {
+    "id": "acc-p-c30",
+    "participantId": "p-c30",
+    "playerName": "GOD乄MaHoàng",
+    "username": "mahoang",
+    "password": "mahoangbachthieu",
+    "bracketName": "Bảng C",
+    "email": "wlink1611@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "panther": {
+    "id": "acc-p-c3",
+    "participantId": "p-c3",
+    "playerName": "GOD乄Panther",
+    "username": "panther",
+    "password": "panthertop1",
+    "bracketName": "Bảng C"
+  },
+  "babγ": {
+    "id": "acc-p-c10",
+    "participantId": "p-c10",
+    "playerName": "GOD乄βαβγ",
+    "username": "babγ",
+    "password": "babγbatbai",
+    "bracketName": "Bảng C"
+  },
+  "chuot": {
+    "id": "acc-p-c11",
+    "participantId": "p-c11",
+    "playerName": "GOD乄Chuột",
+    "username": "chuot",
+    "password": "chuotdocco",
+    "bracketName": "Bảng C"
+  },
+  "yulyn": {
+    "id": "acc-p-c12",
+    "participantId": "p-c12",
+    "playerName": "GOD乄YuLyn",
+    "username": "yulyn",
+    "password": "yulynbatbai",
+    "bracketName": "Bảng C",
+    "email": "yulyn2205@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "vulan": {
+    "id": "acc-p-c19",
+    "participantId": "p-c19",
+    "playerName": "GOD乄Vũ Lân",
+    "username": "vulan",
+    "password": "vulanmahoang",
+    "bracketName": "Bảng C",
+    "email": "Quatlam2024@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "thatgird": {
+    "id": "acc-p-c22",
+    "participantId": "p-c22",
+    "playerName": "GOD乄ThatGird",
+    "username": "thatgird",
+    "password": "thatgirdquangthan",
+    "bracketName": "Bảng C"
+  },
+  "tit": {
+    "id": "acc-p-c23",
+    "participantId": "p-c23",
+    "playerName": "GOD乄Tít",
+    "username": "tit",
+    "password": "tittuthandao",
+    "bracketName": "Bảng C",
+    "email": "ducthuan2002nd@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "huynh": {
+    "id": "acc-p-c25",
+    "participantId": "p-c25",
+    "playerName": "GOD乄Huynh",
+    "username": "huynh",
+    "password": "huynhbachthieu",
+    "bracketName": "Bảng C",
+    "email": "huynhvipboy5@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "death": {
+    "id": "acc-p-c28",
+    "participantId": "p-c28",
+    "playerName": "GOD乄DEATH",
+    "username": "death",
+    "password": "deaththanma",
+    "bracketName": "Bảng C",
+    "email": "duythanh.dhsanh15a@gmail.com",
+    "claimedAt": "2026-08-18T15:18:37Z"
+  },
+  "darkgirl": {
+    "id": "acc-p-c34",
+    "participantId": "p-c34",
+    "playerName": "GOD乄DarkGirl",
+    "username": "darkgirl",
+    "password": "darkgirlkiemtien",
+    "bracketName": "Bảng C"
   }
 };
 

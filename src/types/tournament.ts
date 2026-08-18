@@ -12,9 +12,9 @@ export interface PlayerAccount {
   playerName: string;
   username: string; // e.g. 'tea'
   password: string; // e.g. 'teadeptrai'
-  email: string;
+  email?: string;
   bracketName?: string;
-  claimedAt: string;
+  claimedAt?: string;
 }
 
 export interface Bracket {
