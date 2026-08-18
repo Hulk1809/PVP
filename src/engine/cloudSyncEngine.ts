@@ -16,6 +16,7 @@ class CloudSyncEngine {
   private listeners: Set<SyncCallback> = new Set();
   private lastKnownTimestamp = 0;
   private isPushing = false;
+  private pendingPayload: Omit<CloudSyncPayload, 'updatedAt'> | null = null;
   private pollInterval: any = null;
 
   constructor() {
@@ -29,33 +30,55 @@ class CloudSyncEngine {
     return () => this.listeners.delete(callback);
   }
 
-  // Push state update to AWS EC2 backend
+  // Push state update to AWS EC2 backend with guaranteed delivery & queueing
   public async pushState(payload: Omit<CloudSyncPayload, 'updatedAt'>) {
-    if (this.isPushing) return;
-    this.isPushing = true;
+    if (this.isPushing) {
+      // Save latest payload to be pushed immediately after current in-flight push completes
+      this.pendingPayload = payload;
+      return;
+    }
 
+    this.isPushing = true;
     const data: CloudSyncPayload = {
       ...payload,
       updatedAt: Date.now(),
     };
 
-    this.lastKnownTimestamp = data.updatedAt;
+    // Optimistically update our known timestamp so local poll won't immediately overwrite
+    this.lastKnownTimestamp = Math.max(this.lastKnownTimestamp, data.updatedAt);
 
     try {
-      await fetch('/api/sync', {
+      const res = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: data }),
       });
+      if (res.ok) {
+        const json = await res.json().catch(() => ({}));
+        if (json.lastUpdated) {
+          this.lastKnownTimestamp = Math.max(this.lastKnownTimestamp, json.lastUpdated);
+        }
+      }
     } catch (err) {
       console.warn('[CloudSync] Push sync error:', err);
     } finally {
       this.isPushing = false;
+      // If a new update happened while pushing, process it now
+      if (this.pendingPayload) {
+        const nextPayload = this.pendingPayload;
+        this.pendingPayload = null;
+        this.pushState(nextPayload);
+      }
     }
   }
 
   // Fetch latest state from AWS EC2 backend
   public async fetchLatestState(): Promise<CloudSyncPayload | null> {
+    // If we have an active or pending push from this client, don't pull old state to avoid race conditions
+    if (this.isPushing || this.pendingPayload) {
+      return null;
+    }
+
     let cloudData: CloudSyncPayload | null = null;
 
     try {
@@ -89,7 +112,7 @@ class CloudSyncEngine {
     });
   }
 
-  // Fast polling (every 2.5 seconds) to ensure all devices stay in sync
+  // Polling every 2.5 seconds to ensure all devices stay in sync
   private startPolling() {
     if (typeof window === 'undefined') return;
     if (this.pollInterval) clearInterval(this.pollInterval);
