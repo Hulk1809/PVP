@@ -73,7 +73,7 @@ class CloudSyncEngine {
   }
 
   // Fetch latest state from AWS EC2 backend
-  public async fetchLatestState(): Promise<CloudSyncPayload | null> {
+  public async fetchLatestState(forceNotify = false): Promise<CloudSyncPayload | null> {
     // If we have an active or pending push from this client, don't pull old state to avoid race conditions
     if (this.isPushing || this.pendingPayload) {
       return null;
@@ -93,9 +93,11 @@ class CloudSyncEngine {
       console.warn('[CloudSync] Fetch sync error:', err);
     }
 
-    if (cloudData && cloudData.updatedAt && cloudData.updatedAt > this.lastKnownTimestamp) {
-      this.lastKnownTimestamp = cloudData.updatedAt;
-      this.notifyListeners(cloudData);
+    if (cloudData && cloudData.updatedAt) {
+      if (forceNotify || cloudData.updatedAt > this.lastKnownTimestamp) {
+        this.lastKnownTimestamp = Math.max(this.lastKnownTimestamp, cloudData.updatedAt);
+        this.notifyListeners(cloudData);
+      }
       return cloudData;
     }
 
@@ -116,9 +118,6 @@ class CloudSyncEngine {
   private startPolling() {
     if (typeof window === 'undefined') return;
     if (this.pollInterval) clearInterval(this.pollInterval);
-
-    // Initial fetch immediately
-    setTimeout(() => this.fetchLatestState(), 100);
 
     this.pollInterval = setInterval(() => {
       this.fetchLatestState();

@@ -352,15 +352,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Listen to BroadcastChannel and CloudSync for real-time cross-device updates
   useEffect(() => {
-    // 1. Initial Cloud Fetch & Auto-Seed
-    cloudSync.fetchLatestState().then((cloudData) => {
+    // 1. Initial Cloud Fetch (Fetch authoritative live state from EC2)
+    cloudSync.fetchLatestState(true).then((cloudData) => {
       const defaultData = getInitialTournamentData();
       if (isValidTournamentPayload(cloudData)) {
         if (cloudData.brackets) setBrackets(cloudData.brackets);
         if (cloudData.matches) setMatches(cloudData.matches);
         if (Array.isArray(cloudData.lotusWheelWinners)) setLotusWheelWinners(cloudData.lotusWheelWinners);
 
-        // Merge accounts so default 24 accounts are ALWAYS preserved and merged with any new cloud accounts
+        // Merge accounts so default accounts are ALWAYS preserved and merged with any new cloud accounts
         const mergedAccounts = {
           ...(defaultData.playerAccounts || {}),
           ...(cloudData.playerAccounts || {}),
@@ -384,15 +384,6 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
           setParticipants(mergedParts);
         }
-      } else {
-        // Cloud data is empty or invalid -> Seed cloud with complete initial tournament dataset
-        cloudSync.pushState({
-          brackets: defaultData.brackets,
-          participants: defaultData.participants,
-          matches: defaultData.matches,
-          playerAccounts: defaultData.playerAccounts || {},
-          lotusWheelWinners: [],
-        });
       }
     });
 
