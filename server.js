@@ -100,7 +100,7 @@ app.post('/api/send-account', async (req, res) => {
       if (fs.existsSync(ACCOUNTS_FILE)) {
         accs = JSON.parse(fs.readFileSync(ACCOUNTS_FILE, 'utf-8'));
       }
-      accs[username] = {
+      const newAcc = {
         playerName: playerName || username,
         username,
         password,
@@ -108,7 +108,32 @@ app.post('/api/send-account', async (req, res) => {
         bracketName: bracketName || 'Giải Đấu Chính',
         claimedAt: new Date().toISOString(),
       };
+      accs[username] = newAcc;
       fs.writeFileSync(ACCOUNTS_FILE, JSON.stringify(accs, null, 2), 'utf-8');
+
+      // ALSO synchronize directly into tournament_state.json
+      if (fs.existsSync(STATE_FILE)) {
+        const stateRaw = fs.readFileSync(STATE_FILE, 'utf-8');
+        const state = JSON.parse(stateRaw);
+        if (!state.playerAccounts) state.playerAccounts = {};
+        state.playerAccounts[username] = newAcc;
+
+        if (state.participants) {
+          const norm = (s) => (s || '').toLowerCase().replace('god乄', '').replace('god.', '').replace('god-', '').replace('god', '').replace(/\s+/g, '').trim();
+          const targetNorm = norm(playerName || username);
+          for (const pId in state.participants) {
+            const p = state.participants[pId];
+            if (norm(p.name) === targetNorm || norm(p.username) === targetNorm || p.username === username) {
+              p.claimed = true;
+              p.username = username;
+              p.email = email;
+              break;
+            }
+          }
+        }
+        state.updatedAt = Date.now();
+        fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf-8');
+      }
     } catch (saveErr) {
       console.error('Error saving account to disk:', saveErr);
     }

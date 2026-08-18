@@ -1,0 +1,526 @@
+{
+  "accounts": {
+    "ta": {
+      "playerName": "GOD乄Tà",
+      "username": "ta",
+      "password": "tadocco",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "dongtam9555@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 15:16:25 +0000"
+    },
+    "solomon": {
+      "playerName": "GOD乄Solomon",
+      "username": "solomon",
+      "password": "solomonkiemtien",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "minhtrian0706@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 14:17:28 +0000"
+    },
+    "vulan": {
+      "playerName": "GOD乄Vũ Lân",
+      "username": "vulan",
+      "password": "vulanmahoang",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "Quatlam2024@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:56:12 +0000"
+    },
+    "gau": {
+      "playerName": "GOD乄Gấu",
+      "username": "gau",
+      "password": "gaudocco",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "Sygau1995@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:47:37 +0000"
+    },
+    "hades": {
+      "playerName": "GOD乄Hades",
+      "username": "hades",
+      "password": "hadestop1",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "luulinhfacebookads@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:45:22 +0000"
+    },
+    "tit": {
+      "playerName": "GOD乄Tít",
+      "username": "tit",
+      "password": "tittuthandao",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "ducthuan2002nd@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:37:38 +0000"
+    },
+    "tea": {
+      "playerName": "GOD乄Tea",
+      "username": "tea",
+      "password": "teadeptrai",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "test.tea@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 11:14:03 +0000"
+    },
+    "huynh": {
+      "playerName": "GOD乄Huynh",
+      "username": "huynh",
+      "password": "huynhbachthieu",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "huynhvipboy5@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:35:19 +0000"
+    },
+    "mahoang": {
+      "playerName": "GOD乄MaHoàng",
+      "username": "mahoang",
+      "password": "mahoangbachthieu",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "wlink1611@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:31:51 +0000"
+    },
+    "giangne": {
+      "playerName": "GOD乄Giangnè",
+      "username": "giangne",
+      "password": "giangnetop2",
+      "bracketName": "Bảng B (Tối Thượng < 10)",
+      "email": "gh5766420@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:31:27 +0000"
+    },
+    "heo": {
+      "playerName": "GOD乄Héo",
+      "username": "heo",
+      "password": "heothanma",
+      "bracketName": "Bảng B (Tối Thượng < 10)",
+      "email": "dotronghieu140620053@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:28:01 +0000"
+    },
+    "men": {
+      "playerName": "GOD乄Mèn",
+      "username": "men",
+      "password": "mentranhba",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "phuctkdpro@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:23:10 +0000"
+    },
+    "qlng": {
+      "playerName": "GOD乄QLng",
+      "username": "qlng",
+      "password": "qlngkiemtien",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "minhhuy7001@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:21:28 +0000"
+    },
+    "goodluck": {
+      "playerName": "GOD乄GoodLuck",
+      "username": "goodluck",
+      "password": "goodlucktuyettrieu",
+      "bracketName": "Bảng B (Tối Thượng < 10)",
+      "email": "bqhuy0846446@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:20:37 +0000"
+    },
+    "yulyn": {
+      "playerName": "GOD乄YuLyn",
+      "username": "yulyn",
+      "password": "yulynbatbai",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "yulyn2205@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:20:17 +0000"
+    },
+    "hung": {
+      "playerName": "GOD乄Hung",
+      "username": "hung",
+      "password": "hungchiensi",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "iamhung1706@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:18:40 +0000"
+    },
+    "lucky": {
+      "playerName": "GOD乄Lucky",
+      "username": "lucky",
+      "password": "luckysieucap",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "hoanghai2909@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:17:03 +0000"
+    },
+    "ttt": {
+      "playerName": "GOD乄TTT",
+      "username": "ttt",
+      "password": "tttlongthan",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "thaithien010104@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:14:38 +0000"
+    },
+    "jetjet": {
+      "playerName": "GOD乄JetJet",
+      "username": "jetjet",
+      "password": "jetjetquangthan",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "boycunli@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:12:36 +0000"
+    },
+    "god": {
+      "playerName": "GOD乄ĐẾ",
+      "username": "god",
+      "password": "godhonsu99",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "kientq888@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:11:25 +0000"
+    },
+    "daim": {
+      "playerName": "GOD乄Daim",
+      "username": "daim",
+      "password": "daimvotri",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "hoanglong.147@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:10:33 +0000"
+    },
+    "diem": {
+      "playerName": "GOD乄Diệm",
+      "username": "diem",
+      "password": "diemdeptrai",
+      "bracketName": "Bảng C (Rực Rỡ Trở Xuống)",
+      "email": "tantai.21082005@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:08:41 +0000"
+    },
+    "darkness": {
+      "playerName": "GOD乄Darkness",
+      "username": "darkness",
+      "password": "darknessbachthieu",
+      "bracketName": "Bảng A (Tối Thượng > 50)",
+      "email": "tranminhhieu11a3ntt@gmail.com",
+      "claimedAt": "Mon, 17 Aug 2026 13:08:09 +0000"
+    }
+  },
+  "participants": {
+    "p-a3": {
+      "name": "GOD乄Solomon",
+      "claimed": true,
+      "username": "solomon",
+      "email": "minhtrian0706@gmail.com"
+    },
+    "p-a8": {
+      "name": "GOD乄LÃNGDẠ",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-a1": {
+      "name": "GOD乄TTT",
+      "claimed": true,
+      "username": "ttt",
+      "email": "thaithien010104@gmail.com"
+    },
+    "p-a4": {
+      "name": "GOD乄QLng",
+      "claimed": true,
+      "username": "qlng",
+      "email": "minhhuy7001@gmail.com"
+    },
+    "p-a9": {
+      "name": "GOD乄Mèn",
+      "claimed": true,
+      "username": "men",
+      "email": "phuctkdpro@gmail.com"
+    },
+    "p-a7": {
+      "name": "GOD乄Lucky",
+      "claimed": true,
+      "username": "lucky",
+      "email": "hoanghai2909@gmail.com"
+    },
+    "p-a10": {
+      "name": "GOD乄Parker",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-a2": {
+      "name": "GOD乄TheAnh",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-a11": {
+      "name": "GOD乄Gấu",
+      "claimed": true,
+      "username": "gau",
+      "email": "Sygau1995@gmail.com"
+    },
+    "p-a6": {
+      "name": "GOD乄Tea",
+      "claimed": true,
+      "username": "tea",
+      "email": "test.tea@gmail.com"
+    },
+    "p-a5": {
+      "name": "GOD乄Darkness",
+      "claimed": true,
+      "username": "darkness",
+      "email": "tranminhhieu11a3ntt@gmail.com"
+    },
+    "p-b9": {
+      "name": "GOD乄Mía",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b6": {
+      "name": "GOD乄Pain",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b8": {
+      "name": "GOD乄GoodLuck",
+      "claimed": true,
+      "username": "goodluck",
+      "email": "bqhuy0846446@gmail.com"
+    },
+    "p-b4": {
+      "name": "GOD乄Giangnè",
+      "claimed": true,
+      "username": "giangne",
+      "email": "gh5766420@gmail.com"
+    },
+    "p-b5": {
+      "name": "GOD乄Ryuki",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b7": {
+      "name": "GOD乄Ngốc Yêu",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b10": {
+      "name": "GOD乄Mino",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b11": {
+      "name": "GOD乄Shadow",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b2": {
+      "name": "GOD乄HULK",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b3": {
+      "name": "GOD乄TungKa",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-b1": {
+      "name": "GOD乄Héo",
+      "claimed": true,
+      "username": "heo",
+      "email": "dotronghieu140620053@gmail.com"
+    },
+    "p-c4": {
+      "name": "GOD乄Hạo ca",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c33": {
+      "name": "GOD乄Gin",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c8": {
+      "name": "GOD乄xYunol",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c9": {
+      "name": "GOD乄ĐẾ",
+      "claimed": true,
+      "username": "god",
+      "email": "kientq888@gmail.com"
+    },
+    "p-c6": {
+      "name": "GOD乄Huy12",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c31": {
+      "name": "GOD乄Hades",
+      "claimed": true,
+      "username": "hades",
+      "email": "luulinhfacebookads@gmail.com"
+    },
+    "p-c20": {
+      "name": "GOD乄Namaka06",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c17": {
+      "name": "GOD乄gà con",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c2": {
+      "name": "GOD乄TiểuLy",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c29": {
+      "name": "GOD乄JetJet",
+      "claimed": true,
+      "username": "jetjet",
+      "email": "boycunli@gmail.com"
+    },
+    "p-c21": {
+      "name": "GOD乄Daim",
+      "claimed": true,
+      "username": "daim",
+      "email": "hoanglong.147@gmail.com"
+    },
+    "p-c27": {
+      "name": "GOD乄Đời nó bạc",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c15": {
+      "name": "GOD乄unreal",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c18": {
+      "name": "GOD乄VYX",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c1": {
+      "name": "GOD乄NCDEC",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c24": {
+      "name": "GOD乄longca",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c32": {
+      "name": "GOD乄TiểuLy 2",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c16": {
+      "name": "GOD乄sailầm",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c5": {
+      "name": "GOD乄ILoveU",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c26": {
+      "name": "GOD乄Diệm",
+      "claimed": true,
+      "username": "diem",
+      "email": "tantai.21082005@gmail.com"
+    },
+    "p-c14": {
+      "name": "GOD乄Tà",
+      "claimed": true,
+      "username": "ta",
+      "email": "dongtam9555@gmail.com"
+    },
+    "p-c13": {
+      "name": "GOD乄kiemlai",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c7": {
+      "name": "GOD乄Hung",
+      "claimed": true,
+      "username": "hung",
+      "email": "iamhung1706@gmail.com"
+    },
+    "p-c30": {
+      "name": "GOD乄MaHoàng",
+      "claimed": true,
+      "username": "mahoang",
+      "email": "wlink1611@gmail.com"
+    },
+    "p-c3": {
+      "name": "GOD乄Panther",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c10": {
+      "name": "GOD乄βαβγ",
+      "claimed": true,
+      "username": "god",
+      "email": "kientq888@gmail.com"
+    },
+    "p-c11": {
+      "name": "GOD乄Chuột",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c12": {
+      "name": "GOD乄YuLyn",
+      "claimed": true,
+      "username": "yulyn",
+      "email": "yulyn2205@gmail.com"
+    },
+    "p-c19": {
+      "name": "GOD乄Vũ Lân",
+      "claimed": true,
+      "username": "vulan",
+      "email": "Quatlam2024@gmail.com"
+    },
+    "p-c22": {
+      "name": "GOD乄ThatGird",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c23": {
+      "name": "GOD乄Tít",
+      "claimed": true,
+      "username": "tit",
+      "email": "ducthuan2002nd@gmail.com"
+    },
+    "p-c25": {
+      "name": "GOD乄Huynh",
+      "claimed": true,
+      "username": "huynh",
+      "email": "huynhvipboy5@gmail.com"
+    },
+    "p-c28": {
+      "name": "GOD乄DEATH",
+      "claimed": null,
+      "username": null,
+      "email": null
+    },
+    "p-c34": {
+      "name": "GOD乄DarkGirl",
+      "claimed": null,
+      "username": null,
+      "email": null
+    }
+  }
+}
