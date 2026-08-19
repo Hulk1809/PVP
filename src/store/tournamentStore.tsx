@@ -654,6 +654,15 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     persistState(brackets, participants, updated);
     soundEngine.playAdvanceStrike();
 
+    // Direct atomic call to /api/ban for guaranteed immediate server-side persistence
+    fetch('/api/ban', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId, playerId, banHero: cleanBan }),
+    }).catch((err) => {
+      console.warn('[Ban API] Error sending ban to server:', err);
+    });
+
     return { success: true, message: `Đã cấm tướng "${cleanBan}" thành công!` };
   };
 
