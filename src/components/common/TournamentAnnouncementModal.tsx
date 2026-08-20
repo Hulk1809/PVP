@@ -70,19 +70,6 @@ export const TournamentAnnouncementModal: React.FC<TournamentAnnouncementModalPr
 
         {/* Main Content Body */}
         <div className="space-y-2 sm:space-y-2.5">
-          {/* Card 1: Thời gian bắt đầu mùa giải */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-amber-950/40 via-zinc-900/60 to-amber-950/40 border border-amber-500/30 flex items-center space-x-3 shadow-inner">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center flex-shrink-0 text-amber-400 shadow-sm">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div className="min-w-0 flex-1 text-left">
-              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium">Lịch Khởi Tranh Mùa Giải</p>
-              <p className="text-xs sm:text-sm font-bold text-amber-200 tracking-wide">
-                Thứ Sáu, ngày 21 tháng 8
-              </p>
-            </div>
-          </div>
-
           {/* Card 2: Giờ giấc PVP tự do & Khán giả */}
           <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-cyan-950/40 via-zinc-900/60 to-cyan-950/40 border border-cyan-500/30 flex items-center space-x-3">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center flex-shrink-0 text-cyan-300">
@@ -96,29 +83,6 @@ export const TournamentAnnouncementModal: React.FC<TournamentAnnouncementModalPr
             </div>
           </div>
 
-          {/* Card 3: Lời dặn dò tập luyện */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-zinc-900/70 border border-white/10 flex items-center space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center flex-shrink-0 text-blue-300">
-              <Swords className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div className="min-w-0 flex-1 text-left">
-              <p className="text-xs sm:text-sm font-medium text-slate-200 leading-snug">
-                Các tuyển thủ hãy tập luyện thật kỹ lưỡng nhé!
-              </p>
-            </div>
-          </div>
-
-          {/* Card 4: Lời chúc thi đấu bùng nổ */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-red-950/40 via-zinc-900/60 to-red-950/40 border border-red-500/30 flex items-center space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0 text-red-400">
-              <Flame className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-            </div>
-            <div className="min-w-0 flex-1 text-left">
-              <p className="text-xs sm:text-sm font-semibold text-amber-100 leading-snug">
-                Chúc các tuyển thủ có một mùa giải PVP bùng nổ!
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer Action Button */}
