@@ -1,9 +1,15 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
+import {
+  saveStateWithBackup as saveStateToDatabase,
+  getState as readStateFromDatabase,
+  initializeDatabase,
+} from './database/postgres.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,35 +32,33 @@ if (!fs.existsSync(BACKUP_DIR)) {
   fs.mkdirSync(BACKUP_DIR, { recursive: true });
 }
 
-// Helper: Save rolling backup (keep last 30 backups)
-function saveStateWithBackup(state) {
+async function saveStateWithBackup(state) {
   try {
-    const timestamp = Date.now();
-    const dataWithTimestamp = {
-      ...state,
-      updatedAt: timestamp,
-    };
-    fs.writeFileSync(STATE_FILE, JSON.stringify(dataWithTimestamp, null, 2), 'utf-8');
-
-    // Create timestamped backup
-    const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `state_${dateStr}.json`);
-    fs.writeFileSync(backupFile, JSON.stringify(dataWithTimestamp, null, 2), 'utf-8');
-
-    // Prune old backups (keep newest 30)
-    const files = fs.readdirSync(BACKUP_DIR).filter(f => f.startsWith('state_') && f.endsWith('.json'));
-    if (files.length > 30) {
-      files.sort();
-      for (let i = 0; i < files.length - 30; i++) {
-        try { fs.unlinkSync(path.join(BACKUP_DIR, files[i])); } catch {}
-      }
-    }
-
-    return timestamp;
+    return await saveStateToDatabase(state);
   } catch (e) {
     console.error('[Server] Error saving state and backup:', e);
     throw e;
   }
+}
+
+async function readStateFromDisk() {
+  try {
+    const dbState = await readStateFromDatabase();
+    if (dbState) return dbState;
+  } catch (e) {
+    console.warn('[Server] DB state unavailable, trying file fallback:', e.message || e);
+  }
+
+  try {
+    if (fs.existsSync(STATE_FILE)) {
+      const raw = fs.readFileSync(STATE_FILE, 'utf-8');
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.error('Error reading state file:', e);
+  }
+
+  return null;
 }
 
 // Nodemailer Gmail Transporter
@@ -146,28 +150,24 @@ app.post('/api/send-account', async (req, res) => {
       accs[username] = newAcc;
       fs.writeFileSync(ACCOUNTS_FILE, JSON.stringify(accs, null, 2), 'utf-8');
 
-      // 2. Synchronize into tournament_state.json with automatic backup
-      if (fs.existsSync(STATE_FILE)) {
-        const stateRaw = fs.readFileSync(STATE_FILE, 'utf-8');
-        const state = JSON.parse(stateRaw);
-        if (!state.playerAccounts) state.playerAccounts = {};
-        state.playerAccounts[username] = newAcc;
+      const state = (await readStateFromDisk()) || {};
+      if (!state.playerAccounts) state.playerAccounts = {};
+      state.playerAccounts[username] = newAcc;
 
-        if (state.participants) {
-          const norm = (s) => (s || '').toLowerCase().replace('god乄', '').replace('god.', '').replace('god-', '').replace('god', '').replace(/\s+/g, '').trim();
-          const targetNorm = norm(playerName || username);
-          for (const pId in state.participants) {
-            const p = state.participants[pId];
-            if (norm(p.name) === targetNorm || norm(p.username) === targetNorm || p.username === username) {
-              p.claimed = true;
-              p.username = username;
-              p.email = email;
-              break;
-            }
+      if (state.participants) {
+        const norm = (s) => (s || '').toLowerCase().replace('god乄', '').replace('god.', '').replace('god-', '').replace('god', '').replace(/\s+/g, '').trim();
+        const targetNorm = norm(playerName || username);
+        for (const pId in state.participants) {
+          const p = state.participants[pId];
+          if (norm(p.name) === targetNorm || norm(p.username) === targetNorm || p.username === username) {
+            p.claimed = true;
+            p.username = username;
+            p.email = email;
+            break;
           }
         }
-        saveStateWithBackup(state);
       }
+      await saveStateWithBackup(state);
     } catch (saveErr) {
       console.error('Error saving account to disk:', saveErr);
     }
@@ -180,18 +180,17 @@ app.post('/api/send-account', async (req, res) => {
 });
 
 // 2. ATOMIC API: Submit Player Hero Ban (Guaranteed Immediate Server-Side Persistence)
-app.post('/api/ban', (req, res) => {
+app.post('/api/ban', async (req, res) => {
   const { matchId, playerId, banHero } = req.body || {};
   if (!matchId || !playerId || !banHero) {
     return res.status(400).json({ error: 'Thiếu matchId, playerId hoặc banHero' });
   }
 
   try {
-    if (!fs.existsSync(STATE_FILE)) {
+    const state = await readStateFromDisk();
+    if (!state) {
       return res.status(500).json({ error: 'Server state not initialized' });
     }
-
-    const state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'));
     if (!state.matches || !state.matches[matchId]) {
       return res.status(404).json({ error: 'Không tìm thấy trận đấu' });
     }
@@ -216,7 +215,7 @@ app.post('/api/ban', (req, res) => {
       return res.status(403).json({ error: 'Bạn không thuộc danh sách thi đấu của trận này!' });
     }
 
-    const lastUpdated = saveStateWithBackup(state);
+    const lastUpdated = await saveStateWithBackup(state);
     console.log(`[BAN SUCCESS] Match ${matchId}: Player ${playerId} banned "${cleanBan}" at ${now}`);
     return res.status(200).json({ success: true, match, lastUpdated });
   } catch (e) {
@@ -226,11 +225,10 @@ app.post('/api/ban', (req, res) => {
 });
 
 // 3. API: Real-time Cloud State Sync with Intelligent Server-Side Merge Protection
-app.get('/api/sync', (req, res) => {
+app.get('/api/sync', async (req, res) => {
   try {
-    if (fs.existsSync(STATE_FILE)) {
-      const raw = fs.readFileSync(STATE_FILE, 'utf-8');
-      const state = JSON.parse(raw);
+    const state = await readStateFromDisk();
+    if (state) {
       return res.status(200).json({ success: true, state, lastUpdated: state.updatedAt || Date.now() });
     }
   } catch (e) {
@@ -239,7 +237,7 @@ app.get('/api/sync', (req, res) => {
   return res.status(200).json({ success: true, state: null, lastUpdated: 0 });
 });
 
-app.post('/api/sync', (req, res) => {
+app.post('/api/sync', async (req, res) => {
   const { state: incomingState } = req.body || {};
   if (!incomingState) {
     return res.status(400).json({ error: 'Missing state payload' });
@@ -248,10 +246,8 @@ app.post('/api/sync', (req, res) => {
   try {
     let finalState = incomingState;
 
-    if (fs.existsSync(STATE_FILE)) {
-      const existingRaw = fs.readFileSync(STATE_FILE, 'utf-8');
-      const existingState = JSON.parse(existingRaw);
-
+    const existingState = await readStateFromDisk();
+    if (existingState) {
       // SERVER-SIDE MERGE PROTECTION:
       // Never allow a client to wipe out existing bans or claimed accounts!
       const mergedMatches = { ...(existingState.matches || {}), ...(incomingState.matches || {}) };
@@ -303,7 +299,7 @@ app.post('/api/sync', (req, res) => {
       };
     }
 
-    const lastUpdated = saveStateWithBackup(finalState);
+    const lastUpdated = await saveStateWithBackup(finalState);
     return res.status(200).json({ success: true, lastUpdated });
   } catch (e) {
     console.error('Error saving state file:', e);
@@ -320,11 +316,22 @@ app.use((req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`====================================================`);
-  console.log(`🏆 SOUL LAND PVP TOURNAMENT SERVER RUNNING ON AWS EC2`);
-  console.log(`🚀 Port: ${PORT}`);
-  console.log(`🌐 Local Access: http://localhost:${PORT}`);
-  console.log(`====================================================`);
-});
+async function startServer() {
+  try {
+    const initialized = await initializeDatabase();
+    console.log(initialized ? '[Server] PostgreSQL tables ready' : '[Server] PostgreSQL unavailable, using file fallback');
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`====================================================`);
+      console.log(`🏆 SOUL LAND PVP TOURNAMENT SERVER RUNNING ON AWS EC2`);
+      console.log(`🚀 Port: ${PORT}`);
+      console.log(`🌐 Local Access: http://localhost:${PORT}`);
+      console.log(`====================================================`);
+    });
+  } catch (error) {
+    console.error('[Server] Failed to initialize database:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
