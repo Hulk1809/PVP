@@ -224,6 +224,38 @@ app.post('/api/ban', async (req, res) => {
   }
 });
 
+// 2b. ATOMIC API: Reset / Clear a Ban (Guaranteed Immediate Server-Side Persistence)
+app.post('/api/ban/reset', async (req, res) => {
+  const { matchId, playerSlot } = req.body || {};
+  if (!matchId) {
+    return res.status(400).json({ error: 'Thiếu matchId' });
+  }
+
+  try {
+    const state = await readStateFromDisk();
+    if (!state || !state.matches || !state.matches[matchId]) {
+      return res.status(404).json({ error: 'Không tìm thấy trận đấu' });
+    }
+
+    const match = state.matches[matchId];
+    if (playerSlot === 1 || playerSlot === 'p1' || playerSlot === 'all') {
+      delete match.player1Ban;
+      delete match.player1BanTime;
+    }
+    if (playerSlot === 2 || playerSlot === 'p2' || playerSlot === 'all' || !playerSlot) {
+      delete match.player2Ban;
+      delete match.player2BanTime;
+    }
+
+    const lastUpdated = await saveStateWithBackup(state);
+    console.log(`[BAN RESET] Reset ban for match ${matchId}`);
+    return res.status(200).json({ success: true, match, lastUpdated });
+  } catch (e) {
+    console.error('[BAN RESET ERROR]', e);
+    return res.status(500).json({ error: 'Lỗi xóa cấm tướng trên server' });
+  }
+});
+
 // 3. API: Real-time Cloud State Sync with Intelligent Server-Side Merge Protection
 app.get('/api/sync', async (req, res) => {
   try {
