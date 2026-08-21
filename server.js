@@ -281,7 +281,9 @@ app.post('/api/sync', async (req, res) => {
     const existingState = await readStateFromDisk();
     if (existingState) {
       // SERVER-SIDE MERGE PROTECTION:
-      // Never allow a client to wipe out existing bans or claimed accounts!
+      // 1. Never allow a client to wipe out existing bans or claimed accounts!
+      // 2. Never allow an out-of-sync client to revert a completed match to scheduled!
+      // 3. Preserve advanced players in subsequent rounds!
       const mergedMatches = { ...(existingState.matches || {}), ...(incomingState.matches || {}) };
       if (existingState.matches) {
         for (const [mId, exM] of Object.entries(existingState.matches)) {
@@ -296,6 +298,20 @@ app.post('/api/sync', async (req, res) => {
             if (exM.player2Ban && !inM.player2Ban) {
               inM.player2Ban = exM.player2Ban;
               inM.player2BanTime = exM.player2BanTime;
+            }
+            // Preserve completed match results if incoming client still thinks it is scheduled
+            if (exM.status === 'completed' && exM.winnerId && inM.status === 'scheduled' && !inM.winnerId) {
+              inM.status = exM.status;
+              inM.winnerId = exM.winnerId;
+              inM.player1Score = exM.player1Score;
+              inM.player2Score = exM.player2Score;
+            }
+            // Preserve advanced player slots in later rounds if client sent null
+            if (exM.player1Id && !inM.player1Id) {
+              inM.player1Id = exM.player1Id;
+            }
+            if (exM.player2Id && !inM.player2Id) {
+              inM.player2Id = exM.player2Id;
             }
           }
         }
