@@ -343,11 +343,27 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       persistState(brackets, participants, matches, playerAccounts, next);
       return next;
     });
+
+    // Atomic direct call to server for guaranteed persistence
+    fetch('/api/lotus-wheel/winner', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ winner }),
+    }).catch((err) => {
+      console.warn('[Lotus Wheel API] Error sending winner to server:', err);
+    });
   }, [brackets, participants, matches, playerAccounts, persistState]);
 
   const resetLotusWheelWinners = useCallback(() => {
     setLotusWheelWinners([]);
     persistState(brackets, participants, matches, playerAccounts, []);
+
+    // Atomic direct call to server for reset
+    fetch('/api/lotus-wheel/reset', {
+      method: 'POST',
+    }).catch((err) => {
+      console.warn('[Lotus Wheel API] Error sending reset to server:', err);
+    });
   }, [brackets, participants, matches, playerAccounts, persistState]);
 
   // Listen to BroadcastChannel and CloudSync for real-time cross-device updates

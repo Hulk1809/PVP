@@ -256,6 +256,51 @@ app.post('/api/ban/reset', async (req, res) => {
   }
 });
 
+
+// 2c. ATOMIC API: Record Lotus Wheel Winner (Guaranteed Server-Side Persistence)
+app.post('/api/lotus-wheel/winner', async (req, res) => {
+  const { winner } = req.body || {};
+  if (!winner || !winner.participantId) {
+    return res.status(400).json({ error: 'Thiếu thông tin người trúng giải' });
+  }
+
+  try {
+    const state = await readStateFromDisk();
+    if (!state) return res.status(500).json({ error: 'Server state not initialized' });
+    if (!Array.isArray(state.lotusWheelWinners)) state.lotusWheelWinners = [];
+
+    // Avoid duplicate entry
+    const exists = state.lotusWheelWinners.some(
+      (w) => w.id === winner.id || w.participantId === winner.participantId
+    );
+    if (!exists) {
+      state.lotusWheelWinners.push(winner);
+    }
+
+    const lastUpdated = await saveStateWithBackup(state);
+    console.log(`[LOTUS WHEEL SUCCESS] Recorded winner ${winner.playerName} (${winner.participantId}) at ${new Date().toISOString()}`);
+    return res.status(200).json({ success: true, lotusWheelWinners: state.lotusWheelWinners, lastUpdated });
+  } catch (e) {
+    console.error('[LOTUS WHEEL ERROR]', e);
+    return res.status(500).json({ error: 'Lỗi ghi nhận trúng thưởng trên server' });
+  }
+});
+
+// 2d. ATOMIC API: Reset Lotus Wheel (Explicit Admin Action)
+app.post('/api/lotus-wheel/reset', async (req, res) => {
+  try {
+    const state = await readStateFromDisk();
+    if (!state) return res.status(500).json({ error: 'Server state not initialized' });
+    state.lotusWheelWinners = [];
+    const lastUpdated = await saveStateWithBackup(state);
+    console.log(`[LOTUS WHEEL RESET] Reset all lotus wheel winners at ${new Date().toISOString()}`);
+    return res.status(200).json({ success: true, lotusWheelWinners: [], lastUpdated });
+  } catch (e) {
+    console.error('[LOTUS WHEEL RESET ERROR]', e);
+    return res.status(500).json({ error: 'Lỗi đặt lại vòng quay trên server' });
+  }
+});
+
 // 3. API: Real-time Cloud State Sync with Intelligent Server-Side Merge Protection
 app.get('/api/sync', async (req, res) => {
   try {
@@ -337,13 +382,27 @@ app.post('/api/sync', async (req, res) => {
         }
       }
 
+      // 4. LOTUS WHEEL MERGE PROTECTION:
+      // Union all existing and incoming winners by id / participantId so an empty array never wipes them out!
+      const exWinners = Array.isArray(existingState.lotusWheelWinners) ? existingState.lotusWheelWinners : [];
+      const inWinners = Array.isArray(incomingState.lotusWheelWinners) ? incomingState.lotusWheelWinners : [];
+      
+      const winnerMap = new Map();
+      exWinners.forEach((w) => {
+        if (w && (w.id || w.participantId)) winnerMap.set(w.id || w.participantId, w);
+      });
+      inWinners.forEach((w) => {
+        if (w && (w.id || w.participantId)) winnerMap.set(w.id || w.participantId, w);
+      });
+      const mergedLotusWheelWinners = Array.from(winnerMap.values());
+
       finalState = {
         ...incomingState,
         brackets: incomingState.brackets || existingState.brackets,
         participants: mergedParticipants,
         matches: mergedMatches,
         playerAccounts: mergedAccounts,
-        lotusWheelWinners: incomingState.lotusWheelWinners || existingState.lotusWheelWinners || [],
+        lotusWheelWinners: mergedLotusWheelWinners,
       };
     }
 
